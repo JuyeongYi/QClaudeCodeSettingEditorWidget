@@ -48,10 +48,11 @@ class JsonResultDialog(QtWidgets.QDialog):
 
 class DemoMainWindow(QtWidgets.QMainWindow):
     def __init__(self, path: str | Path | None = None, language: str | None = None,
-                 categories: Category = Category.ALL):
+                 categories: Category = Category.ALL, show_managed_only: bool = False):
         super().__init__()
         self.resize(1200, 800)
-        self.editor = QClaudeCodeSettingEditorWidget(language=language, categories=categories)
+        self.editor = QClaudeCodeSettingEditorWidget(language=language, categories=categories,
+                                                     showManagedOnly=show_managed_only)
         self.editor.fileLoaded.connect(self._set_title_path)
         self.editor.fileSaved.connect(self._set_title_path)
         self.editor.settingChanged.connect(self._retranslate)
@@ -63,6 +64,10 @@ class DemoMainWindow(QtWidgets.QMainWindow):
             self._lang_combo.addItem(f"{i18n.language_name(code)} ({code})", code)
         self._lang_combo.setCurrentIndex(max(self._lang_combo.findData(self.editor.language()), 0))
         self._lang_combo.currentIndexChanged.connect(lambda i: self.editor.setLanguage(self._lang_combo.itemData(i)))
+
+        self._show_managed = QtWidgets.QCheckBox()
+        self._show_managed.setChecked(show_managed_only)
+        self._show_managed.toggled.connect(self.editor.setShowManagedOnly)
 
         self._ok = QtWidgets.QPushButton()
         self._ok.setDefault(True)
@@ -77,6 +82,8 @@ class DemoMainWindow(QtWidgets.QMainWindow):
         bottom = QtWidgets.QHBoxLayout()
         bottom.addWidget(self._lang_label)
         bottom.addWidget(self._lang_combo)
+        bottom.addSpacing(12)
+        bottom.addWidget(self._show_managed)
         bottom.addSpacing(12)
         bottom.addWidget(self._hint, 1)
         bottom.addWidget(self._ok)
@@ -118,6 +125,7 @@ class DemoMainWindow(QtWidgets.QMainWindow):
         title = tr("QClaudeCodeSettingEditorWidget — test")
         self.setWindowTitle(f"{title} — {self._path_title}" if self._path_title else title)
         self._lang_label.setText(tr("Language:"))
+        self._show_managed.setText(tr("Show managed-only"))
         self._ok.setText(tr("OK"))
         self._cancel.setText(tr("Cancel"))
         self._hint.setText(tr("{n} keys set — press OK (Ctrl+Enter) to show the JSON", n=len(self.editor.settings())))
@@ -131,12 +139,13 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--lang", help="언어 코드 (예: ko, en)")
     ap.add_argument("--categories", help="노출할 카테고리 플래그, 예: MODEL|HOOKS|ENV (기본 ALL)")
     ap.add_argument("--exclude", help="제외할 카테고리 플래그, 예: JSON|ADMIN")
+    ap.add_argument("--show-managed", action="store_true", help="관리형(managed) 전용 키도 표시")
     args = ap.parse_args(sys.argv[1:] if argv is None else argv[1:])
     mask = Category.parse(args.categories) if args.categories else Category.ALL
     if args.exclude:
         mask &= ~Category.parse(args.exclude)
     app = QtWidgets.QApplication(sys.argv)
-    win = DemoMainWindow(args.path, args.lang, mask)
+    win = DemoMainWindow(args.path, args.lang, mask, args.show_managed)
     win.show()
     return app.exec()
 

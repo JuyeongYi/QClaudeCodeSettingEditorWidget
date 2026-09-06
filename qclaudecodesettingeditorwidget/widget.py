@@ -56,10 +56,11 @@ class _Page(QtWidgets.QWidget):
         lay.setContentsMargins(0, 0, 0, 0)
         lay.addWidget(scroll)
 
-    def applyFilter(self, text: str, only_set: bool) -> int:
+    def applyFilter(self, text: str, only_set: bool, show_managed: bool = True) -> int:
         shown = 0
         for r, sep in zip(self.rows, self._separators):
-            ok = (not text or r.matches(text)) and (not only_set or r.included())
+            ok = ((not text or r.matches(text)) and (not only_set or r.included())
+                  and (show_managed or not r.managed_only))
             r.setVisible(ok)
             sep.setVisible(ok)
             shown += ok
@@ -89,11 +90,15 @@ class QClaudeCodeSettingEditorWidget(QtWidgets.QWidget):
     def __init__(self, parent: QtWidgets.QWidget | None = None, *, schema: JsonSchema | None = None,
                  schema_path: str | Path | None = None, env_registry_path: str | Path | None = None,
                  env_registry: dict[str, EnvVarInfo] | None = None, language: str | None = None,
-                 categories: Category = Category.ALL, overlaps: dict[str, list[dict[str, str]]] | None = None):
+                 categories: Category = Category.ALL, overlaps: dict[str, list[dict[str, str]]] | None = None,
+                 showManagedOnly: bool = False):
         """categories: 좌측에 노출할 카테고리 비트 플래그. 제외된 카테고리의 키는 편집할 수 없고,
-        로드된 값은 _passthrough 로 보존되어 그대로 다시 내보낸다."""
+        로드된 값은 _passthrough 로 보존되어 그대로 다시 내보낸다.
+        showManagedOnly: 관리형(managed/policy) 설정에서만 유효한 키를 보여줄지. 기본 False(숨김).
+        숨겨도 로드된 값은 보존되어 출력에 그대로 남는다."""
         super().__init__(parent)
         self._categories = Category(categories)
+        self._show_managed = bool(showManagedOnly)
         self._schema: JsonSchema = schema if schema is not None else load_schema(schema_path)
         self._env_registry = (env_registry if env_registry is not None
                               else load_env_registry(env_registry_path, self._schema) if Category.ENV & self._categories
@@ -112,6 +117,7 @@ class QClaudeCodeSettingEditorWidget(QtWidgets.QWidget):
         self._body = self._build_ui()
         self._outer.addWidget(self._body)
         self._refresh_json()
+        self._apply_filter()
 
     # ------------------------------------------------------------------ UI
     def _build_ui(self) -> QtWidgets.QWidget:
@@ -258,6 +264,21 @@ class QClaudeCodeSettingEditorWidget(QtWidgets.QWidget):
     def schema(self) -> JsonSchema:
         return self._schema
 
+    def showManagedOnly(self) -> bool:
+        return self._show_managed
+
+    def setShowManagedOnly(self, show: bool) -> None:
+        """관리형(managed/policy) 설정에서만 유효한 키의 표시 여부. 값은 보존되어 출력에는 그대로 남는다."""
+        show = bool(show)
+        if show == self._show_managed:
+            return
+        self._show_managed = show
+        self._apply_filter()
+
+    def managedOnlyKeys(self) -> list[str]:
+        """관리형 전용으로 판별된 최상위 키(현재 노출 카테고리 기준)."""
+        return [k for k, r in self._rows.items() if r.managed_only]
+
     def categories(self) -> Category:
         """생성 시 지정한 카테고리 비트 플래그."""
         return self._categories
@@ -399,6 +420,8 @@ class QClaudeCodeSettingEditorWidget(QtWidgets.QWidget):
         self._update_overlap_warning()
         if self._only_set.isChecked():
             self._apply_filter()
+        elif not self._show_managed:
+            self._apply_nested_managed_filter()  # 로드로 새로 생긴 중첩 행 반영
         self.settingChanged.emit()
 
     def _update_overlap_warning(self) -> None:
@@ -445,21 +468,31 @@ class QClaudeCodeSettingEditorWidget(QtWidgets.QWidget):
         text = self._search.text().strip().lower()
         only = self._only_set.isChecked()
         for page in self._pages:
-            page.applyFilter(text, only)
+            page.applyFilter(text, only, self._show_managed)
+        self._apply_nested_managed_filter()
         if self._env is not None:
             self._env.setFilterText(self._search.text())
         self._update_nav_counts()
+
+    def _apply_nested_managed_filter(self) -> None:
+        """중첩 객체 안의 관리형 전용 행(sandbox.enabledPlatforms 등)도 숨김/표시."""
+        top = set(self._rows.values())
+        for row in self._body.findChildren(PropertyRow):
+            if row in top or not row.managed_only:
+                continue
+            row.setVisible(self._show_managed)
 
     def _update_nav_counts(self) -> None:
         text = self._search.text().strip().lower()
         only = self._only_set.isChecked()
         for i, page in enumerate(self._pages):
-            n_set = sum(1 for r in page.rows if r.included())
+            rows = [r for r in page.rows if self._show_managed or not r.managed_only]
+            n_set = sum(1 for r in rows if r.included())
             if text or only:
-                n_match = sum(1 for r in page.rows if (not text or r.matches(text)) and (not only or r.included()))
+                n_match = sum(1 for r in rows if (not text or r.matches(text)) and (not only or r.included()))
                 label = f"{page.title}  ({n_match})"
             else:
-                label = f"{page.title}  ({n_set}/{len(page.rows)})" if n_set else page.title
+                label = f"{page.title}  ({n_set}/{len(rows)})" if n_set else page.title
             self._nav.item(i).setText(label)
         if self._env is not None:
             env_title = tr(CATEGORY_TITLES[ENV_ID])

@@ -11,6 +11,7 @@ from ..schema import (
     JsonSchema,
     default_for,
     first_sentence,
+    is_managed_only,
     resolve_ref,
     schema_types,
     value_matches,
@@ -59,6 +60,7 @@ class PropertyRow(QtWidgets.QWidget):
         self.required = required
         self.path = path or key
         self.related: list[dict[str, str]] = list(related or [])  # [{"env", "precedence", "note"}]
+        self.managed_only = is_managed_only(schema)
         self._loading = 0
         self.description = describe(self.path, schema.get("description", ""))
 
@@ -78,6 +80,12 @@ class PropertyRow(QtWidgets.QWidget):
 
         badge = QtWidgets.QLabel(_type_badge(schema))
         badge.setStyleSheet(MUTED + " font-size: 90%;")
+        managed_badge = None
+        if self.managed_only:
+            managed_badge = QtWidgets.QLabel(tr("managed"))
+            managed_badge.setToolTip(tr("Only honored in managed (policy) settings"))
+            managed_badge.setStyleSheet("color: #d08a00; font-size: 85%; border: 1px solid #d08a00; "
+                                        "border-radius: 3px; padding: 0 3px;")
 
         self.editor: BaseEditor = create_editor(schema, root, depth + 1, key=key, path=self.path)
         self.editor.changed.connect(self._on_editor_changed)
@@ -87,6 +95,8 @@ class PropertyRow(QtWidgets.QWidget):
         head.addWidget(self.check)
         head.addWidget(self.name_label)
         head.addWidget(badge)
+        if managed_badge is not None:
+            head.addWidget(managed_badge)
         head.addSpacing(8)
         if self.editor.compact:
             head.addWidget(self.editor, 1)

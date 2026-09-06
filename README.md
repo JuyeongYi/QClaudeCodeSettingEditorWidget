@@ -42,6 +42,7 @@ w.settings()          # dict
 | `setCurrentCategory(id_or_title)` / `categoryIds()` / `categoryTitles()` | 페이지 전환 (`"hooks"`, `"env"`, `"json"` …) |
 | `setLanguage(code)` / `language()` / `availableLanguages()` | 현지화 전환 (`languageChanged` 시그널) |
 | `categories()` | 생성 시 지정한 `Category` 플래그 |
+| `showManagedOnly()` / `setShowManagedOnly(bool)` / `managedOnlyKeys()` | 관리형 전용 키 표시 여부 (생성자 `showManagedOnly=False`) |
 | `settingChanged` (Signal) | 값이 바뀔 때마다 (같은 이벤트 루프 턴 내 변경은 한 번으로 합침) |
 
 ## 카테고리 선택 (비트 플래그)
@@ -68,6 +69,20 @@ w = QClaudeCodeSettingEditorWidget(categories=Category.SETTINGS)                
 - 제외된 카테고리에 속한 키가 로드된 데이터에 있으면 **편집 불가 상태로 보존**되어 `settings()`/`GetSetting()` 에 그대로 다시 나온다(값 유실 방지).
   숨긴 키까지 출력에서 빼려면 호출 측에서 걸러낸다. JSON 페이지가 켜져 있으면 그 JSON 에는 보존된 키가 보인다.
 - 문자열 파싱: `Category.parse("model|hooks,ENV")`. 데모: `python -m qclaudecodesettingeditorwidget --categories "MODEL|HOOKS|ENV"` 또는 `--exclude "ADMIN|JSON"`.
+
+## 관리형(managed) 전용 키 숨기기
+
+`(Managed settings only)`, `Only honored from managed (policy) settings` 처럼 스키마 설명이 관리형(정책) 설정에서만
+유효하다고 밝힌 키는 기본적으로 **숨긴다**. 중첩 키(`sandbox.enabledPlatforms` 등)도 포함되며, 보이는 키에는 `managed` 배지가 붙는다.
+
+```python
+w = QClaudeCodeSettingEditorWidget()                        # showManagedOnly=False: 관리형 전용 키 숨김
+w = QClaudeCodeSettingEditorWidget(showManagedOnly=True)    # 전부 표시
+w.setShowManagedOnly(True); w.showManagedOnly(); w.managedOnlyKeys()
+```
+
+숨긴 키의 값은 로드 시 그대로 보존되어 출력에 남는다(카테고리 제외와 같은 규칙). 판별은 `schema.is_managed_only()`.
+데모: `python -m qclaudecodesettingeditorwidget --show-managed`.
 
 ## 동작 규칙
 

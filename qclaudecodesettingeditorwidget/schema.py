@@ -117,6 +117,19 @@ def resolve_ref(node: Any, root: JsonSchema) -> JsonSchema:
 
 
 # --------------------------------------------------------------------------- 유틸
+_MANAGED_ONLY = re.compile(
+    r"^\([^)]*\bmanaged settings?\b[^)]*\)"          # "(Managed settings only)", "(Admin/managed settings only)" ...
+    r"|only honored from managed \(policy\) settings"
+    r"|honored only at the managed policy tier",
+    re.I,
+)
+
+
+def is_managed_only(schema: JsonSchema) -> bool:
+    """관리형(managed/policy) 설정에서만 유효한 키인지 — 스키마 description 문구로 판별."""
+    return bool(_MANAGED_ONLY.search((schema.get("description") or "").strip()))
+
+
 def json_type_name(value: Any) -> str:
     if value is None:
         return "null"

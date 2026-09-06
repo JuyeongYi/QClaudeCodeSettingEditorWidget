@@ -36,6 +36,10 @@
             <translation>언어:</translation>
         </message>
         <message>
+            <source>Show managed-only</source>
+            <translation>관리형 전용 표시</translation>
+        </message>
+        <message>
             <source>OK</source>
             <translation>확인</translation>
         </message>
@@ -66,6 +70,14 @@
         <message>
             <source>Required key</source>
             <translation>필수 키</translation>
+        </message>
+        <message>
+            <source>managed</source>
+            <translation>관리형</translation>
+        </message>
+        <message>
+            <source>Only honored in managed (policy) settings</source>
+            <translation>관리형(정책) 설정에서만 유효</translation>
         </message>
         <message>
             <source>Related env:</source>
