@@ -1,0 +1,260 @@
+{
+ "advisorModel": [
+  {
+   "env": "CLAUDE_CODE_DISABLE_ADVISOR_TOOL",
+   "precedence": "related",
+   "note": "CLAUDE_CODE_DISABLE_ADVISOR_TOOL turns the advisor off, and this key can't turn it back on json settings.json { \"advisorModel\": \"opus\" } The key has no effect on Amazon Bedrock, Google Cloud's Agent Platform, or Microsoft Foundry."
+  }
+ ],
+ "alwaysThinkingEnabled": [
+  {
+   "env": "MAX_THINKING_TOKENS",
+   "precedence": "related",
+   "note": "Scope : Any file Type : Boolean true: no effect; thinking is already on false: Claude Code turns extended thinking off for every session Default : unset, so thinking is on for models that support it Per-session overrides : MAX_THINKING_TOKENS takes precedence over this key for one session: 0 turns thinking off, under the same model and provider limits as false, and a positive value turns thinking "
+  }
+ ],
+ "apiKeyHelper": [
+  {
+   "env": "ANTHROPIC_AUTH_TOKEN",
+   "precedence": "related",
+   "note": "The last two cases apply only when the helper's output is the credential Claude Code sends and ANTHROPIC_AUTH_TOKEN isn't set."
+  },
+  {
+   "env": "CLAUDE_CODE_API_KEY_HELPER_TTL_MS",
+   "precedence": "related",
+   "note": "Scope : Any file Type : string, a shell command line Default : unset, so Claude Code doesn't run a helper json settings.json { \"apiKeyHelper\": \"/bin/generate_temp_api_key.sh\" } Claude Code caches the value and reruns the command in these cases: After the cache lifetime, five minutes by default or the interval you set with CLAUDE_CODE_API_KEY_HELPER_TTL_MS."
+  }
+ ],
+ "askUserQuestionTimeout": [
+  {
+   "env": "CLAUDE_AFK_TIMEOUT_MS",
+   "precedence": "related",
+   "note": "Scope : User or managed Type : string, one of \"60s\", \"5m\", \"10m\", or \"never\" Default : \"never\" Per-session overrides : CLAUDE_AFK_TIMEOUT_MS takes precedence over this key for one session json settings.json { \"askUserQuestionTimeout\": \"5m\" } Appears in /config as Question auto-continue timeout , which writes this key to user settings; Claude Code hides the row while managed settings or the --setti"
+  }
+ ],
+ "autoCompactEnabled": [
+  {
+   "env": "DISABLE_AUTO_COMPACT",
+   "precedence": "env",
+   "note": "Scope : Any file Type : Boolean true: Claude Code compacts the conversation automatically when context approaches the limit false: Claude Code doesn't compact automatically Default : true Per-session overrides : DISABLE_AUTO_COMPACT turns auto-compact off for one session; whichever of the two turns it off, the other can't turn it back on json settings.json { \"autoCompactEnabled\": false } The manua"
+  }
+ ],
+ "autoConnectIde": [
+  {
+   "env": "CLAUDE_CODE_AUTO_CONNECT_IDE",
+   "precedence": "env",
+   "note": "Scope : Global config Type : Boolean true: Claude Code connects to a running IDE automatically when you start it from an external terminal false: Claude Code doesn't connect automatically from an external terminal; inside a VS Code or JetBrains terminal, or with --ide, it still connects Default : false Per-session overrides : CLAUDE_CODE_AUTO_CONNECT_IDE takes precedence over this key for one sess"
+  }
+ ],
+ "autoInstallIdeExtension": [
+  {
+   "env": "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL",
+   "precedence": "related",
+   "note": "Scope : Global config Type : Boolean true: Claude Code installs the IDE extension automatically when you run it from a VS Code terminal false: Claude Code doesn't install the extension automatically Default : true Per-session overrides : CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL set to 1 skips the install for one session even when this key is true json ~/.claude.json { \"autoInstallIdeExtension\": false } C"
+  }
+ ],
+ "autoMemoryEnabled": [
+  {
+   "env": "CLAUDE_CODE_DISABLE_AUTO_MEMORY",
+   "precedence": "related",
+   "note": "Scope : Any file Type : Boolean true: the same as unset; auto memory stays on unless something that outranks this key turns it off for the session, such as --bare, safe mode, or CLAUDE_CODE_DISABLE_AUTO_MEMORY false: Claude doesn't read from or write to the auto memory directory Default : true Per-session overrides : CLAUDE_CODE_DISABLE_AUTO_MEMORY takes precedence over this key for one session, i"
+  }
+ ],
+ "autoUpdatesChannel": [
+  {
+   "env": "DISABLE_AUTOUPDATER",
+   "precedence": "related",
+   "note": "Set DISABLE_AUTOUPDATER=1 to disable background auto-updates, or DISABLE_UPDATES=1 (added in v2.1.118) to block all update paths including manual claude update."
+  },
+  {
+   "env": "DISABLE_UPDATES",
+   "precedence": "related",
+   "note": "Set DISABLE_AUTOUPDATER=1 to disable background auto-updates, or DISABLE_UPDATES=1 (added in v2.1.118) to block all update paths including manual claude update."
+  }
+ ],
+ "awaySummaryEnabled": [
+  {
+   "env": "CLAUDE_CODE_ENABLE_AWAY_SUMMARY",
+   "precedence": "related",
+   "note": "Scope : Any file Type : Boolean true: you see a one-line session recap when you return after a few minutes away false: Claude Code shows no recap Default : unset, so the recap is on Per-session overrides : CLAUDE_CODE_ENABLE_AWAY_SUMMARY takes precedence over this key for one session, in either direction json settings.json { \"awaySummaryEnabled\": false } Claude Code never shows the recap in non-in"
+  }
+ ],
+ "axScreenReader": [
+  {
+   "env": "CLAUDE_AX_SCREEN_READER",
+   "precedence": "related",
+   "note": "Scope : Any file Type : Boolean true: Claude Code renders flat text without decorative borders or animations, using the classic renderer false: Claude Code renders normally Default : unset, so screen-reader mode is off Per-session overrides : --ax-screen-reader takes precedence over CLAUDE_AX_SCREEN_READER, and both take precedence over this key for one session json settings.json { \"axScreenReader"
+  }
+ ],
+ "defaultShell": [
+  {
+   "env": "CLAUDE_CODE_USE_POWERSHELL_TOOL",
+   "precedence": "related",
+   "note": "In Amazon Bedrock, Google Cloud's Agent Platform, and Microsoft Foundry sessions, and on macOS, Linux, and WSL, set CLAUDE_CODE_USE_POWERSHELL_TOOL=1 to turn the tool on."
+  }
+ ],
+ "disableAgentView": [
+  {
+   "env": "CLAUDE_CODE_DISABLE_AGENT_VIEW",
+   "precedence": "related",
+   "note": "Scope : Any file Type : Boolean true: Claude Code turns off claude agents, --bg, /background, and the on-demand supervisor false: agent view is available Default : unset, so agent view is available Per-session overrides : CLAUDE_CODE_DISABLE_AGENT_VIEW turns agent view off for one session; whichever of the two turns it off, the other can't turn it back on json settings.json { \"disableAgentView\": t"
+  }
+ ],
+ "disableArtifact": [
+  {
+   "env": "CLAUDE_CODE_DISABLE_ARTIFACT",
+   "precedence": "related",
+   "note": "Before v2.1.242, a higher-precedence file could override a lower file's true rather than the key acting as a lock false: ignored; to leave the tool on, remove the key Default : unset, so the tool follows your account's availability Per-session overrides : CLAUDE_CODE_DISABLE_ARTIFACT set to 1 turns the tool off for one session json settings.json { \"disableArtifact\": true } Disable artifacts lists "
+  }
+ ],
+ "disableBundledSkills": [
+  {
+   "env": "CLAUDE_CODE_DISABLE_BUNDLED_SKILLS",
+   "precedence": "related",
+   "note": "Scope : Any file Type : Boolean true: Claude Code removes bundled skills and workflows and hides built-in commands such as /init from the model false: bundled skills load Default : unset, so bundled skills load Per-session overrides : CLAUDE_CODE_DISABLE_BUNDLED_SKILLS set to 1 turns bundled skills off for one session; whichever of the two turns them off, the other can't turn them back on json set"
+  },
+  {
+   "env": "DISABLE_DOCTOR_COMMAND",
+   "precedence": "related",
+   "note": "/doctor stays typable like the built-in commands; to hide it, set DISABLE_DOCTOR_COMMAND instead."
+  }
+ ],
+ "disableClaudeAiConnectors": [
+  {
+   "env": "ENABLE_CLAUDEAI_MCP_SERVERS",
+   "precedence": "related",
+   "note": "Scope : Any file Type : Boolean true: Claude Code neither fetches nor connects those connectors false: the same as unset; Claude Code fetches your connectors unless another settings file or ENABLE_CLAUDEAI_MCP_SERVERS turns them off Default : false, so Claude Code fetches your connectors Per-session overrides : ENABLE_CLAUDEAI_MCP_SERVERS set to false turns connectors off for one session; whicheve"
+  }
+ ],
+ "disableWorkflows": [
+  {
+   "env": "CLAUDE_CODE_DISABLE_WORKFLOWS",
+   "precedence": "related",
+   "note": "Scope : Any file Type : Boolean true: Claude Code turns off dynamic workflows and the bundled workflow commands for everyone your settings reach false: the same as unset; whether workflows are on then follows enableWorkflows and your plan's default Default : false Per-session overrides : CLAUDE_CODE_DISABLE_WORKFLOWS turns workflows off for one session; whichever of the two turns them off, the oth"
+  }
+ ],
+ "effortLevel": [
+  {
+   "env": "CLAUDE_CODE_EFFORT_LEVEL",
+   "precedence": "related",
+   "note": "Scope : Any file Type : string, one of: \"low\": the least reasoning, for short, scoped, latency-sensitive tasks that aren't intelligence-sensitive \"medium\": reduces token usage for cost-sensitive work that can trade off some intelligence \"high\": balances token usage and intelligence \"xhigh\": deeper reasoning at higher token spend Default : unset Per-session overrides : --effort takes precedence ove"
+  }
+ ],
+ "enableArtifact": [
+  {
+   "env": "CLAUDE_CODE_DISABLE_ARTIFACT",
+   "precedence": "related",
+   "note": "Type : Boolean false: Claude Code turns the Artifact tool off for every session the file applies to true: the same as leaving the key unset, because it never overrides a false from another file, from CLAUDE_CODE_DISABLE_ARTIFACT, or from your organization's admin setting Default : unset, so the tool follows your account's availability json settings.json { \"enableArtifact\": false } While a source o"
+  }
+ ],
+ "fastMode": [
+  {
+   "env": "CLAUDE_CODE_DISABLE_FAST_MODE",
+   "precedence": "related",
+   "note": "Scope : Any file Type : Boolean true: Claude Code turns fast mode on for sessions where it's available false: fast mode stays off Default : unset, so fast mode is off Per-session overrides : CLAUDE_CODE_DISABLE_FAST_MODE turns fast mode off for one session, and this key can't turn it back on json settings.json { \"fastMode\": true }"
+  }
+ ],
+ "feedbackSurveyRate": [
+  {
+   "env": "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY",
+   "precedence": "related",
+   "note": "Scope : Any file Type : number between 0 and 1 Default : unset, so Claude Code uses the rate Anthropic sets remotely, or its built-in rate of 0.005 on Amazon Bedrock, Google Cloud's Agent Platform, and Microsoft Foundry, which don't receive remote configuration Per-session overrides : CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY set to 1 turns the survey off for one session whatever rate this key sets json"
+  }
+ ],
+ "fileCheckpointingEnabled": [
+  {
+   "env": "CLAUDE_CODE_DISABLE_FILE_CHECKPOINTING",
+   "precedence": "env",
+   "note": "Scope : Any file Type : Boolean true: Claude Code snapshots files before each edit so /rewind can restore them false: Claude Code doesn't snapshot files, so /rewind can't restore them Default : true Per-session overrides : CLAUDE_CODE_DISABLE_FILE_CHECKPOINTING turns checkpointing off for one session; whichever of the two turns it off, the other can't turn it back on json settings.json { \"fileChec"
+  },
+  {
+   "env": "CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING",
+   "precedence": "related",
+   "note": "The SDK turns checkpointing on with its enableFileCheckpointing option, and a bare -p run needs CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING=true."
+  }
+ ],
+ "includeGitInstructions": [
+  {
+   "env": "CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS",
+   "precedence": "env",
+   "note": "Cloud sessions never include the snapshot false: Claude Code leaves both out Default : true Per-session overrides : CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS takes precedence over this key for one session json settings.json { \"includeGitInstructions\": false }"
+  }
+ ],
+ "model": [
+  {
+   "env": "ANTHROPIC_DEFAULT_HAIKU_MODEL",
+   "precedence": "related",
+   "note": "For finer control, use environment variables: ANTHROPIC_MODEL (runtime override), ANTHROPIC_DEFAULT_OPUS_MODEL, ANTHROPIC_DEFAULT_SONNET_MODEL, ANTHROPIC_DEFAULT_HAIKU_MODEL (per-class pinning), CLAUDE_CODE_SUBAGENT_MODEL (subagent model)."
+  },
+  {
+   "env": "ANTHROPIC_DEFAULT_MODEL",
+   "precedence": "setting",
+   "note": "Scope : Any file Type : string, a model alias or full model ID Default : unset, so Claude Code uses your account's default model Per-session overrides : --model takes precedence over ANTHROPIC_MODEL, and both take precedence over this key for one session, including over a managed model; an availableModels list still applies to the pick json settings.json { \"model\": \"claude-sonnet-5\" } A value here"
+  },
+  {
+   "env": "ANTHROPIC_DEFAULT_OPUS_MODEL",
+   "precedence": "related",
+   "note": "For finer control, use environment variables: ANTHROPIC_MODEL (runtime override), ANTHROPIC_DEFAULT_OPUS_MODEL, ANTHROPIC_DEFAULT_SONNET_MODEL, ANTHROPIC_DEFAULT_HAIKU_MODEL (per-class pinning), CLAUDE_CODE_SUBAGENT_MODEL (subagent model)."
+  },
+  {
+   "env": "ANTHROPIC_DEFAULT_SONNET_MODEL",
+   "precedence": "related",
+   "note": "For finer control, use environment variables: ANTHROPIC_MODEL (runtime override), ANTHROPIC_DEFAULT_OPUS_MODEL, ANTHROPIC_DEFAULT_SONNET_MODEL, ANTHROPIC_DEFAULT_HAIKU_MODEL (per-class pinning), CLAUDE_CODE_SUBAGENT_MODEL (subagent model)."
+  },
+  {
+   "env": "ANTHROPIC_MODEL",
+   "precedence": "env",
+   "note": "Scope : Any file Type : string, a model alias or full model ID Default : unset, so Claude Code uses your account's default model Per-session overrides : --model takes precedence over ANTHROPIC_MODEL, and both take precedence over this key for one session, including over a managed model; an availableModels list still applies to the pick json settings.json { \"model\": \"claude-sonnet-5\" } A value here"
+  },
+  {
+   "env": "CLAUDE_CODE_SUBAGENT_MODEL",
+   "precedence": "related",
+   "note": "For finer control, use environment variables: ANTHROPIC_MODEL (runtime override), ANTHROPIC_DEFAULT_OPUS_MODEL, ANTHROPIC_DEFAULT_SONNET_MODEL, ANTHROPIC_DEFAULT_HAIKU_MODEL (per-class pinning), CLAUDE_CODE_SUBAGENT_MODEL (subagent model)."
+  }
+ ],
+ "otelHeadersHelper": [
+  {
+   "env": "CLAUDE_CODE_ENABLE_TELEMETRY",
+   "precedence": "related",
+   "note": "Requires CLAUDE_CODE_ENABLE_TELEMETRY=1."
+  },
+  {
+   "env": "CLAUDE_CODE_OTEL_HEADERS_HELPER_DEBOUNCE_MS",
+   "precedence": "related",
+   "note": "Scope : Any file Type : string, an executable path or a shell command line Default : unset, so Claude Code adds no helper-generated headers json settings.json { \"otelHeadersHelper\": \"/bin/generate_otel_headers.sh\" } Set the refresh interval with CLAUDE_CODE_OTEL_HEADERS_HELPER_DEBOUNCE_MS."
+  }
+ ],
+ "processWrapper": [
+  {
+   "env": "CLAUDE_CODE_PROCESS_WRAPPER",
+   "precedence": "related",
+   "note": "Scope : User or managed Type : string, the launcher command as an argv prefix, such as an absolute path with optional arguments Default : unset, so background processes start unwrapped Per-session overrides : CLAUDE_CODE_PROCESS_WRAPPER takes precedence over this key for one session json settings.json { \"processWrapper\": \"/opt/corp/launcher --profile claude\" } Claude Code ignores the launcher on W"
+  }
+ ],
+ "skillListingBudgetFraction": [
+  {
+   "env": "SLASH_COMMAND_TOOL_CHAR_BUDGET",
+   "precedence": "related",
+   "note": "Also configurable via the SLASH_COMMAND_TOOL_CHAR_BUDGET environment variable (fixed character count)."
+  }
+ ],
+ "teammateMode": [
+  {
+   "env": "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS",
+   "precedence": "related",
+   "note": "Enable them by adding CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS to your settings.json or environment."
+  }
+ ],
+ "tui": [
+  {
+   "env": "CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN",
+   "precedence": "env",
+   "note": "Scope : Any file Type : string, one of: \"default\": the classic main-screen renderer \"fullscreen\": the flicker-free alt-screen renderer with virtualized scrollback Default : unset, so Claude Code picks the renderer for you Per-session overrides : CLAUDE_CODE_NO_FLICKER and CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN take precedence over this key for one session: CLAUDE_CODE_NO_FLICKER=1 turns fullscreen o"
+  },
+  {
+   "env": "CLAUDE_CODE_NO_FLICKER",
+   "precedence": "env",
+   "note": "Scope : Any file Type : string, one of: \"default\": the classic main-screen renderer \"fullscreen\": the flicker-free alt-screen renderer with virtualized scrollback Default : unset, so Claude Code picks the renderer for you Per-session overrides : CLAUDE_CODE_NO_FLICKER and CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN take precedence over this key for one session: CLAUDE_CODE_NO_FLICKER=1 turns fullscreen o"
+  }
+ ]
+}
