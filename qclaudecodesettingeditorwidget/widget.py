@@ -131,8 +131,13 @@ class QClaudeCodeSettingEditorWidget(QtWidgets.QWidget):
         self._pages: list[_Page] = []
         self._passthrough: dict[str, Any] = {}
         self._file_path: Path | None = None
-        self._refresh_pending = False
         self._json_dirty = False
+        # 0ms 디바운스 타이머. self 를 부모로 두어 위젯(C++)이 파괴되면 함께 죽는다 —
+        # QTimer.singleShot(0, bound_method) 은 위젯 파괴 뒤에도 발화해 stale 행에 접근했다.
+        self._flush_timer = QtCore.QTimer(self)
+        self._flush_timer.setSingleShot(True)
+        self._flush_timer.setInterval(0)
+        self._flush_timer.timeout.connect(self._flush_change)
         self._outer = QtWidgets.QVBoxLayout(self)
         self._outer.setContentsMargins(0, 0, 0, 0)
         self._body = self._build_ui()
@@ -602,12 +607,12 @@ class QClaudeCodeSettingEditorWidget(QtWidgets.QWidget):
 
     # ------------------------------------------------------------------ 내부
     def _on_changed(self) -> None:
-        if not self._refresh_pending:
-            self._refresh_pending = True
-            QtCore.QTimer.singleShot(0, self._flush_change)
+        """변경을 0ms 뒤 한 번으로 합쳐 반영한다(같은 이벤트 루프 턴의 변경은 한 번만 갱신)."""
+        if not self._flush_timer.isActive():
+            self._flush_timer.start()
 
     def _flush_change(self) -> None:
-        self._refresh_pending = False
+        self._flush_timer.stop()
         self._refresh_json()
         self._update_nav_counts()
         self._update_overlap_warning()
