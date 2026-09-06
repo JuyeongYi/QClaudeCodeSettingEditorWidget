@@ -180,6 +180,68 @@ def build_overlaps(schema: dict, env_md: str, settings_md: str) -> dict[str, lis
     return out
 
 
+# --------------------------------------------------------------------------- keys.py (enum) 생성
+KEYS_OUT = ROOT / "qclaudecodesettingeditorwidget" / "keys.py"
+
+
+def enum_member_name(key: str) -> str:
+    """키 → enum 멤버 이름. 식별자면 그대로, 아니면 특수문자를 '_' 로 바꾼다 ($schema → schema)."""
+    if key.isidentifier():
+        return key
+    return re.sub(r"\W+", "_", key).strip("_") or "_"
+
+
+def write_keys_module(schema: dict, registry: dict[str, dict]) -> Path:
+    setting_keys = [k for k in schema.get("properties", {})]
+    env_names = sorted(registry)
+    lines = [
+        '"""설정 키·환경변수 이름 enum (tools/refresh_resources.py 가 스키마·문서에서 자동 생성 — 직접 수정하지 말 것).',
+        "",
+        "멤버 이름이 곧 키다: SettingKey.model == \"model\", EnvVar.API_TIMEOUT_MS == \"API_TIMEOUT_MS\".",
+        "식별자가 될 수 없는 키만 이름이 다르다(SettingKey.schema.value == \"$schema\"). 값은 항상 실제 키 문자열이다.",
+        '"""',
+        "from __future__ import annotations",
+        "",
+        "from enum import Enum",
+        "",
+        "",
+        "class KeyEnum(str, Enum):",
+        '    """str 겸용 enum: dict 키·비교·f-string 모두 실제 키 문자열로 동작한다."""',
+        "",
+        "    def __str__(self) -> str:",
+        "        return str(self.value)",
+        "",
+        "    def __format__(self, spec: str) -> str:",
+        "        return format(str(self.value), spec)",
+        "",
+        "    @classmethod",
+        "    def coerce(cls, key: object) -> str:",
+        '        """enum 멤버·멤버 이름·키 문자열 → 실제 키 문자열."""',
+        "        if isinstance(cls, type) and isinstance(key, cls):",
+        "            return str(key.value)",
+        "        if isinstance(key, Enum):",
+        "            return str(key.value)",
+        "        text = str(key)",
+        "        try:",
+        "            return str(cls[text].value)  # 멤버 이름",
+        "        except KeyError:",
+        "            return text",
+        "",
+        "",
+        "class SettingKey(KeyEnum):",
+        '    """settings.json 최상위 키."""',
+        "",
+    ]
+    for k in setting_keys:
+        lines.append(f"    {enum_member_name(k)} = {json.dumps(k)}")
+    lines += ["", "", "class EnvVar(KeyEnum):", '    """settings.json env 블록의 환경변수 이름(스키마 + 문서)."""', ""]
+    for n in env_names:
+        lines.append(f"    {enum_member_name(n)} = {json.dumps(n)}")
+    lines += ["", "", "__all__ = [\"KeyEnum\", \"SettingKey\", \"EnvVar\"]", ""]
+    KEYS_OUT.write_text("\n".join(lines), "utf-8")
+    return KEYS_OUT
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--schema", help="로컬 스키마 JSON 경로(네트워크 대신 사용)")
@@ -202,7 +264,10 @@ def main(argv: list[str] | None = None) -> int:
     overlaps = build_overlaps(schema, env_md, settings_md)
     OVERLAPS_OUT.write_text(json.dumps(overlaps, indent=1, ensure_ascii=False) + "\n", "utf-8")
 
+    keys_path = write_keys_module(schema, registry)
+
     print(f"schema: {len(schema.get('properties', {}))} top-level keys → {SCHEMA_OUT}")
+    print(f"keys: SettingKey {len(schema.get('properties', {}))} / EnvVar {len(registry)} → {keys_path}")
     print(f"env: {len(registry)} variables (schema {sum(1 for v in registry.values() if v['inSchema'])}, "
           f"docs {len(doc_rows)}) → {ENV_OUT}")
     print(f"overlaps: {len(overlaps)} settings / {sum(len(v) for v in overlaps.values())} pairs → {OVERLAPS_OUT}")

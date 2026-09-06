@@ -12,6 +12,7 @@ from .categories import CATEGORY_TITLES, ENV_ID, ENV_KEY, JSON_ID, Category, cat
 from .editors import PropertyRow
 from .env_editor import EnvEditor
 from .i18n import tr
+from .keys import EnvVar, SettingKey
 from .schema import EnvVarInfo, JsonSchema, load_env_registry, load_overlaps, load_schema, overlaps_by_env, resolve_ref
 
 MUTED = "color: #8a8a8a;"
@@ -315,8 +316,111 @@ class QClaudeCodeSettingEditorWidget(QtWidgets.QWidget):
         """env 페이지 편집기. Category.ENV 가 제외되었으면 None."""
         return self._env
 
-    def rowFor(self, key: str) -> PropertyRow | None:
-        return self._rows.get(key)
+    def rowFor(self, key: str | SettingKey) -> PropertyRow | None:
+        return self._rows.get(SettingKey.coerce(key))
+
+    # ------------------------------------------------------------------ 단건 접근 (enum 키)
+    def settingValue(self, key: str | SettingKey, default: Any = None) -> Any:
+        """최상위 설정 키 하나의 값. 미설정이면 default. env 는 envValue()/UpdateEnv() 를 쓴다."""
+        k = SettingKey.coerce(key)
+        if k == ENV_KEY:
+            env = self._env.value() if self._env is not None else self._passthrough.get(ENV_KEY)
+            return env if env else default
+        row = self._rows.get(k)
+        if row is not None:
+            return row.value() if row.included() else default
+        return self._passthrough.get(k, default)
+
+    def setSettingValue(self, key: str | SettingKey, value: Any) -> None:
+        """최상위 설정 키 하나를 설정. value 가 None 이면 해제. 노출되지 않은 카테고리의 키는 보존 영역에 기록된다."""
+        k = SettingKey.coerce(key)
+        if k == ENV_KEY:
+            self.UpdateEnv({}, replace=value)
+            return
+        row = self._rows.get(k)
+        if row is not None:
+            if value is None:
+                row.setIncluded(False)
+                row.editor.reset()
+            else:
+                row.setValue(value)
+        elif value is None:
+            self._passthrough.pop(k, None)
+        else:
+            self._passthrough[k] = value
+        self._on_changed()
+
+    def unsetSetting(self, key: str | SettingKey) -> None:
+        self.setSettingValue(key, None)
+
+    def envValue(self, name: str | EnvVar, default: str | None = None) -> str | None:
+        """env 변수 하나의 값. 미설정이면 default."""
+        n = EnvVar.coerce(name)
+        if self._env is not None:
+            return self._env.variable(n) if self._env.isSet(n) else default
+        env = self._passthrough.get(ENV_KEY)
+        return env.get(n, default) if isinstance(env, dict) else default
+
+    def setEnvValue(self, name: str | EnvVar, value: str | None) -> None:
+        """env 변수 하나를 설정. value 가 None 이면 해제."""
+        self.UpdateEnv({EnvVar.coerce(name): value})
+
+    # ------------------------------------------------------------------ JSON 병합 갱신
+    @staticmethod
+    def _parse_object(data: str | dict[str, Any]) -> dict[str, Any]:
+        obj = json.loads(data) if isinstance(data, str) else data
+        if not isinstance(obj, dict):
+            raise ValueError(tr("Top level of settings JSON must be an object"))
+        return obj
+
+    def UpdateSetting(self, data: str | dict[str, Any]) -> dict[str, Any]:
+        """JSON(문자열 또는 dict)의 최상위 키들을 현재 설정에 **병합**한다.
+
+        {"model": "opus"} 처럼 키 하나만 넘겨도 되고, 값이 null 인 키는 해제된다.
+        "env" 키가 있으면 UpdateEnv 와 같은 병합 규칙을 적용한다. 갱신 후 settings() 를 돌려준다.
+        """
+        obj = self._parse_object(data)
+        for key, value in obj.items():
+            k = SettingKey.coerce(key)
+            if k == ENV_KEY:
+                if value is None:
+                    self.UpdateEnv({}, replace={})
+                elif isinstance(value, dict):
+                    self.UpdateEnv(value)
+                else:
+                    raise ValueError("env must be an object or null")
+            else:
+                self.setSettingValue(k, value)
+        return self.settings()
+
+    def UpdateEnv(self, data: str | dict[str, Any], *, replace: dict[str, Any] | None = None) -> dict[str, str]:
+        """JSON(문자열 또는 dict)의 환경변수들을 현재 env 에 **병합**한다.
+
+        {"API_TIMEOUT_MS": "1200000"} 처럼 하나만 넘겨도 되고, 값이 null 이면 해제된다.
+        replace 를 주면 병합 대신 env 전체를 그 dict 로 바꾼다. 갱신 후 env dict 를 돌려준다.
+        """
+        obj = self._parse_object(data)
+        if replace is not None:
+            if not isinstance(replace, dict):
+                raise ValueError("env must be an object")
+            obj = replace
+            merged: dict[str, str] = {}
+        else:
+            merged = dict(self._env.value()) if self._env is not None else dict(self._passthrough.get(ENV_KEY) or {})
+        for name, value in obj.items():
+            n = EnvVar.coerce(name)
+            if value is None:
+                merged.pop(n, None)
+            else:
+                merged[n] = str(value)
+        if self._env is not None:
+            self._env.setValue(merged)
+        elif merged:
+            self._passthrough[ENV_KEY] = merged
+        else:
+            self._passthrough.pop(ENV_KEY, None)
+        self._on_changed()
+        return dict(merged)
 
     def settings(self) -> dict[str, Any]:
         """현재 설정을 dict 로. 체크된(설정된) 키만 포함하며 키 순서는 스키마 순서."""

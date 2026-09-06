@@ -7,6 +7,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from .editors.base import BaseEditor
 from .i18n import describe, tr
+from .keys import EnvVar
 from .schema import EnvVarInfo, JsonSchema, first_sentence
 
 COL_SET, COL_NAME, COL_VALUE, COL_DESC = range(4)
@@ -187,13 +188,14 @@ class EnvEditor(BaseEditor):
             self._cell(row).setFocus()
 
     # ---- public helpers
-    def ensureVariable(self, name: str) -> int:
-        """이름의 행 인덱스를 돌려주고, 없으면 사용자 변수 행을 만든다."""
+    def ensureVariable(self, name: str | EnvVar) -> int:
+        """이름(문자열 또는 EnvVar)의 행 인덱스를 돌려주고, 없으면 사용자 변수 행을 만든다."""
+        name = EnvVar.coerce(name)
         if name in self._rows:
             return self._rows[name]
         return self._append_row(EnvVarInfo(name=name), custom=True)
 
-    def setVariable(self, name: str, value: str | None) -> None:
+    def setVariable(self, name: str | EnvVar, value: str | None) -> None:
         """value 가 None 이면 해제, 아니면 설정."""
         row = self.ensureVariable(name)
         with self.loading():
@@ -208,8 +210,14 @@ class EnvEditor(BaseEditor):
     def setFilterText(self, text: str) -> None:
         self._filter.setText(text)
 
-    def isSet(self, name: str) -> bool:
+    def isSet(self, name: str | EnvVar) -> bool:
+        name = EnvVar.coerce(name)
         return name in self._rows and self._is_set(self._rows[name])
+
+    def variable(self, name: str | EnvVar) -> str | None:
+        """설정된 값, 해제 상태면 None."""
+        name = EnvVar.coerce(name)
+        return self._cell(self._rows[name]).text() if self.isSet(name) else None
 
     # ---- BaseEditor
     def value(self) -> dict[str, str]:

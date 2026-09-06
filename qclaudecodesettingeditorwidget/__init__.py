@@ -14,8 +14,9 @@
     print(w.GetSettingJsonl())   # 한 줄 JSON
 """
 from .categories import Category
+from .keys import EnvVar, KeyEnum, SettingKey
 from .schema import EnvVarInfo, load_env_registry, load_schema
 from .widget import QClaudeCodeSettingEditorWidget
 
 __version__ = "0.1.0"
-__all__ = ["QClaudeCodeSettingEditorWidget", "Category", "EnvVarInfo", "load_env_registry", "load_schema", "__version__"]
+__all__ = ["QClaudeCodeSettingEditorWidget", "Category", "SettingKey", "EnvVar", "KeyEnum", "EnvVarInfo", "load_env_registry", "load_schema", "__version__"]

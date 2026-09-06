@@ -1,6 +1,7 @@
 """스키마 노드 → 편집기 팩토리."""
 from __future__ import annotations
 
+from ..keys import SettingKey
 from ..schema import JsonSchema, resolve_ref, schema_types, variants_of
 from .base import BaseEditor
 from .containers import (
@@ -17,7 +18,7 @@ from .containers import (
 from .scalars import BoolEditor, ConstEditor, EnumEditor, IntEditor, NullEditor, NumberEditor, StringEditor
 
 MAX_DEPTH = 12
-MULTILINE_KEYS = {"claudeMd", "pluginTrustMessage"}
+MULTILINE_KEYS = {SettingKey.claudeMd, SettingKey.pluginTrustMessage}
 
 __all__ = [
     "AnyOfEditor", "BaseEditor", "BoolEditor", "CheckListEditor", "ConstEditor", "DictEditor", "EnumEditor",

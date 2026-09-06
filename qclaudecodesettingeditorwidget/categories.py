@@ -1,5 +1,6 @@
 """최상위 설정 키의 카테고리 분류.
 
+키는 문자열 대신 keys.SettingKey 멤버로 적는다(SettingKey 는 str 겸용이라 스키마 dict 조회에 그대로 쓰인다).
 CATEGORY_TITLES 의 영어 제목이 번역 소스(tr) 다. 여기 없는 키(스키마가 갱신되어 새로 생긴 키)는
 자동으로 OTHER_ID 로 들어간다. env 는 별도 페이지(EnvEditor)에서 다루므로 ENV_KEY 로 분리한다.
 """
@@ -7,7 +8,9 @@ from __future__ import annotations
 
 from enum import IntFlag, auto
 
-ENV_KEY = "env"
+from .keys import SettingKey
+
+ENV_KEY = SettingKey.env
 ENV_ID = "env"
 OTHER_ID = "other"
 JSON_ID = "json"
@@ -77,76 +80,76 @@ CATEGORY_TITLES: dict[str, str] = {
     JSON_ID: "JSON",
 }
 
-CATEGORIES: list[tuple[str, list[str]]] = [
+CATEGORIES: list[tuple[str, list[SettingKey]]] = [
     ("auth", [
-        "apiKeyHelper", "awsCredentialExport", "awsAuthRefresh", "gcpAuthRefresh",
-        "forceLoginMethod", "forceLoginOrgUUID", "forceLoginGatewayUrl",
-        "otelHeadersHelper", "policyHelper",
+        SettingKey.apiKeyHelper, SettingKey.awsCredentialExport, SettingKey.awsAuthRefresh, SettingKey.gcpAuthRefresh,
+        SettingKey.forceLoginMethod, SettingKey.forceLoginOrgUUID, SettingKey.forceLoginGatewayUrl,
+        SettingKey.otelHeadersHelper, SettingKey.policyHelper,
     ]),
     ("model", [
-        "model", "availableModels", "enforceAvailableModels", "modelOverrides", "fallbackModel",
-        "effortLevel", "fastMode", "fastModePerSessionOptIn", "alwaysThinkingEnabled",
-        "advisorModel", "teammateDefaultModel", "autoCompactEnabled",
+        SettingKey.model, SettingKey.availableModels, SettingKey.enforceAvailableModels, SettingKey.modelOverrides, SettingKey.fallbackModel,
+        SettingKey.effortLevel, SettingKey.fastMode, SettingKey.fastModePerSessionOptIn, SettingKey.alwaysThinkingEnabled,
+        SettingKey.advisorModel, SettingKey.teammateDefaultModel, SettingKey.autoCompactEnabled,
     ]),
     ("permissions", [
-        "permissions", "autoMode", "useAutoModeDuringPlan", "disableAutoMode",
-        "skipDangerousModePermissionPrompt", "permissionExplainerEnabled",
-        "allowManagedPermissionRulesOnly",
+        SettingKey.permissions, SettingKey.autoMode, SettingKey.useAutoModeDuringPlan, SettingKey.disableAutoMode,
+        SettingKey.skipDangerousModePermissionPrompt, SettingKey.permissionExplainerEnabled,
+        SettingKey.allowManagedPermissionRulesOnly,
     ]),
     ("hooks", [
-        "hooks", "disableAllHooks", "allowedHttpHookUrls", "httpHookAllowedEnvVars",
-        "allowManagedHooksOnly",
+        SettingKey.hooks, SettingKey.disableAllHooks, SettingKey.allowedHttpHookUrls, SettingKey.httpHookAllowedEnvVars,
+        SettingKey.allowManagedHooksOnly,
     ]),
     ("mcp", [
-        "enableAllProjectMcpServers", "enabledMcpjsonServers", "disabledMcpjsonServers",
-        "allowedMcpServers", "deniedMcpServers", "allowManagedMcpServersOnly", "managedMcpServers",
-        "allowAllClaudeAiMcps", "disableClaudeAiConnectors",
+        SettingKey.enableAllProjectMcpServers, SettingKey.enabledMcpjsonServers, SettingKey.disabledMcpjsonServers,
+        SettingKey.allowedMcpServers, SettingKey.deniedMcpServers, SettingKey.allowManagedMcpServersOnly, SettingKey.managedMcpServers,
+        SettingKey.allowAllClaudeAiMcps, SettingKey.disableClaudeAiConnectors,
     ]),
     ("plugins", [
-        "enabledPlugins", "pluginConfigs", "extraKnownMarketplaces", "strictKnownMarketplaces",
-        "blockedMarketplaces", "skippedMarketplaces", "skippedPlugins", "pluginTrustMessage",
-        "pluginSuggestionMarketplaces", "strictPluginOnlyCustomization",
-        "channelsEnabled", "allowedChannelPlugins",
+        SettingKey.enabledPlugins, SettingKey.pluginConfigs, SettingKey.extraKnownMarketplaces, SettingKey.strictKnownMarketplaces,
+        SettingKey.blockedMarketplaces, SettingKey.skippedMarketplaces, SettingKey.skippedPlugins, SettingKey.pluginTrustMessage,
+        SettingKey.pluginSuggestionMarketplaces, SettingKey.strictPluginOnlyCustomization,
+        SettingKey.channelsEnabled, SettingKey.allowedChannelPlugins,
     ]),
-    ("sandbox", ["sandbox"]),
+    ("sandbox", [SettingKey.sandbox]),
     ("context", [
-        "claudeMd", "claudeMdExcludes", "includeGitInstructions", "autoMemoryEnabled", "autoMemoryDirectory",
-        "skillOverrides", "disableBundledSkills", "disableSkillShellExecution",
-        "skillListingMaxDescChars", "skillListingBudgetFraction", "plansDirectory", "respectGitignore",
-        "agent", "outputStyle", "language", "fileCheckpointingEnabled", "cleanupPeriodDays",
+        SettingKey.claudeMd, SettingKey.claudeMdExcludes, SettingKey.includeGitInstructions, SettingKey.autoMemoryEnabled, SettingKey.autoMemoryDirectory,
+        SettingKey.skillOverrides, SettingKey.disableBundledSkills, SettingKey.disableSkillShellExecution,
+        SettingKey.skillListingMaxDescChars, SettingKey.skillListingBudgetFraction, SettingKey.plansDirectory, SettingKey.respectGitignore,
+        SettingKey.agent, SettingKey.outputStyle, SettingKey.language, SettingKey.fileCheckpointingEnabled, SettingKey.cleanupPeriodDays,
     ]),
-    ("git", ["attribution", "includeCoAuthoredBy", "prUrlTemplate", "worktree"]),
+    ("git", [SettingKey.attribution, SettingKey.includeCoAuthoredBy, SettingKey.prUrlTemplate, SettingKey.worktree]),
     ("ui", [
-        "theme", "tui", "viewMode", "editorMode", "vimInsertModeRemaps", "statusLine", "subagentStatusLine",
-        "fileSuggestion", "spinnerVerbs", "spinnerTipsEnabled", "spinnerTipsOverride",
-        "terminalProgressBarEnabled", "showTurnDuration", "prefersReducedMotion", "showThinkingSummaries",
-        "showClearContextOnPlanAccept", "syntaxHighlightingDisabled", "verbose", "diffTool",
-        "wheelScrollAccelerationEnabled", "autoScrollEnabled", "emojiCompletionEnabled", "footerLinksRegexes",
-        "axScreenReader", "disableAgentView", "externalEditorContext", "respondToBashCommands",
-        "askUserQuestionTimeout", "voice", "voiceEnabled",
+        SettingKey.theme, SettingKey.tui, SettingKey.viewMode, SettingKey.editorMode, SettingKey.vimInsertModeRemaps, SettingKey.statusLine, SettingKey.subagentStatusLine,
+        SettingKey.fileSuggestion, SettingKey.spinnerVerbs, SettingKey.spinnerTipsEnabled, SettingKey.spinnerTipsOverride,
+        SettingKey.terminalProgressBarEnabled, SettingKey.showTurnDuration, SettingKey.prefersReducedMotion, SettingKey.showThinkingSummaries,
+        SettingKey.showClearContextOnPlanAccept, SettingKey.syntaxHighlightingDisabled, SettingKey.verbose, SettingKey.diffTool,
+        SettingKey.wheelScrollAccelerationEnabled, SettingKey.autoScrollEnabled, SettingKey.emojiCompletionEnabled, SettingKey.footerLinksRegexes,
+        SettingKey.axScreenReader, SettingKey.disableAgentView, SettingKey.externalEditorContext, SettingKey.respondToBashCommands,
+        SettingKey.askUserQuestionTimeout, SettingKey.voice, SettingKey.voiceEnabled,
     ]),
     ("notifications", [
-        "preferredNotifChannel", "agentPushNotifEnabled", "inputNeededNotifEnabled", "awaySummaryEnabled",
-        "feedbackSurveyRate", "companyAnnouncements",
+        SettingKey.preferredNotifChannel, SettingKey.agentPushNotifEnabled, SettingKey.inputNeededNotifEnabled, SettingKey.awaySummaryEnabled,
+        SettingKey.feedbackSurveyRate, SettingKey.companyAnnouncements,
     ]),
     ("agents", [
-        "teammateMode", "disableWorkflows", "workflowKeywordTriggerEnabled", "workflowSizeGuideline",
-        "remoteControlAtStartup", "disableRemoteControl", "enableArtifact", "disableArtifact",
+        SettingKey.teammateMode, SettingKey.disableWorkflows, SettingKey.workflowKeywordTriggerEnabled, SettingKey.workflowSizeGuideline,
+        SettingKey.remoteControlAtStartup, SettingKey.disableRemoteControl, SettingKey.enableArtifact, SettingKey.disableArtifact,
     ]),
     ("ide", [
-        "autoConnectIde", "autoInstallIdeExtension", "defaultShell", "processWrapper",
-        "wslInheritsWindowsSettings", "skipWebFetchPreflight", "browserExternalPageTools",
-        "disableBrowserExternalNavigation", "disableMobileSimulatorTools",
+        SettingKey.autoConnectIde, SettingKey.autoInstallIdeExtension, SettingKey.defaultShell, SettingKey.processWrapper,
+        SettingKey.wslInheritsWindowsSettings, SettingKey.skipWebFetchPreflight, SettingKey.browserExternalPageTools,
+        SettingKey.disableBrowserExternalNavigation, SettingKey.disableMobileSimulatorTools,
     ]),
     ("admin", [
-        "$schema", "autoUpdatesChannel", "minimumVersion", "requiredMinimumVersion", "requiredMaximumVersion",
-        "parentSettingsBehavior", "forceRemoteSettingsRefresh", "disableDeepLinkRegistration",
-        "disableSideloadFlags", "requireCoworkFullVmSandbox", "sshConfigs", "sshHostAllowlist",
+        SettingKey.schema, SettingKey.autoUpdatesChannel, SettingKey.minimumVersion, SettingKey.requiredMinimumVersion, SettingKey.requiredMaximumVersion,
+        SettingKey.parentSettingsBehavior, SettingKey.forceRemoteSettingsRefresh, SettingKey.disableDeepLinkRegistration,
+        SettingKey.disableSideloadFlags, SettingKey.requireCoworkFullVmSandbox, SettingKey.sshConfigs, SettingKey.sshHostAllowlist,
     ]),
 ]
 
 
-def categorize(keys: list[str], mask: Category = Category.ALL) -> list[tuple[str, list[str]]]:
+def categorize(keys: list[str], mask: Category = Category.ALL) -> list[tuple[str, list[SettingKey]]]:
     """스키마의 최상위 키 목록을 (카테고리 id, 키 목록) 으로 배분. env 제외, 미분류는 OTHER_ID.
 
     mask 에 없는 카테고리는 결과에서 빠진다.

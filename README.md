@@ -37,13 +37,37 @@ w.settings()          # dict
 | `SetSetting(text)` | JSON 문자열 로드. 파싱 실패 시 `ValueError` |
 | `loadFile(path)` / `saveFile(path=None)` | 파일 입출력 (`fileLoaded` / `fileSaved` 시그널) |
 | `clear()` | 모든 키 해제 |
-| `envEditor().setVariable(name, value_or_None)` | env 변수 설정/해제 |
+| `settingValue(key)` / `setSettingValue(key, v)` / `unsetSetting(key)` | 최상위 키 단건 (`SettingKey` 또는 문자열) |
+| `envValue(name)` / `setEnvValue(name, v_or_None)` | env 변수 단건 (`EnvVar` 또는 문자열) |
+| `UpdateSetting(json_or_dict)` / `UpdateEnv(json_or_dict, replace=None)` | JSON 병합 갱신 (`null` → 해제) |
+| `envEditor().setVariable(name, value_or_None)` | env 변수 설정/해제 (env 페이지 편집기 직접) |
 | `rowFor(key)` | 최상위 키의 `PropertyRow` (`included()`, `setValue()`, `editor`) |
 | `setCurrentCategory(id_or_title)` / `categoryIds()` / `categoryTitles()` | 페이지 전환 (`"hooks"`, `"env"`, `"json"` …) |
 | `setLanguage(code)` / `language()` / `availableLanguages()` | 현지화 전환 (`languageChanged` 시그널) |
 | `categories()` | 생성 시 지정한 `Category` 플래그 |
 | `showManagedOnly()` / `setShowManagedOnly(bool)` / `managedOnlyKeys()` | 관리형 전용 키 표시 여부 (생성자 `showManagedOnly=False`) |
 | `settingChanged` (Signal) | 값이 바뀔 때마다 (같은 이벤트 루프 턴 내 변경은 한 번으로 합침) |
+
+## 키 enum 과 단건·JSON 갱신
+
+키 문자열 대신 `keys.py` 의 enum 을 쓴다. `SettingKey`(최상위 설정 키 142개)와 `EnvVar`(환경변수 386개)는
+`str` 겸용이라 **멤버 이름이 곧 키**다: `SettingKey.model == "model"`, `EnvVar.API_TIMEOUT_MS == "API_TIMEOUT_MS"`.
+식별자가 될 수 없는 `$schema` 만 `SettingKey.schema`(값 `"$schema"`)다. 위젯 내부(카테고리 표 등)도 이 enum 을 쓴다.
+`tools/refresh_resources.py` 가 스키마·문서에서 다시 생성하며, 테스트가 스키마와의 동기화를 검사한다.
+
+```python
+from qclaudecodesettingeditorwidget import EnvVar, SettingKey
+
+w.setSettingValue(SettingKey.model, "opus");  w.settingValue(SettingKey.model);  w.unsetSetting(SettingKey.model)
+w.setEnvValue(EnvVar.API_TIMEOUT_MS, "1200000");  w.envValue(EnvVar.API_TIMEOUT_MS)
+
+w.UpdateSetting('{"effortLevel": "high", "fastMode": null}')   # 설정 병합: null 이면 해제, 결과 settings() 반환
+w.UpdateEnv('{"API_TIMEOUT_MS": "1200000", "DEBUG": null}')     # env 병합: null 이면 해제, 결과 env dict 반환
+w.UpdateEnv("{}", replace={"ONLY": "this"})                     # env 전체 교체
+```
+
+`UpdateSetting` / `UpdateEnv` 는 JSON 문자열과 dict 를 모두 받고, 키는 문자열·enum 멤버·멤버 이름(`"schema"`) 어느 것이든 된다.
+노출되지 않은 카테고리(또는 숨긴 env 페이지)의 키도 갱신되며 보존 영역에 기록되어 출력에 반영된다.
 
 ## 카테고리 선택 (비트 플래그)
 
@@ -148,7 +172,8 @@ qclaudecodesettingeditorwidget/
 │   ├── scalars.py     # String / Enum / Bool / Int / Number / Const / Null
 │   └── containers.py  # PropertyRow / Object / Dict / StringList / CheckList / List / AnyOf / Nullable / RawJson
 ├── schema.py          # 스키마 로딩, $ref, value_matches, env 레지스트리
-├── categories.py      # 최상위 키 → 카테고리 (영어 제목이 번역 소스)
+├── categories.py      # 최상위 키 → 카테고리 (영어 제목이 번역 소스, 키는 SettingKey)
+├── keys.py            # SettingKey / EnvVar enum (자동 생성)
 ├── locales/           # qccse_ko.ts / qccse_ko.qm
 └── resources/         # claude-code-settings.schema.json, env-vars.json
 tools/
