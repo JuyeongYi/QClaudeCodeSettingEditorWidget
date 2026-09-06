@@ -122,6 +122,11 @@ w.setShowManagedOnly(True); w.showManagedOnly(); w.managedOnlyKeys()
 
 ## 동작 규칙
 
+- **지연 구축**: 생성 시에는 내비게이션·키 메타·JSON 페이지만 만들고, 카테고리 페이지와 env 편집기는
+  좌측에서 처음 선택되거나 `rowFor()`/`envEditor()`로 필요해질 때 만든다(생성 ~800 ms → ~30 ms).
+  구축 전 값은 내부 `_pending` 에 보관되므로 `settings()`/`setSettings()`/`UpdateSetting()` 등의 의미는
+  구축 여부와 무관하게 같다. 전부 즉시 구축하려면 `ensureAllPagesBuilt()`. 벤치: `python tools/bench_construct.py`.
+
 - **포함/해제**: 각 키 앞의 체크박스가 "JSON에 포함" 여부. 해제된 키는 출력에 나오지 않는다.
   체크가 꺼진 편집기를 만지면 자동으로 켜진다. `required` 키는 항상 포함.
 - **anyOf / oneOf**: 변형 선택 콤보 + 스택 편집기. 값을 로드하면 `value_matches` 휴리스틱으로
@@ -174,7 +179,9 @@ python tools/build_translations.py --compile   # 새 경로가 .ts 에 unfinishe
 
 ```
 qclaudecodesettingeditorwidget/
-├── widget.py          # QClaudeCodeSettingEditorWidget (툴바·카테고리·env·JSON 페이지, 공개 API)
+├── widget.py          # QClaudeCodeSettingEditorWidget (툴바·내비게이션·지연 구축·필터, 값 보관처)
+├── widget_api.py      # SettingsApiMixin: settings/setSettings/Update*/단건 접근·노출 정책, HiddenKeyError
+├── pages.py           # KeyMeta(행 없이 검색·관리형 판별)와 지연 구축 _Page
 ├── demo.py            # 테스트 메인윈도우 (언어 선택, 확인 → JSON 표시)
 ├── env_editor.py      # EnvEditor: env 변수 표
 ├── i18n.py            # QTranslator 로딩, .ts 직접 로더(TsTranslator), tr()/describe()
@@ -189,6 +196,7 @@ qclaudecodesettingeditorwidget/
 ├── locales/           # qccse_ko.ts / qccse_ko.qm
 └── resources/         # claude-code-settings.schema.json, env-vars.json
 tools/
-├── refresh_resources.py    # 스키마·env 문서 다운로드 → resources/
+├── refresh_resources.py    # 스키마·env 문서 다운로드 → resources/, keys.py 생성
+├── bench_construct.py      # 위젯 생성 시간 벤치
 └── build_translations.py   # .ts 생성/갱신/가져오기/컴파일
 ```

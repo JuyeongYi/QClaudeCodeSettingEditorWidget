@@ -86,7 +86,9 @@ def widget(qtbot):
 def test_every_schema_key_has_a_row(widget):
     schema = load_schema()
     keys = set(schema["properties"]) - {"env"}
-    assert set(widget._rows) == keys
+    assert set(widget._page_by_key) == keys      # 생성 직후: 모든 키가 페이지에 배정
+    widget.ensureAllPagesBuilt()
+    assert set(widget._rows) == keys             # 전부 구축하면 행도 전부
     assert widget.settings() == {}
 
 
