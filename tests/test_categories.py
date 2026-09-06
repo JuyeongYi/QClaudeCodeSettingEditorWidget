@@ -31,12 +31,14 @@ def test_widget_with_subset_hides_pages_and_preserves_hidden_keys(qtbot):
     assert w.categories() == Category.MODEL | Category.HOOKS
 
     data = {"model": "opus", "permissions": {"allow": ["Read(*)"]}, "env": {"A": "1"}, "hooks": {"Stop": []}}
-    w.setSettings(data)
-    assert w.settings() == data          # 숨겨진 permissions/env 는 보존만 된다
+    w.setSettings(data, trusted=True)    # 파일 로드에 해당: 숨겨진 permissions/env 는 보존만 된다
+    assert w.settings() == data
     w.rowFor("model").setValue("sonnet")
     assert w.settings()["model"] == "sonnet"
     assert w.settings()["permissions"] == {"allow": ["Read(*)"]}
     w.clear()
+    assert w.settings() == {"permissions": {"allow": ["Read(*)"]}, "env": {"A": "1"}}  # 보존값은 유지
+    w.setSettings({}, trusted=True)
     assert w.settings() == {}
 
 

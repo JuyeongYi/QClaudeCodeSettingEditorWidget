@@ -78,7 +78,7 @@ SAMPLE = {
 
 @pytest.fixture
 def widget(qtbot):
-    w = QClaudeCodeSettingEditorWidget()
+    w = QClaudeCodeSettingEditorWidget(showManagedOnly=True)  # SAMPLE 에 관리형 전용 키가 있으므로 전부 노출
     qtbot.addWidget(w)
     return w
 
@@ -174,7 +174,7 @@ def test_search_filter_hides_rows(widget):
 def test_file_roundtrip(widget, tmp_path):
     widget.setSettings(SAMPLE)
     p = widget.saveFile(tmp_path / "settings.json")
-    other = QClaudeCodeSettingEditorWidget()
+    other = QClaudeCodeSettingEditorWidget()  # 기본(관리형 숨김)이라도 파일 로드는 보존
     other.loadFile(p)
     assert other.settings() == SAMPLE
     assert other.filePath() == p

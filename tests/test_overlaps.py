@@ -36,6 +36,6 @@ def test_widget_shows_related_and_warns_when_both_set(qtbot):
 def test_overlaps_with_hidden_env_page(qtbot):
     w = QClaudeCodeSettingEditorWidget(language="en", categories=Category.MODEL)
     qtbot.addWidget(w)
-    w.setSettings({"model": "opus", "env": {"ANTHROPIC_MODEL": "x"}})
-    assert w.overlaps()[0]["env"] == "ANTHROPIC_MODEL"  # 숨긴 env 도 passthrough 값으로 판정
+    w.setSettings({"model": "opus", "env": {"ANTHROPIC_MODEL": "x"}}, trusted=True)
+    assert w.overlaps()[0]["env"] == "ANTHROPIC_MODEL"  # 숨긴 env 도 보존값으로 판정
     assert not w.showEnvVariable("ANTHROPIC_MODEL")

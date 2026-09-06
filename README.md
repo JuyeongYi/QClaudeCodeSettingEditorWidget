@@ -67,7 +67,7 @@ w.UpdateEnv("{}", replace={"ONLY": "this"})                     # env 전체 교
 ```
 
 `UpdateSetting` / `UpdateEnv` 는 JSON 문자열과 dict 를 모두 받고, 키는 문자열·enum 멤버·멤버 이름(`"schema"`) 어느 것이든 된다.
-노출되지 않은 카테고리(또는 숨긴 env 페이지)의 키도 갱신되며 보존 영역에 기록되어 출력에 반영된다.
+노출되지 않은 키(숨긴 카테고리·관리형 전용·env 페이지 없음)는 읽기(`settingValue`/`envValue`)만 되고 갱신하면 `HiddenKeyError` 다(아래 우회 방지 정책).
 
 ## 카테고리 선택 (비트 플래그)
 
@@ -90,8 +90,20 @@ w = QClaudeCodeSettingEditorWidget(categories=Category.SETTINGS)                
 | `ALL` / `NONE` | 전부 / 없음 |
 
 - 제외된 카테고리는 페이지가 아예 만들어지지 않으며 `rowFor(key)` 는 `None`, `Category.ENV` 가 없으면 `envEditor()` 도 `None`.
-- 제외된 카테고리에 속한 키가 로드된 데이터에 있으면 **편집 불가 상태로 보존**되어 `settings()`/`GetSetting()` 에 그대로 다시 나온다(값 유실 방지).
+- 제외된 카테고리에 속한 키가 **파일에서 로드**되면 편집 불가 상태로 보존되어 `settings()`/`GetSetting()` 에 그대로 다시 나온다(값 유실 방지).
   숨긴 키까지 출력에서 빼려면 호출 측에서 걸러낸다. JSON 페이지가 켜져 있으면 그 JSON 에는 보존된 키가 보인다.
+
+### 우회 방지 정책
+
+생성자에서 정한 노출 범위(카테고리·`showManagedOnly`·env 페이지)는 함수 API 로도 넘을 수 없다. `isKeyExposed(key)` 가 False 인 키는:
+
+- `setSettingValue` / `unsetSetting` / `UpdateSetting` / `setEnvValue` / `UpdateEnv` → `HiddenKeyError`(ValueError 하위, `.keys`).
+  `UpdateSetting` 은 모든 키를 먼저 검사해 하나라도 막히면 아무것도 적용하지 않는다.
+  `showManagedOnly=False` 면 중첩 관리형 경로(`sandbox.enabledPlatforms` 등)를 값 안에 끼워 넣는 것도 막는다.
+  스키마 밖 키는 `Category.OTHER` 가 노출될 때만 허용.
+- `setSettings` / `SetSetting` / JSON 페이지 "적용": 노출되지 않은 키는 **현재 보존값과 동일할 때만** 허용하고,
+  바꾸거나 빼면 거부한다. `clear()` 도 보존값은 건드리지 않는다.
+- `loadFile()` (또는 `setSettings(..., trusted=True)`)만 신뢰 소스로 취급해 숨긴 키를 새 보존값으로 받아들인다.
 - 문자열 파싱: `Category.parse("model|hooks,ENV")`. 데모: `python -m qclaudecodesettingeditorwidget --categories "MODEL|HOOKS|ENV"` 또는 `--exclude "ADMIN|JSON"`.
 
 ## 관리형(managed) 전용 키 숨기기

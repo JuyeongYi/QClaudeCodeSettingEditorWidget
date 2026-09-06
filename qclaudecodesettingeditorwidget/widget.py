@@ -13,9 +13,29 @@ from .editors import PropertyRow
 from .env_editor import EnvEditor
 from .i18n import tr
 from .keys import EnvVar, SettingKey
-from .schema import EnvVarInfo, JsonSchema, load_env_registry, load_overlaps, load_schema, overlaps_by_env, resolve_ref
+from .schema import (
+    EnvVarInfo,
+    JsonSchema,
+    find_managed_only_paths,
+    load_env_registry,
+    load_overlaps,
+    load_schema,
+    overlaps_by_env,
+    resolve_ref,
+)
 
 MUTED = "color: #8a8a8a;"
+
+
+class HiddenKeyError(ValueError):
+    """이 위젯에 노출되지 않은 키(숨긴 카테고리·관리형 전용·env 페이지 없음 등)를 API 로 바꾸려 할 때."""
+
+    def __init__(self, keys: list[str]):
+        self.keys = list(keys)
+        super().__init__(tr("Keys not exposed in this widget cannot be changed: {keys}", keys=", ".join(self.keys)))
+
+
+_MISSING = object()
 
 
 class _Page(QtWidgets.QWidget):
@@ -334,8 +354,9 @@ class QClaudeCodeSettingEditorWidget(QtWidgets.QWidget):
     def setSettingValue(self, key: str | SettingKey, value: Any) -> None:
         """최상위 설정 키 하나를 설정. value 가 None 이면 해제. 노출되지 않은 카테고리의 키는 보존 영역에 기록된다."""
         k = SettingKey.coerce(key)
+        self._check_value(k, value)
         if k == ENV_KEY:
-            self.UpdateEnv({}, replace=value)
+            self.UpdateEnv({}, replace=value if value is not None else {})
             return
         row = self._rows.get(k)
         if row is not None:
@@ -362,7 +383,7 @@ class QClaudeCodeSettingEditorWidget(QtWidgets.QWidget):
         return env.get(n, default) if isinstance(env, dict) else default
 
     def setEnvValue(self, name: str | EnvVar, value: str | None) -> None:
-        """env 변수 하나를 설정. value 가 None 이면 해제."""
+        """env 변수 하나를 설정. value 가 None 이면 해제. env 페이지가 없으면 HiddenKeyError."""
         self.UpdateEnv({EnvVar.coerce(name): value})
 
     # ------------------------------------------------------------------ JSON 병합 갱신
@@ -379,16 +400,23 @@ class QClaudeCodeSettingEditorWidget(QtWidgets.QWidget):
         {"model": "opus"} 처럼 키 하나만 넘겨도 되고, 값이 null 인 키는 해제된다.
         "env" 키가 있으면 UpdateEnv 와 같은 병합 규칙을 적용한다. 갱신 후 settings() 를 돌려준다.
         """
-        obj = self._parse_object(data)
-        for key, value in obj.items():
-            k = SettingKey.coerce(key)
+        obj = {SettingKey.coerce(key): value for key, value in self._parse_object(data).items()}
+        bad: list[str] = []
+        for k, value in obj.items():  # 부분 적용을 막기 위해 먼저 전부 검사
+            if k == ENV_KEY and value is not None and not isinstance(value, dict):
+                raise ValueError("env must be an object or null")
+            try:
+                self._check_value(k, value)
+            except HiddenKeyError as e:
+                bad.extend(e.keys)
+        if bad:
+            raise HiddenKeyError(sorted(set(bad)))
+        for k, value in obj.items():
             if k == ENV_KEY:
                 if value is None:
                     self.UpdateEnv({}, replace={})
-                elif isinstance(value, dict):
-                    self.UpdateEnv(value)
                 else:
-                    raise ValueError("env must be an object or null")
+                    self.UpdateEnv(value)
             else:
                 self.setSettingValue(k, value)
         return self.settings()
@@ -400,6 +428,8 @@ class QClaudeCodeSettingEditorWidget(QtWidgets.QWidget):
         replace 를 주면 병합 대신 env 전체를 그 dict 로 바꾼다. 갱신 후 env dict 를 돌려준다.
         """
         obj = self._parse_object(data)
+        if self._env is None:
+            raise HiddenKeyError([str(ENV_KEY)])
         if replace is not None:
             if not isinstance(replace, dict):
                 raise ValueError("env must be an object")
@@ -413,12 +443,7 @@ class QClaudeCodeSettingEditorWidget(QtWidgets.QWidget):
                 merged.pop(n, None)
             else:
                 merged[n] = str(value)
-        if self._env is not None:
-            self._env.setValue(merged)
-        elif merged:
-            self._passthrough[ENV_KEY] = merged
-        else:
-            self._passthrough.pop(ENV_KEY, None)
+        self._env.setValue(merged)
         self._on_changed()
         return dict(merged)
 
@@ -439,8 +464,16 @@ class QClaudeCodeSettingEditorWidget(QtWidgets.QWidget):
             out.setdefault(k, v)
         return out
 
-    def setSettings(self, data: dict[str, Any] | None) -> None:
+    def setSettings(self, data: dict[str, Any] | None, *, trusted: bool = False) -> None:
+        """설정 전체를 교체한다.
+
+        trusted=False(기본): 이 위젯에 노출되지 않은 키(숨긴 카테고리·관리형 전용·env 페이지 없음 등)는
+        현재 보존값과 동일할 때만 허용하고, 바뀌었으면 HiddenKeyError 를 낸다(우회 방지).
+        trusted=True: 파일 등 신뢰 소스에서 읽은 문서. 노출되지 않은 키는 읽기 전용으로 보존한다.
+        """
         data = dict(data or {})
+        if not trusted:
+            self._check_document(data)
         self._passthrough = {}
         for key, row in self._rows.items():
             if key in data:
@@ -455,6 +488,59 @@ class QClaudeCodeSettingEditorWidget(QtWidgets.QWidget):
                 self._passthrough[k] = v  # 제외된 카테고리·미지 키는 보존만 한다
         self._on_changed()
 
+    # ------------------------------------------------------------------ 노출 정책(우회 방지)
+    def isKeyExposed(self, key: str | SettingKey) -> bool:
+        """이 위젯에서 편집 가능한(노출된) 최상위 키인지."""
+        k = SettingKey.coerce(key)
+        if k == ENV_KEY:
+            return self._env is not None
+        row = self._rows.get(k)
+        if row is not None:
+            return self._show_managed or not row.managed_only
+        if k in self._schema.get("properties", {}):
+            return False  # 숨긴 카테고리
+        return bool(Category.OTHER & self._categories)  # 스키마 밖 키는 OTHER 가 노출될 때만
+
+    def _hidden_current(self, k: str) -> Any:
+        """노출되지 않은 키의 현재(보존) 값. 없으면 _MISSING."""
+        row = self._rows.get(k)
+        if row is not None:
+            return row.value() if row.included() else _MISSING
+        return self._passthrough.get(k, _MISSING)
+
+    def _check_value(self, k: str, value: Any) -> None:
+        """단건 변경 허용 검사: 키 노출 여부 + (관리형 숨김 시) 중첩 관리형 경로."""
+        if not self.isKeyExposed(k):
+            raise HiddenKeyError([k])
+        if not self._show_managed and k != ENV_KEY and value is not None:
+            prop = self._schema.get("properties", {}).get(k)
+            if prop is not None:
+                paths = find_managed_only_paths(prop, value, self._schema, k)
+                if paths:
+                    raise HiddenKeyError(paths)
+
+    def _check_document(self, data: dict[str, Any]) -> None:
+        """전체 문서 교체 허용 검사: 노출되지 않은 키는 현재 보존값과 같아야 한다."""
+        bad: list[str] = []
+        for k, v in data.items():
+            if self.isKeyExposed(k):
+                try:
+                    self._check_value(k, v)
+                except HiddenKeyError as e:
+                    bad.extend(e.keys)
+            elif self._hidden_current(k) != v:
+                bad.append(k)
+        for k in self._all_hidden_current_keys():
+            if k not in data:
+                bad.append(k)  # 숨긴 키 제거도 변경이다
+        if bad:
+            raise HiddenKeyError(sorted(set(bad)))
+
+    def _all_hidden_current_keys(self) -> list[str]:
+        keys = [k for k, r in self._rows.items() if r.included() and not self.isKeyExposed(k)]
+        keys += [k for k in self._passthrough if not self.isKeyExposed(k)]
+        return keys
+
     def GetSetting(self, indent: int | None = 2) -> str:
         """설정을 JSON 문자열로 반환."""
         return json.dumps(self.settings(), indent=indent, ensure_ascii=False)
@@ -463,19 +549,22 @@ class QClaudeCodeSettingEditorWidget(QtWidgets.QWidget):
         """설정을 한 줄 JSON(JSONL 레코드 한 줄)으로 반환. 개행 없음."""
         return json.dumps(self.settings(), ensure_ascii=False, separators=(",", ":"))
 
-    def SetSetting(self, text: str) -> None:
-        """JSON 문자열에서 설정 로드. 파싱 실패 시 ValueError."""
+    def SetSetting(self, text: str, *, trusted: bool = False) -> None:
+        """JSON 문자열에서 설정 로드. 파싱 실패 시 ValueError, 노출되지 않은 키 변경 시 HiddenKeyError."""
         data = json.loads(text) if text.strip() else {}
         if not isinstance(data, dict):
             raise ValueError(tr("Top level of settings JSON must be an object"))
-        self.setSettings(data)
+        self.setSettings(data, trusted=trusted)
 
     def clear(self) -> None:
-        self.setSettings({})
+        """노출된 키를 모두 해제한다. 노출되지 않은 키의 보존값은 그대로 둔다."""
+        keep = {k: self._hidden_current(k) for k in self._all_hidden_current_keys()}
+        self.setSettings(keep, trusted=True)
 
     def loadFile(self, path: str | Path) -> None:
+        """파일(신뢰 소스)에서 로드. 노출되지 않은 키는 읽기 전용으로 보존된다."""
         p = Path(path)
-        self.SetSetting(p.read_text("utf-8"))
+        self.SetSetting(p.read_text("utf-8"), trusted=True)
         self._file_path = p
         self.fileLoaded.emit(str(p))
 
@@ -560,6 +649,9 @@ class QClaudeCodeSettingEditorWidget(QtWidgets.QWidget):
             return
         try:
             self.SetSetting(self._json.toPlainText())
+            self._json_error.clear()
+        except HiddenKeyError as e:
+            self._json_error.setText(str(e))
         except ValueError as e:
             self._json_error.setText(tr("JSON error: {error}", error=e))
 

@@ -26,7 +26,7 @@ def test_default_hides_managed_only_rows_but_keeps_values(qtbot):
     assert nested.managed_only and nested.isHidden()
 
     data = {"claudeMd": "org rules", "model": "opus", "sandbox": {"enabledPlatforms": ["linux"]}}
-    w.setSettings(data)
+    w.setSettings(data, trusted=True)                # 파일 로드에 해당
     assert w.settings() == data                      # 숨겨도 값은 보존
     w._flush_change()
     assert nested.isHidden()

@@ -87,14 +87,17 @@ def test_update_env_json_merges_and_null_unsets(widget):
     assert "env" not in widget.settings()
 
 
-def test_updates_work_with_hidden_categories(qtbot):
+def test_hidden_categories_are_readable_but_not_updatable(qtbot):
+    from qclaudecodesettingeditorwidget import HiddenKeyError
+
     w = QClaudeCodeSettingEditorWidget(language="en", categories=Category.MODEL)
     qtbot.addWidget(w)
-    w.UpdateSetting({"permissions": {"deny": ["Bash"]}, "model": "sonnet"})
-    w.UpdateEnv({"API_TIMEOUT_MS": "7"})
-    assert w.settings() == {"model": "sonnet", "permissions": {"deny": ["Bash"]}, "env": {"API_TIMEOUT_MS": "7"}}
-    assert w.settingValue(SettingKey.permissions) == {"deny": ["Bash"]}
+    w.setSettings({"permissions": {"deny": ["Bash"]}, "env": {"API_TIMEOUT_MS": "7"}}, trusted=True)
+    assert w.settingValue(SettingKey.permissions) == {"deny": ["Bash"]}   # 읽기는 가능
     assert w.envValue(EnvVar.API_TIMEOUT_MS) == "7"
-    w.UpdateEnv({"API_TIMEOUT_MS": None})
-    w.unsetSetting(SettingKey.permissions)
-    assert w.settings() == {"model": "sonnet"}
+    with pytest.raises(HiddenKeyError):
+        w.UpdateSetting({"permissions": {"deny": ["Edit"]}, "model": "sonnet"})
+    with pytest.raises(HiddenKeyError):
+        w.UpdateEnv({"API_TIMEOUT_MS": "8"})
+    w.UpdateSetting({"model": "sonnet"})
+    assert w.settings() == {"model": "sonnet", "permissions": {"deny": ["Bash"]}, "env": {"API_TIMEOUT_MS": "7"}}

@@ -204,6 +204,10 @@
             <translation>열기…</translation>
         </message>
         <message>
+            <source>Keys not exposed in this widget cannot be changed: {keys}</source>
+            <translation>이 위젯에 노출되지 않은 키는 변경할 수 없습니다: {keys}</translation>
+        </message>
+        <message>
             <source>No matches</source>
             <translation>검색 결과 없음</translation>
         </message>

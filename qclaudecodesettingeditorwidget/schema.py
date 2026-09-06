@@ -130,6 +130,34 @@ def is_managed_only(schema: JsonSchema) -> bool:
     return bool(_MANAGED_ONLY.search((schema.get("description") or "").strip()))
 
 
+def find_managed_only_paths(schema: JsonSchema, value: Any, root: JsonSchema, path: str = "") -> list[str]:
+    """value 안에서 관리형 전용 스키마 노드에 해당하는 경로들(예: sandbox.enabledPlatforms). 최상위 키 자체는 검사하지 않는다."""
+    schema = resolve_ref(schema, root)
+    out: list[str] = []
+    if "anyOf" in schema or "oneOf" in schema:
+        for v in variants_of(schema, root):
+            if value_matches(v, value, root):
+                return find_managed_only_paths(v, value, root, path)
+        return out
+    if isinstance(value, dict):
+        props = schema.get("properties", {})
+        addl = schema.get("additionalProperties")
+        for k, v in value.items():
+            child = f"{path}.{k}" if path else str(k)
+            if k in props:
+                ps = resolve_ref(props[k], root)
+                if is_managed_only(ps):
+                    out.append(child)
+                else:
+                    out += find_managed_only_paths(ps, v, root, child)
+            elif isinstance(addl, dict):
+                out += find_managed_only_paths(addl, v, root, child)
+    elif isinstance(value, list) and isinstance(schema.get("items"), dict):
+        for i, v in enumerate(value):
+            out += find_managed_only_paths(schema["items"], v, root, f"{path}[{i}]")
+    return out
+
+
 def json_type_name(value: Any) -> str:
     if value is None:
         return "null"
