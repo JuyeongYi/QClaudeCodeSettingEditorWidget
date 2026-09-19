@@ -3468,5 +3468,16 @@
   "inSchema": true,
   "inDocs": true,
   "valuesAreHints": false
+ },
+ "CLAUDE_CODE_ENABLE_FUNCTION_HOOKS": {
+  "description": "Enable Claude Mods(Function hook)",
+  "schemaDescription": "",
+  "values": [
+   "0",
+   "1"
+  ],
+  "inSchema": false,
+  "inDocs": false,
+  "valuesAreHints": false
  }
 }
