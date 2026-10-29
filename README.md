@@ -1,9 +1,12 @@
 # QClaudeCodeSettingEditorWidget
 
 Claude Code `settings.json` 의 **모든 키**를 GUI로 편집하는 PySide6 위젯.
-[schemastore 의 claude-code-settings.json](https://www.schemastore.org/claude-code-settings.json) 스키마를
-번들해 두고, 그 스키마로부터 편집기를 자동 생성한다. `env` 는 스키마의 변수 목록에
-[환경 변수 문서](https://code.claude.com/docs/en/env-vars)를 병합한 전용 표로 편집한다.
+키 목록·스코프·버전은 공식 문서 [All settings (settings-reference)](https://code.claude.com/docs/en/settings-reference)가 기준이고,
+키별 JSON 구조는 [schemastore 의 claude-code-settings.json](https://www.schemastore.org/claude-code-settings.json) 으로 보충한다
+(schemastore 에 아직 없는 문서 키는 문서의 Type 설명에서 스키마를 만들어 주입). 그 병합 스키마로부터 편집기를 자동 생성한다.
+`env` 는 스키마의 변수 목록에 [환경 변수 문서](https://code.claude.com/docs/en/env-vars)를 병합한 전용 표로 편집한다.
+
+**패키지 버전 = 번들 메타데이터를 생성한 Claude Code 버전**(현재 `2.1.312`, `qclaudecodesettingeditorwidget/_version.py`).
 
 ## 설치·실행
 
@@ -45,15 +48,43 @@ w.settings()          # dict
 | `setCurrentCategory(id_or_title)` / `categoryIds()` / `categoryTitles()` | 페이지 전환 (`"hooks"`, `"env"`, `"json"` …) |
 | `setLanguage(code)` / `language()` / `availableLanguages()` | 현지화 전환 (`languageChanged` 시그널) |
 | `categories()` | 생성 시 지정한 `Category` 플래그 |
-| `showManagedOnly()` / `setShowManagedOnly(bool)` / `managedOnlyKeys()` | 관리형 전용 키 표시 여부 (생성자 `showManagedOnly=False`) |
+| `targetScope()` / `setTargetScope(Scope)` | 편집 대상 설정 파일 (생성자 `targetScope=Scope.USER`) — 그 파일에서 효력 없는 키 숨김 |
+| `targetVersion()` / `setTargetVersion(str \| None)` / `latestVersion()` | 대상 Claude Code 버전 (생성자 `targetVersion=None` = 필터 없음) |
+| `isKeyApplicable(key_or_path)` / `inapplicableKeys()` | 대상 스코프·버전에서 효력이 있는지 / 그래서 숨긴 최상위 키 |
 | `settingChanged` (Signal) | 값이 바뀔 때마다 (같은 이벤트 루프 턴 내 변경은 한 번으로 합침) |
 
-## 키 enum 과 단건·JSON 갱신
+## 키 enum·메타데이터와 단건·JSON 갱신
 
-키 문자열 대신 `keys.py` 의 enum 을 쓴다. `SettingKey`(최상위 설정 키 142개)와 `EnvVar`(환경변수 386개)는
+키 문자열 대신 enum 을 쓴다. `SettingKey`(최상위 설정 키 184개, `keys.py`)와 `EnvVar`(환경변수 441개, `env_keys.py`)는
 `str` 겸용이라 **멤버 이름이 곧 키**다: `SettingKey.model == "model"`, `EnvVar.API_TIMEOUT_MS == "API_TIMEOUT_MS"`.
 식별자가 될 수 없는 `$schema` 만 `SettingKey.schema`(값 `"$schema"`)다. 위젯 내부(카테고리 표 등)도 이 enum 을 쓴다.
-`tools/refresh_resources.py` 가 스키마·문서에서 다시 생성하며, 테스트가 스키마와의 동기화를 검사한다.
+
+`SettingKey` 의 각 멤버는 값으로 **`SettingInfo` dataclass** 를 갖고, `.info` 로 꺼낸다(키 문자열 동작은 그대로).
+중첩 경로(`sandbox.bwrapPath` 등 63개)는 `NESTED_SETTINGS`, 통합 조회는 `setting_info(path)`.
+메타데이터는 문자열 대신 `constants.py` 의 enum(`Scope`·`JsonType`·`Topic`)과 `Version` 으로 적힌다 — 문자열은 키와 JSON 값(기본값·값 후보)뿐.
+
+| `SettingInfo` 필드 | 내용 |
+| --- | --- |
+| `scope` | 효력이 있는 파일 — `Scope` 비트 플래그 (`USER`·`PROJECT`·`LOCAL`·`MANAGED`, `ANY_FILE`, `GLOBAL_CONFIG`=`~/.claude.json`) |
+| `type` / `default` / `values` | `JsonType` 비트 플래그(`STRING \| NULL` 등) / 문서·스키마의 기본값 / 값 후보(배열이면 원소 후보) |
+| `since` / `removed` | 도입·제거 `Version` (`None` = 미상 → 버전 필터에서 항상 있는 것으로 취급) |
+| `deprecated` / `deprecated_since` / `replaced_by` | 사용 중단 여부·`Version`·대체 키의 `SettingInfo` |
+| `topic` / `in_docs` / `in_schemastore` | 문서 주제 `Topic` / 출처 |
+| 메서드 | `allowed_in(scope)`, `available_in(version)`, `applicable(scope, version)`, `deprecated_in(version)` |
+
+```python
+from qclaudecodesettingeditorwidget import EnvVar, Scope, SettingKey, Version, setting_info
+
+SettingKey.availableModelsMatch.info   # SettingInfo("availableModelsMatch", scope=Scope.MANAGED, type=JsonType.STRING,
+                                       #             default="prefix", values=("prefix", "exact"), since=Version(2, 1, 283),
+                                       #             topic=Topic.MODEL, ...)
+SettingKey.voiceEnabled.info.replaced_by.key    # "voice"
+SettingKey.availableModelsMatch.info.available_in("2.1.250")   # False (Version 또는 "2.1.250" 문자열)
+setting_info("sandbox.bwrapPath").scope         # Scope.MANAGED
+```
+
+`keys.py`·`env_keys.py` 는 `tools/refresh_resources.py` 가 생성하며(직접 수정 금지, 보정은 `tools/resource_overrides.json`),
+테스트가 스키마·env 레지스트리와의 동기화를 검사한다.
 
 ```python
 from qclaudecodesettingeditorwidget import EnvVar, SettingKey
@@ -67,7 +98,7 @@ w.UpdateEnv("{}", replace={"ONLY": "this"})                     # env 전체 교
 ```
 
 `UpdateSetting` / `UpdateEnv` 는 JSON 문자열과 dict 를 모두 받고, 키는 문자열·enum 멤버·멤버 이름(`"schema"`) 어느 것이든 된다.
-노출되지 않은 키(숨긴 카테고리·관리형 전용·env 페이지 없음)는 읽기(`settingValue`/`envValue`)만 되고 갱신하면 `HiddenKeyError` 다(아래 우회 방지 정책).
+노출되지 않은 키(숨긴 카테고리·대상 스코프/버전 밖·env 페이지 없음)는 읽기(`settingValue`/`envValue`)만 되고 갱신하면 `HiddenKeyError` 다(아래 우회 방지 정책).
 
 ## 카테고리 선택 (비트 플래그)
 
@@ -84,7 +115,7 @@ w = QClaudeCodeSettingEditorWidget(categories=Category.SETTINGS)                
 | 플래그 | 페이지 |
 | --- | --- |
 | `AUTH` `MODEL` `PERMISSIONS` `HOOKS` `MCP` `PLUGINS` `SANDBOX` `CONTEXT` `GIT` `UI` `NOTIFICATIONS` `AGENTS` `IDE` `ADMIN` | 설정 카테고리 (`categories.py` 의 키 분류와 1:1) |
-| `OTHER` | 스키마 갱신으로 새로 생겨 분류되지 않은 키 |
+| `OTHER` | 스키마·문서 갱신으로 새로 생겨 분류되지 않은 키 |
 | `ENV` / `JSON` | 환경 변수 페이지 / JSON 페이지 |
 | `SETTINGS` | 위 설정 카테고리 전부 (`ENV`·`JSON` 제외) |
 | `ALL` / `NONE` | 전부 / 없음 |
@@ -95,30 +126,41 @@ w = QClaudeCodeSettingEditorWidget(categories=Category.SETTINGS)                
 
 ### 우회 방지 정책
 
-생성자에서 정한 노출 범위(카테고리·`showManagedOnly`·env 페이지)는 함수 API 로도 넘을 수 없다. `isKeyExposed(key)` 가 False 인 키는:
+생성자에서 정한 노출 범위(카테고리·`targetScope`·`targetVersion`·env 페이지)는 함수 API 로도 넘을 수 없다. `isKeyExposed(key)` 가 False 인 키는:
 
 - `setSettingValue` / `unsetSetting` / `UpdateSetting` / `setEnvValue` / `UpdateEnv` → `HiddenKeyError`(ValueError 하위, `.keys`).
   `UpdateSetting` 은 모든 키를 먼저 검사해 하나라도 막히면 아무것도 적용하지 않는다.
-  `showManagedOnly=False` 면 중첩 관리형 경로(`sandbox.enabledPlatforms` 등)를 값 안에 끼워 넣는 것도 막는다.
+  대상 스코프·버전 밖의 중첩 경로(`USER` 대상일 때 `sandbox.bwrapPath` 등)를 값 안에 끼워 넣는 것도 막는다.
   스키마 밖 키는 `Category.OTHER` 가 노출될 때만 허용.
 - `setSettings` / `SetSetting` / JSON 페이지 "적용": 노출되지 않은 키는 **현재 보존값과 동일할 때만** 허용하고,
   바꾸거나 빼면 거부한다. `clear()` 도 보존값은 건드리지 않는다.
 - `loadFile()` (또는 `setSettings(..., trusted=True)`)만 신뢰 소스로 취급해 숨긴 키를 새 보존값으로 받아들인다.
 - 문자열 파싱: `Category.parse("model|hooks,ENV")`. 데모: `python -m qclaudecodesettingeditorwidget --categories "MODEL|HOOKS|ENV"` 또는 `--exclude "ADMIN|JSON"`.
 
-## 관리형(managed) 전용 키 숨기기
+## 편집 대상 스코프와 Claude Code 버전 필터
 
-`(Managed settings only)`, `Only honored from managed (policy) settings` 처럼 스키마 설명이 관리형(정책) 설정에서만
-유효하다고 밝힌 키는 기본적으로 **숨긴다**. 중첩 키(`sandbox.enabledPlatforms` 등)도 포함되며, 보이는 키에는 `managed` 배지가 붙는다.
+문서의 Scope 열은 키마다 효력이 있는 파일을 정한다(Any file 120 · Managed 34 · User or managed 20 · User/local/managed 4 ·
+Global config 6). `targetScope` 로 **지금 편집하는 파일**을 정하면 그 파일에서 효력이 없는 키를 숨긴다.
 
 ```python
-w = QClaudeCodeSettingEditorWidget()                        # showManagedOnly=False: 관리형 전용 키 숨김
-w = QClaudeCodeSettingEditorWidget(showManagedOnly=True)    # 전부 표시
-w.setShowManagedOnly(True); w.showManagedOnly(); w.managedOnlyKeys()
+from qclaudecodesettingeditorwidget import QClaudeCodeSettingEditorWidget, Scope
+
+w = QClaudeCodeSettingEditorWidget()                                  # 기본 USER: ~/.claude/settings.json
+w = QClaudeCodeSettingEditorWidget(targetScope=Scope.PROJECT)         # .claude/settings.json — User or managed 키도 숨김
+w = QClaudeCodeSettingEditorWidget(targetScope=Scope.MANAGED)         # 관리형 설정
+w = QClaudeCodeSettingEditorWidget(targetScope=Scope.ANY_FILE)        # 설정 파일 4종 중 어디서든 효력 있는 키 전부
+w = QClaudeCodeSettingEditorWidget(targetVersion="2.1.250")           # 2.1.250 에 없는 키(이후 추가·이전 제거) 숨김
+w.setTargetScope(Scope.USER | Scope.PROJECT); w.setTargetVersion(None); w.inapplicableKeys()
 ```
 
-숨긴 키의 값은 로드 시 그대로 보존되어 출력에 남는다(카테고리 제외와 같은 규칙). 판별은 `schema.is_managed_only()`.
-데모: `python -m qclaudecodesettingeditorwidget --show-managed`.
+- 플래그를 조합하면 그중 **하나라도** 효력이 있는 키를 보인다. `GLOBAL_CONFIG`(`~/.claude.json` 전용 키)는 settings.json 이
+  아니므로 대상으로 줄 수 없고(ValueError) 항상 숨긴다.
+- 버전은 `since`/`removed` 로 거른다. 버전 정보가 없는 키는 오래전부터 있던 것으로 보고 **항상 표시**한다.
+  deprecated 키는 숨기지 않고 배지로 알린다.
+- 중첩 키(`sandbox.bwrapPath`, `autoMode.classifyAllShell` 등)도 같은 규칙으로 숨긴다.
+- 행 머리 배지: 스코프(`managed`, `user · managed`), 도입 버전(`v2.1.283+`), `deprecated`, `removed v2.1.277`.
+- 숨긴 키의 값은 로드 시 그대로 보존되어 출력에 남는다(카테고리 제외와 같은 규칙).
+- 데모: `python -m qclaudecodesettingeditorwidget --scope PROJECT --target-version 2.1.250` (하단 콤보·입력란으로도 전환).
 
 ## 동작 규칙
 
@@ -134,10 +176,10 @@ w.setShowManagedOnly(True); w.showManagedOnly(); w.managedOnlyKeys()
   변형이 전부 문자열(`theme` 의 enum | `custom:*`)이면 제안 목록이 달린 편집 가능한 콤보 하나로 합친다.
   `type: [X, "null"]` 은 `null` 체크박스 + X 편집기.
 - **스키마에 없는 키**는 그대로 보존해 다시 내보낸다(최상위·중첩 객체 모두).
-- **env**: 스키마 340개 + 문서 전용 변수 46개 = 386개를 표로 제공. enum 이 있으면 콤보(직접 입력도 가능),
+- **env**: 스키마 340개 + 문서 전용 변수 100개 + overrides 1개 = 441개를 표로 제공. enum 이 있으면 콤보(직접 입력도 가능),
   문서에서 "Set to 1" 류로 추론된 값은 힌트로만 제공. 목록에 없는 변수는 `+ 사용자 변수` 로 추가.
 - **JSON 페이지**: 현재 설정의 JSON 을 보여주고, 직접 고쳐 `JSON 적용` 으로 폼에 반영할 수 있다.
-- **설정 키 ↔ env 변수 겹침**: `resources/overlaps.json`(문서에서 추출, 29개 설정 / 40쌍)을 바탕으로
+- **설정 키 ↔ env 변수 겹침**: `resources/overlaps.json`(문서에서 추출, 46개 설정 / 63쌍)을 바탕으로
   설정 행에 `관련 env: ANTHROPIC_MODEL (env 우선)` 링크(클릭 시 env 페이지로 이동·필터), env 행에 `↔ model` 접두어를 표시한다.
   둘 다 설정되어 있으면 툴바에 `⚠ 겹침 n건` 경고가 뜨고 `overlaps()` 로 목록을 얻을 수 있다.
   우선순위(`env`/`setting`)는 문서 문장에 명시된 경우에만 붙고, 나머지는 `related`(관련) 로 표시한다.
@@ -166,14 +208,29 @@ python tools/build_translations.py --compile          # pyside6-lrelease 로 .qm
 
 ## 리소스 갱신
 
-스키마와 문서가 바뀌면 다음으로 번들 리소스를 다시 만든다(네트워크 필요).
+Claude Code 가 새 버전을 내면 다음으로 번들 리소스·생성 코드를 다시 만든다(네트워크 필요).
 
 ```bash
-python tools/refresh_resources.py
-python tools/build_translations.py --compile   # 새 경로가 .ts 에 unfinished 로 추가된다
+python tools/refresh_resources.py              # 로컬 파일로: --schema/--envdoc/--settingsdoc/--changelog PATH
+python tools/build_translations.py             # 새 경로가 .ts 에 unfinished 로 추가된다
+python tools/build_translations.py --compile
 ```
 
-새로 생긴 최상위 키는 `categories.py` 에 분류가 없어도 `Other` 페이지에 자동으로 나타난다.
+| 출처 | 쓰임 |
+| --- | --- |
+| [settings-reference.md](https://code.claude.com/docs/en/settings-reference.md) | **1차 출처**: 키 목록·Scope·Type·Default·`Requires Claude Code vX`·Deprecated/Removed |
+| [schemastore claude-code-settings.json](https://www.schemastore.org/claude-code-settings.json) | 키별 상세 JSON 구조(문서에 없는 키의 관리형 판별은 설명 문구로) |
+| [env-vars.md](https://code.claude.com/docs/en/env-vars.md) | env 변수 설명·값 힌트 |
+| [CHANGELOG.md](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) | 최신 버전(= 패키지 버전), 문서에 없는 키의 `since`("Added `key` setting") |
+| `tools/resource_overrides.json` (손 관리) | 생성 결과 위에 덮어쓰는 보정: 구조를 추론할 수 없는 객체 키의 스키마, 문서에 없는 env 변수 등 |
+| `tools/settings_history.json` (자동 관리) | 갱신 때마다 문서에 보인 버전 범위 — 이후 새로 생긴 키의 `since`, 문서에서 사라진 키의 `removed` |
+
+- 생성물: `resources/` 의 병합 스키마·`env-vars.json`·`overlaps.json`, `keys.py`, `env_keys.py`, `_version.py`.
+- `since` 우선순위: overrides > 문서 > CHANGELOG > 이력. `removed`/`deprecated`: overrides > 문서 > 이력.
+- 문서에만 있는 키는 Type 문장(Boolean, 문자열 enum, 숫자 범위, 문자열 배열)에서 스키마를 만들고, 객체형은 overrides 에 적는다.
+  `Global config` 전용 키는 settings.json 이 아니므로 주입하지 않는다.
+- 새로 생긴 최상위 키는 `categories.py` 에 분류가 없어도 `Other` 페이지에 자동으로 나타난다.
+- 문서에 새 주제(Topic 열)가 생기면 갱신이 멈추고 `constants.Topic` 에 추가하라고 알린다.
 
 ## 구조
 
@@ -181,22 +238,31 @@ python tools/build_translations.py --compile   # 새 경로가 .ts 에 unfinishe
 qclaudecodesettingeditorwidget/
 ├── widget.py          # QClaudeCodeSettingEditorWidget (툴바·내비게이션·지연 구축·필터, 값 보관처)
 ├── widget_api.py      # SettingsApiMixin: settings/setSettings/Update*/단건 접근·노출 정책, HiddenKeyError
-├── pages.py           # KeyMeta(행 없이 검색·관리형 판별)와 지연 구축 _Page
+├── pages.py           # KeyMeta(행 없이 검색·스코프/버전 판별)와 지연 구축 _Page
 ├── demo.py            # 테스트 메인윈도우 (언어 선택, 확인 → JSON 표시)
 ├── env_editor.py      # EnvEditor: env 변수 표
 ├── i18n.py            # QTranslator 로딩, .ts 직접 로더(TsTranslator), tr()/describe()
 ├── editors/
 │   ├── __init__.py    # create_editor 팩토리 (스키마 노드 → 편집기)
 │   ├── base.py        # BaseEditor
+│   ├── badges.py      # SettingInfo → 스코프·since·deprecated·removed 배지
 │   ├── scalars.py     # String / Enum / Bool / Int / Number / Const / Null
 │   └── containers.py  # PropertyRow / Object / Dict / StringList / CheckList / List / AnyOf / Nullable / RawJson
-├── schema.py          # 스키마 로딩, $ref, value_matches, env 레지스트리
+├── schema.py          # 스키마 로딩, $ref, value_matches, 중첩 경로 적용 검사, env 레지스트리
 ├── categories.py      # 최상위 키 → 카테고리 (영어 제목이 번역 소스, 키는 SettingKey)
-├── keys.py            # SettingKey / EnvVar enum (자동 생성)
+├── constants.py       # 전역 참조 상수: Scope·JsonType(비트 플래그), Topic·Precedence, 페이지 id, 리소스·번역 이름, 공용 스타일
+├── spec.py            # Version, SettingInfo(dataclass), KeyEnum
+├── keys.py            # SettingKey(멤버 값 = SettingInfo) + NESTED_SETTINGS + setting_info() (자동 생성)
+├── env_keys.py        # EnvVar enum (자동 생성)
+├── _version.py        # 패키지 버전 = Claude Code 버전 (자동 생성)
 ├── locales/           # qccse_ko.ts / qccse_ko.qm
-└── resources/         # claude-code-settings.schema.json, env-vars.json
+└── resources/         # claude-code-settings.schema.json(병합), env-vars.json, overlaps.json
 tools/
-├── refresh_resources.py    # 스키마·env 문서 다운로드 → resources/, keys.py 생성
+├── refresh_resources.py    # 문서·스키마·CHANGELOG 다운로드 → resources/, keys.py·env_keys.py·_version.py 생성
+├── refresh/                # pkg(패키지 모듈 로더) / markdown(문서 파서) / changelog / catalog(스코프·버전·스키마 주입) /
+│                           # envvars / overlaps / codegen
+├── resource_overrides.json # 손 보정 (객체 키 스키마, 문서에 없는 env 변수 …)
+├── settings_history.json   # 문서에 보인 버전 범위 (자동)
 ├── bench_construct.py      # 위젯 생성 시간 벤치
 └── build_translations.py   # .ts 생성/갱신/가져오기/컴파일
 ```

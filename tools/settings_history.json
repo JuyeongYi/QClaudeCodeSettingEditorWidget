@@ -1,0 +1,993 @@
+{
+ "seededAt": "2.1.312",
+ "paths": {
+  "advisorModel": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "agent": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "agentPushNotifEnabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "allowAllClaudeAiMcps": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "allowClaudeInChromeWithManagedMcp": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "allowedChannelPlugins": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "allowedHttpHookUrls": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "allowedMcpServers": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "allowedProviders": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "allowManagedHooksOnly": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "allowManagedMcpServersOnly": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "allowManagedPermissionRulesOnly": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "alwaysThinkingEnabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "apiKeyHelper": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "askUserQuestionTimeout": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "appendPlugins": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "attribution": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "attribution.commit": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "attribution.pr": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "attribution.sessionUrl": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "autoCompactEnabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "autoCompactWindow": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "autoConnectIde": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "autoContinueAtUsageLimit": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "autoInstallIdeExtension": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "autoMemoryDirectory": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "autoMemoryEnabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "autoMode": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "autoMode.classifyAllShell": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "autoScrollEnabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "autoUpdatesChannel": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "availableModels": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "availableModelsMatch": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "awaySummaryEnabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "awsAuthRefresh": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "awsCredentialExport": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "axScreenReader": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "bashEditDiffEnabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "bashOutputMaxChars": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "blockedMarketplaces": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "browserExternalPageTools": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "channelsEnabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "claudeInChromeDefaultEnabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "claudeMd": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "claudeMdExcludes": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "cleanupPeriodDays": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "companyAnnouncements": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "copyFullResponse": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "copyOnSelect": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "crossSessionInbound": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "defaultShell": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "defaultToAgentsView": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "deniedMcpServers": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "deniedModels": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "desktopSessionCleanupPeriodDays": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "dialogExpiry": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "diffTool": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "disableAgentView": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "disableAllHooks": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "disableArtifact": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "disableAutoMode": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "disableBrowserExternalNavigation": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "disableBundledSkills": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "disableClaudeAiConnectors": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "disableCommandPluginSources": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "disableDeepLinkRegistration": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "disableDesktopLocalSessions": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "disabledMcpjsonServers": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "disableMobileSimulatorTools": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "disableRemoteControl": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "disableSideloadFlags": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "disableSkillShellExecution": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "disableWorkflows": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "editorMode": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "effortLevel": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "emojiCompletionEnabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "enableAllProjectMcpServers": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "enableArtifact": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "enabledMcpjsonServers": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "enabledPlugins": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "enableWorkflows": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "enforceAvailableModels": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "env": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "externalEditorContext": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "extraKnownMarketplaces": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "fallbackModel": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "fastMode": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "fastModePerSessionOptIn": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "feedbackDrafts": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "feedbackSurveyRate": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "fileCheckpointingEnabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "fileSuggestion": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "footerLinksRegexes": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "forceLoginGatewayUrl": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "forceLoginMethod": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "forceLoginOrgUUID": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "forceRemoteSettingsRefresh": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "gatewayInternalNetworks": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "gcpAuthRefresh": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "hooks": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "httpHookAllowedEnvVars": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "idleCompaction": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "includeCoAuthoredBy": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "includeGitInstructions": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "inputNeededNotifEnabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "isolatePeerMachines": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "keybindingFlavor": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "language": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "leftArrowOpensAgents": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "managedMcpServers": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "managedSourcesBehavior": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "maxEffortLevel": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "maxProseWidth": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "minimumVersion": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "model": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "modelOverrides": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "modelPicker": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "modelPricing": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "modelSettings": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "otelHeadersHelper": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "outputStyle": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "parentSettingsBehavior": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "permissionExplainerEnabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "permissions": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "permissions.additionalDirectories": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "permissions.allow": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "permissions.ask": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "permissions.blockReadsOutsideWorkingDirectories": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "permissions.defaultMode": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "permissions.deny": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "permissions.disableBypassPermissionsMode": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "plansDirectory": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "pluginConfigs": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "pluginSuggestionMarketplaces": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "pluginTrustMessage": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "policyHelper": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "policyHelper.path": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "policyHelper.refreshIntervalMs": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "policyHelper.timeoutMs": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "preferredNotifChannel": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "prefersReducedMotion": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "prependPlugins": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "processWrapper": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "promptCacheTtl": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "promptSuggestionEnabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "prStatusFooterEnabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "prUrlTemplate": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "remote.defaultEnvironmentId": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "remoteControlAtStartup": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "requiredMaximumVersion": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "requiredMinimumVersion": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "respectGitignore": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "respondToBashCommands": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.allowAppleEvents": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.allowNestedUserNamespaces": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.allowUnsandboxedCommands": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.autoAllowBashIfSandboxed": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.bwrapPath": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.credentials": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.credentials.allowPlaintextInject": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.credentials.awsPairs": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.credentials.envVars": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.credentials.files": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.credentials.sigv4": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.enabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.enableWeakerNestedSandbox": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.enableWeakerNetworkIsolation": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.excludedCommands": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.failIfUnavailable": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.filesystem": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.filesystem.allowManagedReadPathsOnly": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.filesystem.allowRead": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.filesystem.allowWrite": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.filesystem.denyRead": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.filesystem.denyWrite": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.filesystem.disabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.ignoreViolations": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.network": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.network.allowAllUnixSockets": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.network.allowedDomains": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.network.allowLocalBinding": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.network.allowMachLookup": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.network.allowManagedDomainsOnly": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.network.allowUnixSockets": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.network.deniedDomains": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.network.httpProxyPort": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.network.socksProxyPort": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.network.strictAllowlist": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.network.tlsTerminate": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.ripgrep": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sandbox.socatPath": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "showClearContextOnPlanAccept": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "showThinkingSummaries": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "showTurnDuration": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "skillListingBudgetFraction": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "skillListingMaxDescChars": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "skillOverrides": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "skipAutoPermissionPrompt": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "skipDangerousModePermissionPrompt": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "skipWebFetchPreflight": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "spellcheck": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "spinnerTipsEnabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "spinnerTipsOverride": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "spinnerVerbs": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sshConfigs": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sshHostAllowlist": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "sshHostCommands": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "statusLine": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "strictKnownMarketplaces": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "strictPluginOnlyCustomization": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "strictPluginOnlyCustomization.agents": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "strictPluginOnlyCustomization.hooks": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "strictPluginOnlyCustomization.mcp": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "strictPluginOnlyCustomization.skills": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "subagentPromptCacheTtl": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "subagentStatusLine": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "switchModelsOnFlag": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "syncClaudeAiPlugins": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "syncClaudeAiSkills": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "syntaxHighlightingDisabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "taskOutputMaxChars": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "teammateDefaultModel": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "teammateMode": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "terminalProgressBarEnabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "terminalTitleFromRename": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "theme": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "timeFormat": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "timeZone": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "tui": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "ultracode": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "useAutoModeDuringPlan": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "verbose": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "viewMode": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "vimInsertModeRemaps": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "voice": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "voiceEnabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "wheelScrollAccelerationEnabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "workflowKeywordTriggerEnabled": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "workflowSizeGuideline": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "worktree": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "worktree.baseRef": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "worktree.bgIsolation": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "worktree.location": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "worktree.sparsePaths": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "worktree.symlinkDirectories": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  },
+  "wslInheritsWindowsSettings": {
+   "firstSeen": "2.1.312",
+   "lastSeen": "2.1.312"
+  }
+ }
+}

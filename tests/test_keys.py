@@ -3,14 +3,15 @@ import json
 
 import pytest
 
-from qclaudecodesettingeditorwidget import Category, EnvVar, QClaudeCodeSettingEditorWidget, SettingKey
+from qclaudecodesettingeditorwidget import Category, EnvVar, QClaudeCodeSettingEditorWidget, Scope, SettingKey
 from qclaudecodesettingeditorwidget.categories import CATEGORIES
 from qclaudecodesettingeditorwidget.schema import load_env_registry, load_schema
 
 
 def test_enums_are_in_sync_with_schema_and_registry():
     schema = load_schema()
-    assert [m.value for m in SettingKey] == list(schema["properties"])
+    # 순서는 다를 수 있다: deprecated 키는 replaced_by 로 참조하는 대체 키 뒤에 정의된다
+    assert sorted(m.value for m in SettingKey) == sorted(schema["properties"])
     assert [m.value for m in EnvVar] == sorted(load_env_registry(schema=schema))
     # 멤버 이름 == 키 ($schema 만 예외)
     assert all(m.name == m.value for m in SettingKey if m.value != "$schema")
@@ -35,7 +36,7 @@ def test_categories_use_enum_members():
 
 @pytest.fixture
 def widget(qtbot):
-    w = QClaudeCodeSettingEditorWidget(language="en", showManagedOnly=True)
+    w = QClaudeCodeSettingEditorWidget(language="en", targetScope=Scope.ANY_FILE)
     qtbot.addWidget(w)
     return w
 

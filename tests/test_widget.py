@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from qclaudecodesettingeditorwidget import QClaudeCodeSettingEditorWidget, load_schema
+from qclaudecodesettingeditorwidget import QClaudeCodeSettingEditorWidget, Scope, load_schema
 from qclaudecodesettingeditorwidget.editors import (
     AnyOfEditor,
     CheckListEditor,
@@ -24,7 +24,6 @@ SAMPLE = {
     "cleanupPeriodDays": 14,
     "feedbackSurveyRate": 0.25,
     "theme": "custom:solarized",
-    "teammateDefaultModel": None,
     "strictPluginOnlyCustomization": ["skills", "hooks"],
     "availableModels": ["opus", "sonnet"],
     "modelOverrides": {"claude-opus-4-6": "arn:aws:bedrock:us-east-2:1:x"},
@@ -78,7 +77,7 @@ SAMPLE = {
 
 @pytest.fixture
 def widget(qtbot):
-    w = QClaudeCodeSettingEditorWidget(showManagedOnly=True)  # SAMPLE 에 관리형 전용 키가 있으므로 전부 노출
+    w = QClaudeCodeSettingEditorWidget(targetScope=Scope.ANY_FILE)  # SAMPLE 에 관리형 전용 키가 있으므로 모든 설정 파일 대상
     qtbot.addWidget(w)
     return w
 
@@ -124,7 +123,7 @@ def test_editor_kinds_selected_by_factory(widget):
     assert isinstance(widget.rowFor("availableModels").editor, StringListEditor)
     assert isinstance(widget.rowFor("allowedMcpServers").editor, ListEditor)
     assert isinstance(widget.rowFor("modelOverrides").editor, DictEditor)
-    assert isinstance(widget.rowFor("teammateDefaultModel").editor, NullableEditor)
+    assert isinstance(widget.rowFor("teammateDefaultModel").editor, NullableEditor)  # Global config 라 숨겨져 있어도 행은 있다
     assert isinstance(widget.rowFor("strictPluginOnlyCustomization").editor, AnyOfEditor)
     assert isinstance(widget.rowFor("theme").editor, StringEditor)  # 문자열 anyOf → 제안 콤보
     assert isinstance(widget.rowFor("managedMcpServers").editor, ListEditor)
@@ -168,9 +167,9 @@ def test_env_editor_set_and_unset(widget, qtbot):
 def test_search_filter_hides_rows(widget):
     widget._search.setText("sandbox")
     assert widget.rowFor("sandbox").isVisible() or not widget.isVisible()  # offscreen: visibility flag
-    page_counts = [p.applyFilter("sandbox", False) for p in widget._pages]
+    page_counts = [p.applyFilter("sandbox", False, widget.isKeyApplicable) for p in widget._pages]
     assert sum(page_counts) >= 1
-    assert all(p.applyFilter("zzz-no-such-key", False) == 0 for p in widget._pages)
+    assert all(p.applyFilter("zzz-no-such-key", False, widget.isKeyApplicable) == 0 for p in widget._pages)
 
 
 def test_file_roundtrip(widget, tmp_path):

@@ -13,8 +13,22 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from . import i18n
 from .categories import Category
+from .constants import MUTED, Scope
 from .i18n import tr
 from .widget import QClaudeCodeSettingEditorWidget
+
+
+SCOPE_CHOICES = [Scope.USER, Scope.PROJECT, Scope.LOCAL, Scope.MANAGED, Scope.ANY_FILE]
+
+
+def scope_choice_label(scope: Scope) -> str:
+    return {
+        Scope.USER: tr("User (~/.claude/settings.json)"),
+        Scope.PROJECT: tr("Project (.claude/settings.json)"),
+        Scope.LOCAL: tr("Local (.claude/settings.local.json)"),
+        Scope.MANAGED: tr("Managed settings"),
+        Scope.ANY_FILE: tr("All files"),
+    }[scope]
 
 
 class JsonResultDialog(QtWidgets.QDialog):
@@ -48,11 +62,11 @@ class JsonResultDialog(QtWidgets.QDialog):
 
 class DemoMainWindow(QtWidgets.QMainWindow):
     def __init__(self, path: str | Path | None = None, language: str | None = None,
-                 categories: Category = Category.ALL, show_managed_only: bool = False):
+                 categories: Category = Category.ALL, scope: Scope = Scope.USER, version: str | None = None):
         super().__init__()
         self.resize(1200, 800)
         self.editor = QClaudeCodeSettingEditorWidget(language=language, categories=categories,
-                                                     showManagedOnly=show_managed_only)
+                                                     targetScope=scope, targetVersion=version)
         self.editor.fileLoaded.connect(self._set_title_path)
         self.editor.fileSaved.connect(self._set_title_path)
         self.editor.settingChanged.connect(self._retranslate)
@@ -65,9 +79,17 @@ class DemoMainWindow(QtWidgets.QMainWindow):
         self._lang_combo.setCurrentIndex(max(self._lang_combo.findData(self.editor.language()), 0))
         self._lang_combo.currentIndexChanged.connect(lambda i: self.editor.setLanguage(self._lang_combo.itemData(i)))
 
-        self._show_managed = QtWidgets.QCheckBox()
-        self._show_managed.setChecked(show_managed_only)
-        self._show_managed.toggled.connect(self.editor.setShowManagedOnly)
+        self._scope_label = QtWidgets.QLabel()
+        self._scope_combo = QtWidgets.QComboBox()
+        for s in SCOPE_CHOICES:
+            self._scope_combo.addItem("", int(s))
+        self._scope_combo.setCurrentIndex(max(self._scope_combo.findData(int(scope)), 0))
+        self._scope_combo.currentIndexChanged.connect(
+            lambda i: self.editor.setTargetScope(Scope(self._scope_combo.itemData(i))))
+        self._version_label = QtWidgets.QLabel()
+        self._version = QtWidgets.QLineEdit(version or "")
+        self._version.setMaximumWidth(110)
+        self._version.editingFinished.connect(self._apply_version)
 
         self._ok = QtWidgets.QPushButton()
         self._ok.setDefault(True)
@@ -77,13 +99,17 @@ class DemoMainWindow(QtWidgets.QMainWindow):
         self._cancel.setMinimumWidth(100)
         self._cancel.clicked.connect(self.close)
         self._hint = QtWidgets.QLabel()
-        self._hint.setStyleSheet("color: #8a8a8a;")
+        self._hint.setStyleSheet(MUTED)
 
         bottom = QtWidgets.QHBoxLayout()
         bottom.addWidget(self._lang_label)
         bottom.addWidget(self._lang_combo)
         bottom.addSpacing(12)
-        bottom.addWidget(self._show_managed)
+        bottom.addWidget(self._scope_label)
+        bottom.addWidget(self._scope_combo)
+        bottom.addSpacing(12)
+        bottom.addWidget(self._version_label)
+        bottom.addWidget(self._version)
         bottom.addSpacing(12)
         bottom.addWidget(self._hint, 1)
         bottom.addWidget(self._ok)
@@ -105,6 +131,13 @@ class DemoMainWindow(QtWidgets.QMainWindow):
             if p.exists():
                 self.editor.loadFile(p)
 
+    def _apply_version(self) -> None:
+        try:
+            self.editor.setTargetVersion(self._version.text().strip() or None)
+            self._version.setStyleSheet("")
+        except ValueError:
+            self._version.setStyleSheet("color: #d33;")
+
     @QtCore.Slot()
     def showResult(self) -> None:
         JsonResultDialog(self.editor, self).exec()
@@ -125,7 +158,11 @@ class DemoMainWindow(QtWidgets.QMainWindow):
         title = tr("QClaudeCodeSettingEditorWidget — test")
         self.setWindowTitle(f"{title} — {self._path_title}" if self._path_title else title)
         self._lang_label.setText(tr("Language:"))
-        self._show_managed.setText(tr("Show managed-only"))
+        self._scope_label.setText(tr("Editing:"))
+        for i, s in enumerate(SCOPE_CHOICES):
+            self._scope_combo.setItemText(i, scope_choice_label(s))
+        self._version_label.setText(tr("Claude Code version:"))
+        self._version.setPlaceholderText(tr("all ({version})", version=self.editor.latestVersion()))
         self._ok.setText(tr("OK"))
         self._cancel.setText(tr("Cancel"))
         self._hint.setText(tr("{n} keys set — press OK (Ctrl+Enter) to show the JSON", n=len(self.editor.settings())))
@@ -139,13 +176,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--lang", help="언어 코드 (예: ko, en)")
     ap.add_argument("--categories", help="노출할 카테고리 플래그, 예: MODEL|HOOKS|ENV (기본 ALL)")
     ap.add_argument("--exclude", help="제외할 카테고리 플래그, 예: JSON|ADMIN")
-    ap.add_argument("--show-managed", action="store_true", help="관리형(managed) 전용 키도 표시")
+    ap.add_argument("--scope", default="USER", help="편집 대상 파일 스코프, 예: USER, PROJECT, MANAGED, ANY_FILE (기본 USER)")
+    ap.add_argument("--target-version", help="대상 Claude Code 버전, 예: 2.1.250 (그 버전에 없는 키를 숨김)")
     args = ap.parse_args(sys.argv[1:] if argv is None else argv[1:])
     mask = Category.parse(args.categories) if args.categories else Category.ALL
     if args.exclude:
         mask &= ~Category.parse(args.exclude)
     app = QtWidgets.QApplication(sys.argv)
-    win = DemoMainWindow(args.path, args.lang, mask, args.show_managed)
+    win = DemoMainWindow(args.path, args.lang, mask, Scope.parse(args.scope), args.target_version)
     win.show()
     return app.exec()
 

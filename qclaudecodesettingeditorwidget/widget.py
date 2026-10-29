@@ -13,18 +13,19 @@ from typing import Any
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from . import i18n
-from .categories import CATEGORY_TITLES, ENV_ID, ENV_KEY, JSON_ID, Category, categorize
+from ._version import __version__ as CLAUDE_CODE_VERSION
+from .categories import CATEGORY_TITLES, Category, categorize
+from .constants import ENV_ID, ENV_KEY, JSON_ID, MUTED, Precedence, Scope
 from .editors import PropertyRow
 from .env_editor import EnvEditor
 from .i18n import tr
-from .keys import SettingKey
+from .keys import SettingKey, setting_info
 from .pages import KeyMeta, _Page
 from .schema import EnvVarInfo, JsonSchema, load_env_registry, load_overlaps, load_schema, overlaps_by_env, resolve_ref
+from .spec import Version
 from .widget_api import _MISSING, HiddenKeyError, SettingsApiMixin
 
 __all__ = ["QClaudeCodeSettingEditorWidget", "HiddenKeyError"]
-
-MUTED = "color: #8a8a8a;"
 
 
 class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
@@ -50,14 +51,17 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
                  schema_path: str | Path | None = None, env_registry_path: str | Path | None = None,
                  env_registry: dict[str, EnvVarInfo] | None = None, language: str | None = None,
                  categories: Category = Category.ALL, overlaps: dict[str, list[dict[str, str]]] | None = None,
-                 showManagedOnly: bool = False):
+                 targetScope: Scope = Scope.USER, targetVersion: str | None = None):
         """categories: 좌측에 노출할 카테고리 비트 플래그. 제외된 카테고리의 키는 편집할 수 없고,
         로드된 값은 _passthrough 로 보존되어 그대로 다시 내보낸다.
-        showManagedOnly: 관리형(managed/policy) 설정에서만 유효한 키를 보여줄지. 기본 False(숨김).
-        숨겨도 로드된 값은 보존되어 출력에 그대로 남는다."""
+        targetScope: 편집 대상 설정 파일(Scope 비트 플래그, 기본 USER = ~/.claude/settings.json).
+        그 파일들 중 어디에서도 효력이 없는 키(예: USER 대상일 때 Managed 전용 키)는 숨긴다. ANY_FILE 이면 전부.
+        targetVersion: 대상 Claude Code 버전("2.1.250"). 그 버전에 없는 키(이후 추가·이전 제거)는 숨긴다.
+        None 이면 버전으로 거르지 않는다. 숨겨도 로드된 값은 보존되어 출력에 그대로 남는다."""
         super().__init__(parent)
         self._categories = Category(categories)
-        self._show_managed = bool(showManagedOnly)
+        self._target_scope = self._valid_scope(targetScope)
+        self._target_version = self._valid_version(targetVersion)
         self._env_enabled = bool(Category.ENV & self._categories)
         self._schema: JsonSchema = schema if schema is not None else load_schema(schema_path)
         self._env_registry_path = env_registry_path
@@ -217,8 +221,8 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
         if page.built:
             return
         page.build()
-        page.applyFilter(self._search.text().strip().lower(), self._only_set.isChecked(), self._show_managed)
-        self._apply_nested_managed_filter(page)
+        page.applyFilter(self._search.text().strip().lower(), self._only_set.isChecked(), self._applicable)
+        self._apply_nested_filter(page)
 
     def _ensure_env(self) -> EnvEditor | None:
         """env 편집기를 처음 필요할 때 만든다. Category.ENV 가 없으면 None."""
@@ -346,16 +350,49 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
     def schema(self) -> JsonSchema:
         return self._schema
 
-    def showManagedOnly(self) -> bool:
-        return self._show_managed
+    def targetScope(self) -> Scope:
+        return self._target_scope
 
-    def setShowManagedOnly(self, show: bool) -> None:
-        """관리형(managed/policy) 설정에서만 유효한 키의 표시 여부. 값은 보존되어 출력에는 그대로 남는다."""
-        show = bool(show)
-        if show == self._show_managed:
-            return
-        self._show_managed = show
-        self._apply_filter()
+    def setTargetScope(self, scope: Scope) -> None:
+        """편집 대상 설정 파일(Scope 플래그). 그 파일들에서 효력이 없는 키는 숨기고 API 로도 바꿀 수 없다."""
+        scope = self._valid_scope(scope)
+        if scope != self._target_scope:
+            self._target_scope = scope
+            self._apply_filter()
+
+    def targetVersion(self) -> str | None:
+        """대상 Claude Code 버전("2.1.250"). None 이면 버전 필터 없음."""
+        return str(self._target_version) if self._target_version is not None else None
+
+    def setTargetVersion(self, version: str | None) -> None:
+        """대상 Claude Code 버전. 그 버전에 없는 키(이후 추가·이전 제거)는 숨긴다. None 이면 필터 해제."""
+        v = self._valid_version(version)
+        if v != self._target_version:
+            self._target_version = v
+            self._apply_filter()
+
+    @staticmethod
+    def latestVersion() -> str:
+        """번들 메타데이터의 기준 Claude Code 버전(= 패키지 버전)."""
+        return CLAUDE_CODE_VERSION
+
+    @staticmethod
+    def _valid_scope(scope: Scope) -> Scope:
+        scope = Scope(scope)
+        if not scope or scope & ~Scope.ANY_FILE:
+            raise ValueError(tr("targetScope must be a non-empty combination of USER, PROJECT, LOCAL and MANAGED"))
+        return scope
+
+    @staticmethod
+    def _valid_version(version: str | None) -> Version | None:
+        return None if version is None or not str(version).strip() else Version.parse(str(version))
+
+    def isKeyApplicable(self, path: str | SettingKey) -> bool:
+        """키(또는 중첩 경로 "sandbox.bwrapPath")가 대상 스코프·버전에서 효력이 있는지. 메타데이터가 없으면 True."""
+        info = setting_info(SettingKey.coerce(path))
+        return info is None or info.applicable(self._target_scope, self._target_version)
+
+    _applicable = isKeyApplicable
 
     def categories(self) -> Category:
         """생성 시 지정한 카테고리 비트 플래그."""
@@ -374,7 +411,7 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
                 continue
             for e in entries:
                 if e["env"] in env:
-                    out.append({"setting": key, "env": e["env"], "precedence": e.get("precedence", "related")})
+                    out.append({"setting": key, "env": e["env"], "precedence": e.get("precedence", Precedence.RELATED)})
         return out
 
     def showEnvVariable(self, name: str) -> bool:
@@ -433,8 +470,8 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
         self._update_overlap_warning()
         if self._only_set.isChecked():
             self._apply_filter()
-        elif not self._show_managed:
-            self._apply_nested_managed_filter()  # 로드로 새로 생긴 중첩 행 반영
+        else:
+            self._apply_nested_filter()  # 로드로 새로 생긴 중첩 행 반영
         self.settingChanged.emit()
 
     def _update_overlap_warning(self) -> None:
@@ -489,25 +526,25 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
         text = self._search.text().strip().lower()
         only = self._only_set.isChecked()
         for page in self._pages:
-            page.applyFilter(text, only, self._show_managed)
-        self._apply_nested_managed_filter()
+            page.applyFilter(text, only, self._applicable)
+        self._apply_nested_filter()
         if self._env is not None:
             self._env.setFilterText(self._search.text())
         self._update_nav_counts()
 
-    def _apply_nested_managed_filter(self, root: QtWidgets.QWidget | None = None) -> None:
-        """중첩 객체 안의 관리형 전용 행(sandbox.enabledPlatforms 등)도 숨김/표시."""
+    def _apply_nested_filter(self, root: QtWidgets.QWidget | None = None) -> None:
+        """중첩 객체 안의 행(sandbox.bwrapPath 등)도 대상 스코프·버전에 맞춰 숨김/표시."""
         top = set(self._rows.values())
         for row in (root or self._body).findChildren(PropertyRow):
-            if row in top or not row.managed_only:
+            if row in top or row.info is None:
                 continue
-            row.setVisible(self._show_managed)
+            row.setVisible(row.info.applicable(self._target_scope, self._target_version))
 
     def _update_nav_counts(self) -> None:
         text = self._search.text().strip().lower()
         only = self._only_set.isChecked()
         for i, page in enumerate(self._pages):
-            n_match, n_set, n_total = page.count(text, only, self._show_managed)
+            n_match, n_set, n_total = page.count(text, only, self._applicable)
             if text or only:
                 label = f"{page.title}  ({n_match})"
             else:

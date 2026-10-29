@@ -8,6 +8,26 @@
             <translation>한국어</translation>
         </message>
         <message>
+            <source>User (~/.claude/settings.json)</source>
+            <translation>사용자 (~/.claude/settings.json)</translation>
+        </message>
+        <message>
+            <source>Project (.claude/settings.json)</source>
+            <translation>프로젝트 (.claude/settings.json)</translation>
+        </message>
+        <message>
+            <source>Local (.claude/settings.local.json)</source>
+            <translation>로컬 (.claude/settings.local.json)</translation>
+        </message>
+        <message>
+            <source>Managed settings</source>
+            <translation>관리형 설정</translation>
+        </message>
+        <message>
+            <source>All files</source>
+            <translation>모든 파일</translation>
+        </message>
+        <message>
             <source>Configured settings (GetSetting)</source>
             <translation>설정된 세팅 (GetSetting)</translation>
         </message>
@@ -36,8 +56,16 @@
             <translation>언어:</translation>
         </message>
         <message>
-            <source>Show managed-only</source>
-            <translation>관리형 전용 표시</translation>
+            <source>Editing:</source>
+            <translation>편집 대상:</translation>
+        </message>
+        <message>
+            <source>Claude Code version:</source>
+            <translation>Claude Code 버전:</translation>
+        </message>
+        <message>
+            <source>all ({version})</source>
+            <translation>전체 ({version})</translation>
         </message>
         <message>
             <source>OK</source>
@@ -50,6 +78,62 @@
         <message>
             <source>{n} keys set — press OK (Ctrl+Enter) to show the JSON</source>
             <translation>{n}개 키 설정됨 — 확인(Ctrl+Enter)을 누르면 JSON으로 표시</translation>
+        </message>
+        <message>
+            <source>user</source>
+            <translation>사용자</translation>
+        </message>
+        <message>
+            <source>project</source>
+            <translation>프로젝트</translation>
+        </message>
+        <message>
+            <source>local</source>
+            <translation>로컬</translation>
+        </message>
+        <message>
+            <source>managed</source>
+            <translation>관리형</translation>
+        </message>
+        <message>
+            <source>global config</source>
+            <translation>전역 구성</translation>
+        </message>
+        <message>
+            <source>managed settings</source>
+            <translation>관리형 설정</translation>
+        </message>
+        <message>
+            <source>Only honored in: {files}</source>
+            <translation>다음 파일에서만 적용됩니다: {files}</translation>
+        </message>
+        <message>
+            <source>Requires Claude Code v{version} or later</source>
+            <translation>Claude Code v{version} 이상이 필요합니다</translation>
+        </message>
+        <message>
+            <source>removed v{version}</source>
+            <translation>v{version} 제거</translation>
+        </message>
+        <message>
+            <source>Removed in Claude Code v{version}; it has no effect on that version or later</source>
+            <translation>Claude Code v{version}에서 제거되었습니다. 그 버전부터는 효과가 없습니다</translation>
+        </message>
+        <message>
+            <source>Deprecated since Claude Code v{version}</source>
+            <translation>Claude Code v{version}부터 사용 중단(deprecated)되었습니다</translation>
+        </message>
+        <message>
+            <source>Deprecated</source>
+            <translation>사용 중단(deprecated)되었습니다</translation>
+        </message>
+        <message>
+            <source>Use {key} instead</source>
+            <translation>대신 {key}을(를) 사용하세요</translation>
+        </message>
+        <message>
+            <source>deprecated</source>
+            <translation>사용 중단</translation>
         </message>
         <message>
             <source>env wins</source>
@@ -70,14 +154,6 @@
         <message>
             <source>Required key</source>
             <translation>필수 키</translation>
-        </message>
-        <message>
-            <source>managed</source>
-            <translation>관리형</translation>
-        </message>
-        <message>
-            <source>Only honored in managed (policy) settings</source>
-            <translation>관리형(정책) 설정에서만 유효</translation>
         </message>
         <message>
             <source>Related env:</source>
@@ -204,10 +280,6 @@
             <translation>열기…</translation>
         </message>
         <message>
-            <source>Keys not exposed in this widget cannot be changed: {keys}</source>
-            <translation>이 위젯에 노출되지 않은 키는 변경할 수 없습니다: {keys}</translation>
-        </message>
-        <message>
             <source>No matches</source>
             <translation>검색 결과 없음</translation>
         </message>
@@ -240,12 +312,8 @@
             <translation>복사</translation>
         </message>
         <message>
-            <source>Top level of settings JSON must be an object</source>
-            <translation>settings JSON 의 최상위는 객체여야 합니다</translation>
-        </message>
-        <message>
-            <source>No save path</source>
-            <translation>저장 경로가 없습니다</translation>
+            <source>targetScope must be a non-empty combination of USER, PROJECT, LOCAL and MANAGED</source>
+            <translation>targetScope 는 USER, PROJECT, LOCAL, MANAGED 중 하나 이상의 조합이어야 합니다</translation>
         </message>
         <message>
             <source>⚠ {n} overlapping</source>
@@ -286,6 +354,18 @@
         <message>
             <source>Save failed</source>
             <translation>저장 실패</translation>
+        </message>
+        <message>
+            <source>Keys not exposed in this widget cannot be changed: {keys}</source>
+            <translation>이 위젯에 노출되지 않은 키는 변경할 수 없습니다: {keys}</translation>
+        </message>
+        <message>
+            <source>Top level of settings JSON must be an object</source>
+            <translation>settings JSON 의 최상위는 객체여야 합니다</translation>
+        </message>
+        <message>
+            <source>No save path</source>
+            <translation>저장 경로가 없습니다</translation>
         </message>
         <message>
             <source>Auth &amp; API</source>
@@ -526,6 +606,11 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <source>permissions.additionalDirectories</source>
             <extracomment>Additional directories to include in the permission scope</extracomment>
             <translation>권한 범위에 포함할 추가 디렉터리</translation>
+        </message>
+        <message>
+            <source>permissions.blockReadsOutsideWorkingDirectories</source>
+            <extracomment>Make Claude's file tools refuse reads outside your working directories in every permission mode, including bypassPermissions. Claude Code denies Read, Grep, Glob, and LSP calls on those paths and tells Claude to ask you to add the directory with /add-dir. Files Claude Code itself needs stay readable, such as your skills, plugins, rules, agents, commands, and the CLAUDE.md memory file under ~/.claude/. Requires Claude Code v2.1.257 or later.</extracomment>
+            <translation>Claude의 파일 도구가 모든 권한 모드(bypassPermissions 포함)에서 작업 디렉터리 밖의 읽기를 거부하도록 한다. Claude Code는 해당 경로에 대한 Read, Grep, Glob, LSP 호출을 거부하고 Claude에게 /add-dir로 디렉터리를 추가하도록 사용자에게 요청하라고 안내한다. skills, plugins, rules, agents, commands, ~/.claude/ 아래의 CLAUDE.md 메모리 파일처럼 Claude Code 자체가 필요로 하는 파일은 계속 읽을 수 있다. Claude Code v2.1.257 이상이 필요하다.</translation>
         </message>
         <message>
             <source>language</source>
@@ -4463,6 +4548,11 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <translation>마켓플레이스 소스의 파일 또는 디렉터리 경로를 매칭할 정규식 패턴</translation>
         </message>
         <message>
+            <source>strictKnownMarketplaces[]</source>
+            <extracomment>Keeps skills-directory plugins (folders under ~/.claude/skills/ or a project's .claude/skills/ that carry a .claude-plugin/plugin.json) loading while an allowlist is set. Matches no marketplace. See https://code.claude.com/docs/en/plugins/org#keep-skills-directory-plugins-loading</extracomment>
+            <translation>허용 목록이 설정된 동안에도 skills 디렉터리 플러그인(~/.claude/skills/ 또는 프로젝트의 .claude/skills/ 아래에 있으며 .claude-plugin/plugin.json을 가진 폴더)이 계속 로드되도록 한다. 어떤 마켓플레이스와도 일치하지 않는다. 참고: https://code.claude.com/docs/en/plugins/org#keep-skills-directory-plugins-loading</translation>
+        </message>
+        <message>
             <source>skippedMarketplaces</source>
             <extracomment>List of marketplace names the user has chosen not to install when prompted. See https://code.claude.com/docs/en/discover-plugins</extracomment>
             <translation>확인 요청을 받았을 때 사용자가 설치하지 않기로 선택한 마켓플레이스 이름의 목록. 참고: https://code.claude.com/docs/en/discover-plugins</translation>
@@ -4723,9 +4813,24 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <translation>TLS로 종료되는 HTTPS뿐 아니라 일반 HTTP 요청에서도 마스크 치환을 허용한다. 일반 HTTP에서는 상위 서버의 신원이 검증되지 않고 자격 증명이 평문으로 전송되므로, 신뢰할 수 있는 테스트 네트워크 밖에서는 이 설정을 꺼 둔다. 사용자 설정, 관리형 설정, CLI --settings 설정에서만 적용되며 .claude/settings.json 이나 .claude/settings.local.json 에서는 적용되지 않는다 (기본값: false). Claude Code v2.1.199 이상 필요. 참고: https://code.claude.com/docs/en/sandboxing#protect-credentials</translation>
         </message>
         <message>
+            <source>sandbox.credentials.awsPairs</source>
+            <extracomment>Group masked environment variables that form one AWS credential for SigV4 re-signing when your credential lives in variables with non-standard names. Claude Code links the conventional AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_SESSION_TOKEN trio automatically when you mask their whole values, so you need this key only for other names. Requires Claude Code v2.1.224 or later.</extracomment>
+            <translation>자격 증명이 비표준 이름의 변수에 들어 있을 때, SigV4 재서명을 위해 하나의 AWS 자격 증명을 이루는 마스킹된 환경 변수를 그룹으로 묶는다. 기본 이름인 AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN 세 변수는 전체 값을 마스킹하면 Claude Code가 자동으로 연결하므로, 이 키는 그 외의 이름에만 필요하다. Claude Code v2.1.224 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>sandbox.credentials.sigv4</source>
+            <extracomment>Choose what the sandbox proxy does with AWS request forms it can't re-sign: streaming for aws-chunked streaming uploads, presigned for presigned URLs, and sigv4a for SigV4A asymmetric signatures. This applies only to requests signed with a masked pair's placeholder access key ID. Requires Claude Code v2.1.224 or later.</extracomment>
+            <translation>샌드박스 프록시가 재서명할 수 없는 AWS 요청 형식을 어떻게 처리할지 선택한다. streaming은 aws-chunked 스트리밍 업로드, presigned는 미리 서명된 URL, sigv4a는 SigV4A 비대칭 서명에 해당한다. 마스킹된 쌍의 플레이스홀더 액세스 키 ID로 서명된 요청에만 적용된다. Claude Code v2.1.224 이상이 필요하다.</translation>
+        </message>
+        <message>
             <source>sandbox.allowAppleEvents</source>
             <extracomment>Allow sandboxed commands to send Apple Events on macOS (v2.1.181+). Honored only from user, managed, or CLI settings; project settings cannot enable it. See https://code.claude.com/docs/en/sandboxing#limitations</extracomment>
             <translation>macOS에서 샌드박스 명령이 Apple Events를 보낼 수 있도록 허용한다 (v2.1.181+). 사용자 설정, 관리형 설정, CLI 설정에서만 적용되며, 프로젝트 설정으로는 활성화할 수 없다. 참고: https://code.claude.com/docs/en/sandboxing#limitations</translation>
+        </message>
+        <message>
+            <source>sandbox.allowNestedUserNamespaces</source>
+            <extracomment>Let sandboxed commands on Linux and WSL2 create user namespaces, which Chromium's and Electron's own sandbox, a nested bubblewrap, and unshare need. If you set this key to true, you turn off a security boundary: code from a sandboxed command can end up running outside the sandbox. For rootless Podman or Buildah, use excludedCommands instead, because the sandbox stops them in other ways too. Requires Claude Code v2.1.305 or later.</extracomment>
+            <translation>Linux와 WSL2에서 샌드박스된 명령이 사용자 네임스페이스를 만들 수 있도록 허용한다. Chromium과 Electron 자체 샌드박스, 중첩 bubblewrap, unshare에 필요하다. 이 키를 true로 설정하면 보안 경계가 해제되어, 샌드박스된 명령의 코드가 샌드박스 밖에서 실행될 수 있다. 루트리스 Podman이나 Buildah는 샌드박스가 다른 방식으로도 이들을 막으므로 excludedCommands를 사용한다. Claude Code v2.1.305 이상이 필요하다.</translation>
         </message>
         <message>
             <source>spinnerVerbs</source>
@@ -4828,6 +4933,11 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <translation>대용량 디렉터리가 디스크에 중복되지 않도록 메인 저장소에서 각 워크트리로 심볼릭 링크할 디렉터리. 기본적으로는 심볼릭 링크되는 디렉터리가 없다. 참고: https://code.claude.com/docs/en/settings#worktree-settings</translation>
         </message>
         <message>
+            <source>worktree.location</source>
+            <extracomment>Choose the folder on a remote machine where Desktop SSH sessions create their worktrees, instead of &lt;project-root&gt;/.claude/worktrees/. Only the desktop app reads this key: --worktree, the EnterWorktree tool, isolated subagents, and background sessions ignore it. Requires Claude Desktop v1.44121.0 or later.</extracomment>
+            <translation>Desktop SSH 세션이 워크트리를 생성하는 원격 머신의 폴더를 &lt;project-root&gt;/.claude/worktrees/ 대신 지정한다. 데스크톱 앱만 이 키를 읽으며, --worktree, EnterWorktree 도구, 격리된 서브에이전트, 백그라운드 세션은 이 키를 무시한다. Claude Desktop v1.44121.0 이상이 필요하다.</translation>
+        </message>
+        <message>
             <source>parentSettingsBehavior</source>
             <extracomment>(Admin/managed settings only) Controls how SDK managedSettings (parent tier) merge with inherited settings. 'first-wins': first non-empty value applies (default). 'merge': merge arrays and objects. See https://code.claude.com/docs/en/server-managed-settings</extracomment>
             <translation>(관리자/관리형 설정 전용) SDK managedSettings(상위 계층)가 상속된 설정과 병합되는 방식을 제어한다. 'first-wins': 비어 있지 않은 첫 번째 값이 적용된다 (기본값). 'merge': 배열과 객체를 병합한다. 참고: https://code.claude.com/docs/en/server-managed-settings</translation>
@@ -4906,6 +5016,11 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <source>blockedMarketplaces[].pathPattern</source>
             <extracomment>Regex pattern to match file or directory paths for marketplace sources</extracomment>
             <translation>마켓플레이스 소스의 파일 또는 디렉터리 경로를 매칭할 정규식 패턴</translation>
+        </message>
+        <message>
+            <source>blockedMarketplaces[]</source>
+            <extracomment>Stops skills-directory plugins (folders under ~/.claude/skills/ or a project's .claude/skills/ that carry a .claude-plugin/plugin.json) from loading. Matches no marketplace. See https://code.claude.com/docs/en/plugins/org#blocklist-with-blockedmarketplaces</extracomment>
+            <translation>skills 디렉터리 플러그인(~/.claude/skills/ 또는 프로젝트의 .claude/skills/ 아래에 있으며 .claude-plugin/plugin.json을 가진 폴더)이 로드되지 않도록 차단한다. 어떤 마켓플레이스와도 일치하지 않는다. 참고: https://code.claude.com/docs/en/plugins/org#blocklist-with-blockedmarketplaces</translation>
         </message>
         <message>
             <source>agent</source>
@@ -5413,6 +5528,281 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <translation>(관리형 설정 전용) Claude의 도구를 Mac이 아니라 격리된 가상 머신 안에서 실행한다. 데스크톱 앱의 iOS Simulator 창과 Claude의 시뮬레이터 도구를 완전히 비활성화하므로, 이 설정이 켜져 있는 동안에는 해당 창에서 기기를 연결할 수 없다. 참고: https://code.claude.com/docs/en/desktop-ios-simulator#turn-off-simulator-access</translation>
         </message>
         <message>
+            <source>allowClaudeInChromeWithManagedMcp</source>
+            <extracomment>Let the built-in Claude in Chrome server run alongside a deployed managed-mcp.json. Without this key, a deployed managed-mcp.json blocks Claude in Chrome in terminal sessions. Requires Claude Code v2.1.282 or later.</extracomment>
+            <translation>내장 Claude in Chrome 서버가 배포된 managed-mcp.json과 함께 실행되도록 허용한다. 이 키가 없으면 배포된 managed-mcp.json이 터미널 세션에서 Claude in Chrome을 차단한다. Claude Code v2.1.282 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>allowedProviders</source>
+            <extracomment>List the services a machine may reach Claude through, such as the Anthropic API, Amazon Bedrock, or an LLM gateway. A session on a provider that isn't listed is refused at startup, at login, and when it next contacts the API, so switching to an unlisted provider mid-session is refused too. The refusal message names what selected the provider and the steps to continue. Requires Claude Code v2.1.285 or later.</extracomment>
+            <translation>이 머신에서 Claude에 접속할 수 있는 서비스(예: Anthropic API, Amazon Bedrock, LLM 게이트웨이)를 나열한다. 목록에 없는 제공자의 세션은 시작 시, 로그인 시, 그리고 다음에 API에 접속할 때 거부되므로, 세션 도중 목록에 없는 제공자로 전환하는 것도 거부된다. 거부 메시지에는 제공자를 선택한 요인과 계속하기 위한 단계가 표시된다. Claude Code v2.1.285 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>appendPlugins</source>
+            <extracomment>List the managed plugins whose mods run after every mod a user installs, in the listed order. An id listed in both prependPlugins and appendPlugins is prepended. In managed settings, Claude Code skips an id whose plugin doesn't count as your organization's.</extracomment>
+            <translation>사용자가 설치한 모든 mod 뒤에, 나열된 순서대로 mod를 실행할 관리형 플러그인을 나열한다. prependPlugins와 appendPlugins 양쪽에 나열된 id는 앞쪽에 배치된다. 관리형 설정에서는 플러그인이 조직의 것으로 인정되지 않는 id를 Claude Code가 건너뛴다.</translation>
+        </message>
+        <message>
+            <source>autoCompactWindow</source>
+            <extracomment>Set how full the context window gets before Claude Code compacts automatically.</extracomment>
+            <translation>Claude Code가 자동으로 컨텍스트를 압축(compact)하기 전에 컨텍스트 윈도우가 얼마나 차는지를 설정한다.</translation>
+        </message>
+        <message>
+            <source>autoContinueAtUsageLimit</source>
+            <extracomment>After a claude.ai usage limit stops your session, wait in the open session and continue the task automatically after the reset. See Turn automatic continue off. Requires Claude Code v2.1.234 or later.</extracomment>
+            <translation>claude.ai 사용량 한도로 세션이 중단된 후, 열려 있는 세션에서 대기하다가 한도가 초기화되면 작업을 자동으로 이어서 진행한다. 자동 이어서 진행 끄기를 참고한다. Claude Code v2.1.234 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>availableModelsMatch</source>
+            <extracomment>Choose how availableModels entries match model IDs. By default a model ID entry also permits later versions that extend it, so "claude-opus-5" permits Opus 5.5. With "exact", each model ID entry permits only the version it names, so a newer version of that model stays blocked until you list it. Requires Claude Code v2.1.283 or later.</extracomment>
+            <translation>availableModels 항목이 모델 ID와 일치하는 방식을 선택한다. 기본적으로 모델 ID 항목은 그것을 확장하는 이후 버전도 허용하므로 "claude-opus-5"는 Opus 5.5도 허용한다. "exact"를 사용하면 각 모델 ID 항목은 명시한 버전만 허용하므로, 해당 모델의 더 새로운 버전은 목록에 추가하기 전까지 차단된 상태로 유지된다. Claude Code v2.1.283 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>bashEditDiffEnabled</source>
+            <extracomment>Choose whether Claude Code records which files changed in a Git repository while a Bash command runs. When it records them, you see their diff in the terminal after the command, and your PostToolUse Bash hooks receive the changed-file list.</extracomment>
+            <translation>Bash 명령이 실행되는 동안 Git 저장소에서 어떤 파일이 변경되었는지 Claude Code가 기록할지 선택한다. 기록하면 명령이 끝난 뒤 터미널에 변경 내용(diff)이 표시되고, PostToolUse Bash 훅이 변경된 파일 목록을 받는다.</translation>
+        </message>
+        <message>
+            <source>bashOutputMaxChars</source>
+            <extracomment>Set how many characters of a successful Bash or PowerShell command's output Claude receives inline. When output passes the limit, Claude Code saves it to a file and Claude receives a short preview plus the file's path. Raise the limit when command output, such as a verbose build or a full test-suite log, routinely overflows the default and you want Claude to read it without opening the file. Requires Claude Code v2.1.261 or later.</extracomment>
+            <translation>성공한 Bash 또는 PowerShell 명령의 출력 중 Claude가 인라인으로 받는 문자 수를 설정한다. 출력이 한도를 넘으면 Claude Code가 이를 파일로 저장하고 Claude는 짧은 미리보기와 파일 경로를 받는다. 장황한 빌드나 전체 테스트 스위트 로그처럼 명령 출력이 기본값을 자주 넘고, Claude가 파일을 열지 않고도 읽게 하려면 한도를 높인다. Claude Code v2.1.261 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>crossSessionInbound</source>
+            <extracomment>Choose what this session does with messages arriving from your other Claude Code sessions. When no value applies, Claude Code decides per message from the two sessions' permission-mode classes. Requires Claude Code v2.1.224 or later.</extracomment>
+            <translation>다른 Claude Code 세션에서 이 세션으로 들어오는 메시지를 어떻게 처리할지 선택한다. 적용되는 값이 없으면 Claude Code가 두 세션의 권한 모드 분류를 기준으로 메시지마다 결정한다. Claude Code v2.1.224 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>deniedModels</source>
+            <extracomment>Block specific models, with or without an availableModels allowlist and even when that list permits them. Claude Code hides a blocked model from the /model picker, and the model can't be selected anywhere availableModels is enforced. A session on the Default option doesn't run a blocked model either, as Block specific models or versions describes. Requires Claude Code v2.1.283 or later.</extracomment>
+            <translation>availableModels 허용 목록이 있든 없든, 그리고 그 목록이 허용하더라도 특정 모델을 차단한다. Claude Code는 차단된 모델을 /model 선택기에서 숨기며, availableModels가 적용되는 어느 곳에서도 그 모델을 선택할 수 없다. 기본(Default) 옵션을 사용하는 세션도 차단된 모델을 실행하지 않으며, 이는 특정 모델 또는 버전 차단에 설명되어 있다. Claude Code v2.1.283 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>desktopSessionCleanupPeriodDays</source>
+            <extracomment>Set an age limit in days for the transcripts of sessions you started or most recently continued in Claude Desktop or Cowork. Without this key, Claude Code keeps those transcripts at any age. Claude Code deletes each one once it's older than both this limit and cleanupPeriodDays, so with cleanupPeriodDays at its default of 30, a value of 7 still keeps them 30 days. Cleaned up automatically lists the cases where cleanupPeriodDays applies instead and Claude Code ignores this key. Requires Claude Code v2.1.248 or later.</extracomment>
+            <translation>Claude Desktop 또는 Cowork에서 시작했거나 가장 최근에 이어서 진행한 세션의 트랜스크립트에 대한 보관 기간 제한(일 단위)을 설정한다. 이 키가 없으면 Claude Code는 해당 트랜스크립트를 기간과 관계없이 보관한다. Claude Code는 각 트랜스크립트가 이 제한과 cleanupPeriodDays 둘 다보다 오래되었을 때 삭제하므로, cleanupPeriodDays가 기본값 30일이면 7로 설정해도 30일간 보관된다. 자동 정리 항목에는 cleanupPeriodDays가 대신 적용되어 Claude Code가 이 키를 무시하는 경우가 나열되어 있다. Claude Code v2.1.248 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>dialogExpiry</source>
+            <extracomment>Set the deadline for dialogs Claude Code forwards to a remote client, such as a Remote Control or SDK host, and for the approval dialog for a held cross-session message. On Claude Code v2.1.236 or later, the same deadline bounds the mid-session Fable usage-credits consent prompt in a session that may have nobody at the terminal. When no answer arrives before the deadline, Claude Code cancels the dialog and continues with its no-action default. Requires Claude Code v2.1.224 or later.</extracomment>
+            <translation>원격 클라이언트(예: Remote Control 또는 SDK 호스트)로 전달되는 대화상자와 보류된 세션 간 메시지의 승인 대화상자에 대한 기한을 설정한다. Claude Code v2.1.236 이상에서는 터미널에 아무도 없을 수 있는 세션에서 세션 도중 표시되는 Fable 사용량 크레딧 동의 프롬프트에도 같은 기한이 적용된다. 기한 내에 응답이 없으면 Claude Code는 대화상자를 취소하고 아무 동작도 하지 않는 기본 동작으로 계속 진행한다. Claude Code v2.1.224 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>disableCommandPluginSources</source>
+            <extracomment>Block the command plugin source, which installs a plugin by running a marketplace-declared command on the user's machine. When you set it to true, Claude Code never runs the command, doesn't install or update command-sourced plugins, and stops loading the ones already installed. Set it to false to allow them explicitly. Whenever it blocks command sources, whether you set it to true or leave it unset under allowManagedHooksOnly, it also blocks marketplace headersHelper commands, except for a marketplace that managed settings themselves declare. Requires Claude Code v2.1.229 or later, and the headersHelper block requires v2.1.238 or later.</extracomment>
+            <translation>마켓플레이스가 선언한 명령을 사용자 머신에서 실행하여 플러그인을 설치하는 command 플러그인 소스를 차단한다. true로 설정하면 Claude Code는 해당 명령을 실행하지 않고, command 소스 플러그인을 설치하거나 업데이트하지 않으며, 이미 설치된 플러그인의 로드도 중단한다. 명시적으로 허용하려면 false로 설정한다. command 소스가 차단될 때는(true로 설정했든 allowManagedHooksOnly 아래에서 미설정이든) 관리형 설정 자체가 선언한 마켓플레이스를 제외하고 마켓플레이스 headersHelper 명령도 함께 차단한다. Claude Code v2.1.229 이상이 필요하며, headersHelper 차단에는 v2.1.238 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>disableDesktopLocalSessions</source>
+            <extracomment>Turn off Code sessions that run on the device in the desktop app, for deployments where developers should work on remote machines over SSH.</extracomment>
+            <translation>개발자가 SSH로 원격 머신에서 작업해야 하는 배포 환경을 위해, 데스크톱 앱에서 기기 로컬로 실행되는 Code 세션을 끈다.</translation>
+        </message>
+        <message>
+            <source>enableWorkflows</source>
+            <extracomment>Turn dynamic workflows on or off for yourself when your plan's default isn't what you want. Appears in /config as Dynamic workflows, which writes this key to your user settings and removes it again when you toggle back to your plan's default. To turn workflows off for everyone from managed settings, use disableWorkflows instead.</extracomment>
+            <translation>요금제 기본값이 원하는 설정이 아닐 때 본인에 한해 동적 워크플로를 켜거나 끈다. /config에 Dynamic workflows로 표시되며, 이 키를 사용자 설정에 기록하고 요금제 기본값으로 되돌리면 다시 제거한다. 관리형 설정에서 모든 사용자의 워크플로를 끄려면 대신 disableWorkflows를 사용한다.</translation>
+        </message>
+        <message>
+            <source>feedbackDrafts</source>
+            <extracomment>Control Claude-drafted feedback: whether Claude can queue feedback drafts for you to review, and whether Claude Code shows a card when Claude queues one.</extracomment>
+            <translation>Claude가 작성한 피드백 초안을 제어한다. Claude가 검토용 피드백 초안을 대기열에 올릴 수 있는지, 그리고 Claude가 초안을 대기열에 올릴 때 Claude Code가 카드를 표시할지를 정한다.</translation>
+        </message>
+        <message>
+            <source>gatewayInternalNetworks</source>
+            <extracomment>Declare the public IPv4 blocks that your organization numbers its internal network from, so /login accepts a cloud gateway there. Requires Claude Code v2.1.268 or later.</extracomment>
+            <translation>조직이 내부 네트워크에 번호를 부여하는 공인 IPv4 블록을 선언하여, /login이 해당 대역의 클라우드 게이트웨이를 허용하도록 한다. Claude Code v2.1.268 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>idleCompaction</source>
+            <extracomment>Idle compaction compacts a long conversation that you've stepped away from. Your next message then sends a summary instead of the whole conversation.</extracomment>
+            <translation>유휴 압축(idle compaction)은 자리를 비운 긴 대화를 압축한다. 이후 다음 메시지는 전체 대화 대신 요약을 전송한다.</translation>
+        </message>
+        <message>
+            <source>isolatePeerMachines</source>
+            <extracomment>Require your explicit approval before Claude's SendMessage reaches one of your sessions beyond this machine; see Require approval for cross-machine messages. The approval prompt appears even in bypassPermissions mode.</extracomment>
+            <translation>Claude의 SendMessage가 이 머신 밖의 세션에 도달하기 전에 사용자의 명시적 승인을 요구한다. 머신 간 메시지 승인 요구를 참고한다. 승인 프롬프트는 bypassPermissions 모드에서도 표시된다.</translation>
+        </message>
+        <message>
+            <source>keybindingFlavor</source>
+            <extracomment>In v2.1.238 through v2.1.260, setting it to "readline" made Ctrl+W delete back to the previous whitespace instead of only the previous word.</extracomment>
+            <translation>v2.1.238부터 v2.1.260까지에서는 "readline"으로 설정하면 Ctrl+W가 이전 단어까지만 지우는 대신 이전 공백까지 뒤로 지웠다.</translation>
+        </message>
+        <message>
+            <source>managedSourcesBehavior</source>
+            <extracomment>Choose whether Claude Code applies only the highest-priority managed source your organization delivers, or combines every admin source it delivers. By default Claude Code takes the highest-priority source that carries a policy key and ignores the rest. A policy key is any settings key other than this one and wslInheritsWindowsSettings. Under that default, once server-managed settings or an MDM policy deliver a policy key, a managed-settings.json file contributes only the keys Claude Code reads from every admin source. With "merge", every admin source you deliver contributes its keys to one combined policy. Requires Claude Code v2.1.242 or later.</extracomment>
+            <translation>Claude Code가 조직이 전달하는 관리형 소스 중 우선순위가 가장 높은 것만 적용할지, 전달되는 모든 관리자 소스를 결합할지 선택한다. 기본적으로 Claude Code는 정책 키를 가진 소스 중 우선순위가 가장 높은 것을 취하고 나머지는 무시한다. 정책 키는 이 키와 wslInheritsWindowsSettings를 제외한 모든 설정 키를 말한다. 이 기본 동작에서는 서버 관리형 설정이나 MDM 정책이 정책 키를 전달하면, managed-settings.json 파일은 Claude Code가 모든 관리자 소스에서 읽는 키만 제공한다. "merge"를 사용하면 전달되는 모든 관리자 소스가 자신의 키를 하나의 결합된 정책에 기여한다. Claude Code v2.1.242 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>maxEffortLevel</source>
+            <extracomment>Cap the effort level a session can use, leaving lower levels available. Any higher level runs at the cap instead, including one from /effort, the /model picker, --effort, CLAUDE_CODE_EFFORT_LEVEL, a skill's or subagent's effort frontmatter, or the model's own default. Claude Code applies the cap itself before each request, so it holds on every provider, including Amazon Bedrock, Google Cloud's Agent Platform, and Microsoft Foundry. Requires Claude Code v2.1.267 or later.</extracomment>
+            <translation>세션이 사용할 수 있는 노력 수준(effort level)의 상한을 설정하며, 그보다 낮은 수준은 계속 사용할 수 있다. /effort, /model 선택기, --effort, CLAUDE_CODE_EFFORT_LEVEL, 스킬 또는 서브에이전트의 effort 프런트매터, 모델 자체의 기본값에서 온 것을 포함해 더 높은 수준은 모두 상한 수준으로 실행된다. Claude Code가 각 요청 전에 직접 상한을 적용하므로 Amazon Bedrock, Google Cloud의 Agent Platform, Microsoft Foundry를 포함한 모든 제공자에서 유효하다. Claude Code v2.1.267 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>maxProseWidth</source>
+            <extracomment>Cap the width of the prose in Claude's responses so lines stay readable in a wide terminal. Paragraphs, headings, lists, and blockquotes wrap within this many columns, while tables and code blocks keep the full terminal width. Requires Claude Code v2.1.282 or later.</extracomment>
+            <translation>넓은 터미널에서도 줄이 읽기 편하도록 Claude 응답 본문의 너비 상한을 설정한다. 문단, 제목, 목록, 인용 블록은 이 열 수 안에서 줄바꿈되며, 표와 코드 블록은 터미널의 전체 너비를 유지한다. Claude Code v2.1.282 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>modelPicker</source>
+            <extracomment>List the models the /model picker offers, in the order you write them and under labels you choose, so the picker lists the models your organization runs, after the built-in lineup or instead of it. Each row's model is taken verbatim, so it accepts anything --model accepts: an alias such as opus, an Anthropic model ID, or a provider-format ID for Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry, or an LLM gateway. Requires Claude Code v2.1.242 or later.</extracomment>
+            <translation>/model 선택기가 제공하는 모델을, 작성한 순서와 직접 정한 레이블로 나열한다. 이를 통해 선택기가 조직에서 실행하는 모델을 내장 목록 뒤에 또는 내장 목록 대신 보여준다. 각 행의 모델은 그대로 사용되므로 --model이 받는 모든 값을 쓸 수 있다. opus 같은 별칭, Anthropic 모델 ID, 또는 Amazon Bedrock, Google Cloud의 Agent Platform, Microsoft Foundry, LLM 게이트웨이용 제공자 형식 ID가 가능하다. Claude Code v2.1.242 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>modelPicker.options</source>
+            <extracomment>The rows the picker shows, in this order.</extracomment>
+            <translation>선택기에 표시되는 행이며, 작성한 순서대로 표시된다.</translation>
+        </message>
+        <message>
+            <source>modelPicker.options[].model</source>
+            <extracomment>Model alias or ID the row selects.</extracomment>
+            <translation>해당 행이 선택하는 모델 별칭 또는 ID.</translation>
+        </message>
+        <message>
+            <source>modelPicker.options[].label</source>
+            <extracomment>Row title. Defaults to the built-in name or the model ID.</extracomment>
+            <translation>행 제목. 기본값은 내장 이름 또는 모델 ID이다.</translation>
+        </message>
+        <message>
+            <source>modelPicker.options[].description</source>
+            <extracomment>Second line shown under the label.</extracomment>
+            <translation>레이블 아래에 표시되는 두 번째 줄.</translation>
+        </message>
+        <message>
+            <source>modelPicker.options[].behavesAs</source>
+            <extracomment>Built-in model whose capabilities this row's model follows.</extracomment>
+            <translation>이 행의 모델이 기능 면에서 따르는 내장 모델.</translation>
+        </message>
+        <message>
+            <source>modelPicker.replaceBuiltInOptions</source>
+            <extracomment>Show only these rows (plus Default and the current model) instead of adding them after the built-in lineup.</extracomment>
+            <translation>내장 목록 뒤에 추가하는 대신, 이 행들(및 Default와 현재 모델)만 표시한다.</translation>
+        </message>
+        <message>
+            <source>modelPricing</source>
+            <extracomment>Report spend at the rates your organization pays instead of list price. Set it when your organization has contracted rates, so the dollar figures developers see match your bill. Claude Code applies the rates in /usage, the status line, the Agent SDK's total_cost_usd, the --max-budget-usd limit, and the OpenTelemetry cost metric and events. You supply the rates: Claude Code doesn't read them from your contract or the Claude Console. Requires Claude Code v2.1.242 or later.</extracomment>
+            <translation>목록 가격 대신 조직이 실제로 지불하는 요율로 지출을 보고한다. 조직에 계약 요율이 있을 때 설정하면, 개발자에게 보이는 금액이 청구서와 일치한다. Claude Code는 /usage, 상태 표시줄, Agent SDK의 total_cost_usd, --max-budget-usd 한도, OpenTelemetry 비용 지표와 이벤트에 이 요율을 적용한다. 요율은 사용자가 직접 제공해야 하며, Claude Code는 계약서나 Claude Console에서 읽어 오지 않는다. Claude Code v2.1.242 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>modelPricing.multiplier</source>
+            <extracomment>Scales every cost Claude Code computes. Below 1 is a discount, above 1 a markup.</extracomment>
+            <translation>Claude Code가 계산하는 모든 비용에 배율을 적용한다. 1보다 작으면 할인, 1보다 크면 할증이다.</translation>
+        </message>
+        <message>
+            <source>modelPricing.overrides</source>
+            <extracomment>USD-per-million-token rates per model ID; all four rates required.</extracomment>
+            <translation>모델 ID별 백만 토큰당 USD 요율이며, 네 가지 요율을 모두 지정해야 한다.</translation>
+        </message>
+        <message>
+            <source>modelSettings</source>
+            <extracomment>Save an effort level for each model you use. Requires Claude Code v2.1.251 or later.</extracomment>
+            <translation>사용하는 각 모델에 대한 노력 수준(effort level)을 저장한다. Claude Code v2.1.251 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>modelSettings.*.maxEffortLevel</source>
+            <extracomment>The highest effort level the model may run at.</extracomment>
+            <translation>해당 모델이 실행될 수 있는 가장 높은 노력 수준.</translation>
+        </message>
+        <message>
+            <source>modelSettings.*.autoCompactWindow</source>
+            <extracomment>Tokens from 100000 to 1000000, or "auto" for the window tuned for the model.</extracomment>
+            <translation>100000에서 1000000 사이의 토큰 수, 또는 모델에 맞게 조정된 윈도우를 사용하는 "auto".</translation>
+        </message>
+        <message>
+            <source>prependPlugins</source>
+            <extracomment>List the managed plugins whose mods run before every mod a user installs, in the listed order. When you set this key in managed settings, name sec-default@builtin in the list to keep the built-in guard. In managed settings, Claude Code skips an id whose plugin doesn't count as your organization's. See Install your organization's mods and set the order for those conditions and for how the two ordering keys work together.</extracomment>
+            <translation>사용자가 설치한 모든 mod 앞에, 나열된 순서대로 mod를 실행할 관리형 플러그인을 나열한다. 관리형 설정에서 이 키를 설정할 때는 내장 가드를 유지하려면 목록에 sec-default@builtin을 포함한다. 관리형 설정에서는 플러그인이 조직의 것으로 인정되지 않는 id를 Claude Code가 건너뛴다. 이러한 조건과 두 순서 키가 함께 동작하는 방식은 조직의 mod 설치 및 순서 설정을 참고한다.</translation>
+        </message>
+        <message>
+            <source>promptCacheTtl</source>
+            <extracomment>Choose how long the prompt cache holds the main conversation. This key applies to your interactive, -p, and Agent SDK turns, together with the helpers Claude Code runs inline with them. The one-hour lifetime keeps the cache warm across longer breaks, and the API bills each cache write at a higher rate than at the five-minute lifetime. Requires Claude Code v2.1.242 or later.</extracomment>
+            <translation>프롬프트 캐시가 메인 대화를 유지하는 시간을 선택한다. 이 키는 대화형, -p, Agent SDK 턴과 이들과 함께 Claude Code가 인라인으로 실행하는 헬퍼에 적용된다. 1시간 수명은 긴 휴식 중에도 캐시를 유지하지만, API는 캐시 쓰기를 5분 수명보다 높은 요율로 청구한다. Claude Code v2.1.242 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>promptSuggestionEnabled</source>
+            <extracomment>Show or hide prompt suggestions, the grayed-out predictions that appear in your prompt input. Set it to false, or turn off Prompt suggestions in /config, to hide them.</extracomment>
+            <translation>프롬프트 입력창에 나타나는 회색 예측 문구인 프롬프트 제안을 표시하거나 숨긴다. 숨기려면 false로 설정하거나 /config에서 Prompt suggestions를 끈다.</translation>
+        </message>
+        <message>
+            <source>remote.defaultEnvironmentId</source>
+            <extracomment>Pick the default cloud environment for cloud sessions you create from the CLI, such as with claude --cloud. Claude Code writes this key to your user settings when you pick an environment with /remote-env.</extracomment>
+            <translation>claude --cloud처럼 CLI에서 만드는 클라우드 세션의 기본 클라우드 환경을 지정한다. /remote-env로 환경을 선택하면 Claude Code가 이 키를 사용자 설정에 기록한다.</translation>
+        </message>
+        <message>
+            <source>skipAutoPermissionPrompt</source>
+            <extracomment>Skip the one-time notice describing auto mode that Claude Code shows when you first enter auto mode yourself, for example through your own settings or the mode selector, rather than when the built-in default starts a session in it. Claude Code shows that notice once and then records that it was shown, so this key only matters where the notice hasn't appeared yet.</extracomment>
+            <translation>내장 기본값이 세션을 auto 모드로 시작할 때가 아니라, 사용자가 설정이나 모드 선택기 등을 통해 직접 auto 모드에 처음 진입할 때 Claude Code가 표시하는 auto 모드 설명 알림(1회성)을 건너뛴다. Claude Code는 이 알림을 한 번 표시한 뒤 표시했다고 기록하므로, 이 키는 알림이 아직 나타나지 않은 곳에서만 의미가 있다.</translation>
+        </message>
+        <message>
+            <source>spellcheck</source>
+            <extracomment>Underline misspelled words in the prompt input as you type, using a spell checker you install. Claude Code checks only the text in the input box. Check spelling as you type covers installing aspell, hunspell, or ispell and what the checker covers. Requires Claude Code v2.1.235 or later.</extracomment>
+            <translation>설치한 맞춤법 검사기를 사용해 입력하는 동안 프롬프트 입력창의 철자가 틀린 단어에 밑줄을 표시한다. Claude Code는 입력창 안의 텍스트만 검사한다. 입력하면서 맞춤법 검사에서 aspell, hunspell, ispell 설치와 검사기가 다루는 범위를 설명한다. Claude Code v2.1.235 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>spellcheck.language</source>
+            <extracomment>Dictionary name passed to the checker.</extracomment>
+            <translation>검사기에 전달되는 사전 이름.</translation>
+        </message>
+        <message>
+            <source>spellcheck.color</source>
+            <extracomment>Terminal color name, #rrggbb, rgb(r,g,b), ansi256(n), or ansi:&lt;name&gt;.</extracomment>
+            <translation>터미널 색상 이름, #rrggbb, rgb(r,g,b), ansi256(n), 또는 ansi:&lt;name&gt;.</translation>
+        </message>
+        <message>
+            <source>sshHostCommands</source>
+            <extracomment>Add SSH connections whose host comes from a command to the Desktop environment selector. When you create a connection or replace its host, Desktop runs the entry's command on your computer and connects to the host that the command prints. Requires Claude Desktop v3.6556.0 or later on macOS or Linux, signed in with a Claude account.</extracomment>
+            <translation>호스트가 명령에서 나오는 SSH 연결을 Desktop 환경 선택기에 추가한다. 연결을 만들거나 호스트를 교체할 때 Desktop이 사용자의 컴퓨터에서 해당 항목의 명령을 실행하고, 그 명령이 출력하는 호스트에 연결한다. Claude 계정으로 로그인한 macOS 또는 Linux의 Claude Desktop v3.6556.0 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>sshHostCommands[].command</source>
+            <extracomment>Program and plain arguments; Desktop starts it without a shell.</extracomment>
+            <translation>프로그램과 일반 인수. Desktop은 셸 없이 이를 시작한다.</translation>
+        </message>
+        <message>
+            <source>subagentPromptCacheTtl</source>
+            <extracomment>Choose how long the prompt cache holds the requests Claude Code makes outside the main conversation. This key applies to subagents, workflows, and Claude Code's own background and helper requests, such as compaction and session titles. The one-hour lifetime keeps the cache warm across longer breaks, and the API bills each cache write at a higher rate than at the five-minute lifetime. Requires Claude Code v2.1.242 or later.</extracomment>
+            <translation>메인 대화 밖에서 Claude Code가 보내는 요청을 프롬프트 캐시가 유지하는 시간을 선택한다. 이 키는 서브에이전트, 워크플로, 그리고 압축(compaction)이나 세션 제목 같은 Claude Code 자체의 백그라운드 및 헬퍼 요청에 적용된다. 1시간 수명은 긴 휴식 중에도 캐시를 유지하지만, API는 캐시 쓰기를 5분 수명보다 높은 요율로 청구한다. Claude Code v2.1.242 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>switchModelsOnFlag</source>
+            <extracomment>Choose what happens when a safety classifier flags a request: switch to the fallback model and continue, or pause so you can choose between switching and editing the prompt.</extracomment>
+            <translation>안전 분류기가 요청을 플래그했을 때의 동작을 선택한다. 폴백 모델로 전환하여 계속하거나, 일시 중지하여 전환과 프롬프트 수정 중에서 선택할 수 있게 한다.</translation>
+        </message>
+        <message>
+            <source>syncClaudeAiPlugins</source>
+            <extracomment>Turn off the download of the plugins enabled for your claude.ai account. Claude Code downloads them into ~/.claude/plugins/synced/ at the start of terminal sessions where you sign in with your claude.ai account and in Cowork sessions, and loads each one as &lt;name&gt;@synced. Set false to stop that download and stop loading the plugins it already synced. Claude Code honors only false: true is the same as unset and doesn't turn syncing on where it's otherwise off. Requires Claude Code v2.1.273 or later.</extracomment>
+            <translation>claude.ai 계정에 활성화된 플러그인의 다운로드를 끈다. Claude Code는 claude.ai 계정으로 로그인한 터미널 세션과 Cowork 세션이 시작될 때 이를 ~/.claude/plugins/synced/ 에 다운로드하고, 각각을 &lt;name&gt;@synced로 로드한다. false로 설정하면 다운로드를 중단하고 이미 동기화된 플러그인의 로드도 중단한다. Claude Code는 false만 인식하며, true는 미설정과 같고 다른 방식으로 꺼져 있는 곳에서 동기화를 켜지 않는다. Claude Code v2.1.273 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>syncClaudeAiSkills</source>
+            <extracomment>Turn off the download of the skills enabled for your claude.ai account. Claude Code downloads them into ~/.claude/skills/synced/ in terminal sessions where you sign in with your claude.ai account, interactive or non-interactive, and in Cowork and cloud sessions. Set false to stop that download and stop loading the skills it already synced. Claude Code honors only false: true is the same as unset and doesn't turn syncing on where it's otherwise off.</extracomment>
+            <translation>claude.ai 계정에 활성화된 스킬의 다운로드를 끈다. Claude Code는 claude.ai 계정으로 로그인한 터미널 세션(대화형이든 비대화형이든)과 Cowork 및 클라우드 세션에서 이를 ~/.claude/skills/synced/ 에 다운로드한다. false로 설정하면 다운로드를 중단하고 이미 동기화된 스킬의 로드도 중단한다. Claude Code는 false만 인식하며, true는 미설정과 같고 다른 방식으로 꺼져 있는 곳에서 동기화를 켜지 않는다.</translation>
+        </message>
+        <message>
+            <source>taskOutputMaxChars</source>
+            <extracomment>Through v2.1.276, you set this key to the number of characters of a background task's output that Claude received inline when it read the task with the TaskOutput tool.</extracomment>
+            <translation>v2.1.276까지는 이 키를 설정하여, Claude가 TaskOutput 도구로 백그라운드 작업을 읽을 때 인라인으로 받는 작업 출력의 문자 수를 지정했다.</translation>
+        </message>
+        <message>
+            <source>terminalTitleFromRename</source>
+            <extracomment>Claude Code sets your terminal tab's title. By default it uses a title it generates from the conversation, and once you give the session a name with /rename or --name, the tab shows that name instead. Set this key to false to keep the generated title on the tab even after you name the session. The name itself still applies, so /resume &lt;name&gt; and the session picker find it.</extracomment>
+            <translation>Claude Code가 터미널 탭의 제목을 설정한다. 기본적으로 대화에서 생성한 제목을 사용하며, /rename 또는 --name으로 세션에 이름을 지정하면 탭에 그 이름이 대신 표시된다. 이 키를 false로 설정하면 세션에 이름을 지정한 뒤에도 탭에 생성된 제목을 유지한다. 이름 자체는 계속 적용되므로 /resume &lt;name&gt;과 세션 선택기에서 찾을 수 있다.</translation>
+        </message>
+        <message>
+            <source>timeFormat</source>
+            <extracomment>Choose how Claude Code writes the times it shows in the interface, such as the done 6:05 PM at the end of each turn duration message and the timestamps in the transcript viewer. To pick a preset, run /config and set Time format. Requires Claude Code v2.1.257 or later.</extracomment>
+            <translation>각 턴 소요 시간 메시지 끝의 done 6:05 PM이나 트랜스크립트 뷰어의 타임스탬프처럼, Claude Code가 인터페이스에 표시하는 시간의 표기 방식을 선택한다. 프리셋을 고르려면 /config를 실행하고 Time format을 설정한다. Claude Code v2.1.257 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>timeZone</source>
+            <extracomment>Show the times in the interface in a time zone other than your system's. Set it to an IANA time zone name, such as "UTC" or "Europe/Dublin". The times that timeFormat controls then show in this zone. If timeFormat is "24-hour-utc", times stay in UTC and Claude Code ignores this key. /config has no row for this key, so set it in a settings file. Requires Claude Code v2.1.257 or later.</extracomment>
+            <translation>인터페이스의 시간을 시스템과 다른 시간대로 표시한다. "UTC"나 "Europe/Dublin" 같은 IANA 시간대 이름으로 설정한다. 그러면 timeFormat이 제어하는 시간이 이 시간대로 표시된다. timeFormat이 "24-hour-utc"이면 시간은 UTC로 유지되고 Claude Code는 이 키를 무시한다. /config에는 이 키의 행이 없으므로 설정 파일에서 설정한다. Claude Code v2.1.257 이상이 필요하다.</translation>
+        </message>
+        <message>
+            <source>ultracode</source>
+            <extracomment>Start sessions with ultracode on. With it on, Claude plans a workflow for each substantive task instead of waiting for you to ask. Claude plans workflows only when dynamic workflows are enabled for you and your model supports xhigh effort. The key doesn't change the session's effort level: ultracode runs at whichever level the session uses. Claude Code reads this key but never writes it: /effort ultracode turns ultracode on for the current session only.</extracomment>
+            <translation>ultracode를 켠 상태로 세션을 시작한다. 켜져 있으면 Claude가 요청을 기다리지 않고 실질적인 작업마다 워크플로를 계획한다. Claude는 동적 워크플로가 활성화되어 있고 모델이 xhigh 노력 수준을 지원할 때만 워크플로를 계획한다. 이 키는 세션의 노력 수준을 바꾸지 않으며, ultracode는 세션이 사용하는 수준 그대로 실행된다. Claude Code는 이 키를 읽기만 하고 쓰지 않으며, /effort ultracode는 현재 세션에서만 ultracode를 켠다.</translation>
+        </message>
+        <message>
             <source>env.ANTHROPIC_API_KEY</source>
             <extracomment>API key sent as X-Api-Key header. When set, this key is used instead of your Claude Pro, Max, Team, or Enterprise subscription even if you are logged in. In non-interactive mode (-p), the key is always used when present. In interactive mode, you are prompted to approve the key once before it overrides your subscription. To use your subscription instead, run unset ANTHROPIC_API_KEY</extracomment>
             <translation>X-Api-Key 헤더로 전송되는 API 키. 설정하면 로그인되어 있더라도 Claude Pro, Max, Team, Enterprise 구독 대신 이 키가 사용된다. 비대화형 모드(-p)에서는 키가 있으면 항상 사용된다. 대화형 모드에서는 키가 구독을 재정의하기 전에 한 번 승인 확인을 요청한다. 구독을 대신 사용하려면 unset ANTHROPIC_API_KEY를 실행한다</translation>
@@ -5439,7 +5829,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.ANTHROPIC_BASE_URL</source>
-            <extracomment>Override the API endpoint to route requests through a proxy or gateway. When set to a non-first-party host, MCP tool search is disabled by default. Set ENABLE_TOOL_SEARCH=true if your proxy forwards tool_reference blocks. As of v2.1.196, Remote Control is disabled when this points at a host other than api.anthropic.com, matching its behavior on Amazon Bedrock, Google Cloud's Agent Platform, and Microsoft Foundry</extracomment>
+            <extracomment>Override the API endpoint to route requests through a proxy or gateway. For what happens when that gateway rejects MCP tool search, see Tool search through an LLM gateway. As of v2.1.196, Remote Control is disabled when this points at a host other than api.anthropic.com, matching its behavior on Amazon Bedrock, Google Cloud's Agent Platform, and Microsoft Foundry</extracomment>
             <translation>프록시나 게이트웨이를 경유하도록 API 엔드포인트를 재정의한다. 자사 호스트가 아닌 곳으로 설정하면 MCP 도구 검색이 기본적으로 비활성화된다. 프록시가 tool_reference 블록을 전달한다면 ENABLE_TOOL_SEARCH=true를 설정한다. v2.1.196부터는 이 값이 api.anthropic.com 이외의 호스트를 가리키면 Remote Control이 비활성화되며, 이는 Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry에서의 동작과 동일하다</translation>
         </message>
         <message>
@@ -5484,7 +5874,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.ANTHROPIC_CUSTOM_MODEL_OPTION_NAME</source>
-            <extracomment>Display name for the custom model entry in the /model picker. Defaults to the model ID when not set</extracomment>
+            <extracomment>Display name for the custom model entry in the /model picker. When not set, the entry shows the model's name if Claude Code recognizes the ID, and the model ID otherwise</extracomment>
             <translation>/model 선택기에 표시되는 사용자 지정 모델 항목의 이름. 설정하지 않으면 기본값은 모델 ID다</translation>
         </message>
         <message>
@@ -5499,12 +5889,12 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.ANTHROPIC_DEFAULT_FABLE_MODEL_DESCRIPTION</source>
-            <extracomment>Display description for the pinned Fable model in the /model picker. Defaults to Custom Fable model when not set. See Model configuration</extracomment>
+            <extracomment>Display description for the pinned Fable model in the /model picker. When not set, the row shows a default description that begins Custom Fable model. See Model configuration</extracomment>
             <translation>/model 선택기에 표시되는 고정된 Fable 모델의 설명. 설정하지 않으면 기본값은 Custom Fable model 이다. 참고: Model configuration</translation>
         </message>
         <message>
             <source>env.ANTHROPIC_DEFAULT_FABLE_MODEL_NAME</source>
-            <extracomment>Display name for the pinned Fable model in the /model picker. Defaults to the model ID when not set. See Model configuration</extracomment>
+            <extracomment>Display name for the pinned Fable model in the /model picker. When not set, the row shows the model's name if Claude Code recognizes the pinned ID, and the pinned ID otherwise. See Model configuration</extracomment>
             <translation>/model 선택기에 표시되는 고정된 Fable 모델의 이름. 설정하지 않으면 기본값은 모델 ID다. 참고: Model configuration</translation>
         </message>
         <message>
@@ -5519,12 +5909,12 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.ANTHROPIC_DEFAULT_HAIKU_MODEL_DESCRIPTION</source>
-            <extracomment>Display description for the pinned Haiku model in the /model picker. Defaults to Custom Haiku model when not set. See Model configuration</extracomment>
+            <extracomment>Display description for the pinned Haiku model in the /model picker. When not set, the row shows a default description that begins Custom Haiku model. See Model configuration</extracomment>
             <translation>/model 선택기에 표시되는 고정된 Haiku 모델의 설명. 설정하지 않으면 기본값은 Custom Haiku model 이다. 참고: Model configuration</translation>
         </message>
         <message>
             <source>env.ANTHROPIC_DEFAULT_HAIKU_MODEL_NAME</source>
-            <extracomment>Display name for the pinned Haiku model in the /model picker. Defaults to the model ID when not set. See Model configuration</extracomment>
+            <extracomment>Display name for the pinned Haiku model in the /model picker. When not set, the row shows the model's name if Claude Code recognizes the pinned ID, and the pinned ID otherwise. See Model configuration</extracomment>
             <translation>/model 선택기에 표시되는 고정된 Haiku 모델의 이름. 설정하지 않으면 기본값은 모델 ID다. 참고: Model configuration</translation>
         </message>
         <message>
@@ -5544,12 +5934,12 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.ANTHROPIC_DEFAULT_OPUS_MODEL_DESCRIPTION</source>
-            <extracomment>Display description for the pinned Opus model in the /model picker. When not set, defaults to Custom Opus model, or Custom Opus model (1M context) if the pinned model ID has the [1m] suffix and CLAUDE_CODE_DISABLE_1M_CONTEXT isn't turned on. See Model configuration</extracomment>
+            <extracomment>Display description for the pinned Opus model in the /model picker. When not set, the row shows a default description that begins Custom Opus model. See Model configuration</extracomment>
             <translation>/model 선택기에 표시되는 고정된 Opus 모델의 설명. 설정하지 않으면 기본값은 Custom Opus model 이며, 고정된 모델 ID에 [1m] 접미사가 있고 CLAUDE_CODE_DISABLE_1M_CONTEXT가 켜져 있지 않으면 Custom Opus model (1M context) 이다. 참고: Model configuration</translation>
         </message>
         <message>
             <source>env.ANTHROPIC_DEFAULT_OPUS_MODEL_NAME</source>
-            <extracomment>Display name for the pinned Opus model in the /model picker. Defaults to the model ID when not set. See Model configuration</extracomment>
+            <extracomment>Display name for the pinned Opus model in the /model picker. When not set, the row shows the model's name if Claude Code recognizes the pinned ID, and the pinned ID otherwise. See Model configuration</extracomment>
             <translation>/model 선택기에 표시되는 고정된 Opus 모델의 이름. 설정하지 않으면 기본값은 모델 ID다. 참고: Model configuration</translation>
         </message>
         <message>
@@ -5564,12 +5954,12 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.ANTHROPIC_DEFAULT_SONNET_MODEL_DESCRIPTION</source>
-            <extracomment>Display description for the pinned Sonnet model in the /model picker. When not set, defaults to Custom Sonnet model, or Custom Sonnet model (1M context) if the pinned model ID has the [1m] suffix and CLAUDE_CODE_DISABLE_1M_CONTEXT isn't turned on. See Model configuration</extracomment>
+            <extracomment>Display description for the pinned Sonnet model in the /model picker. When not set, the row shows a default description that begins Custom Sonnet model. See Model configuration</extracomment>
             <translation>/model 선택기에 표시되는 고정된 Sonnet 모델의 설명. 설정하지 않으면 기본값은 Custom Sonnet model 이며, 고정된 모델 ID에 [1m] 접미사가 있고 CLAUDE_CODE_DISABLE_1M_CONTEXT가 켜져 있지 않으면 Custom Sonnet model (1M context) 이다. 참고: Model configuration</translation>
         </message>
         <message>
             <source>env.ANTHROPIC_DEFAULT_SONNET_MODEL_NAME</source>
-            <extracomment>Display name for the pinned Sonnet model in the /model picker. Defaults to the model ID when not set. See Model configuration</extracomment>
+            <extracomment>Display name for the pinned Sonnet model in the /model picker. When not set, the row shows the model's name if Claude Code recognizes the pinned ID, and the pinned ID otherwise. See Model configuration</extracomment>
             <translation>/model 선택기에 표시되는 고정된 Sonnet 모델의 이름. 설정하지 않으면 기본값은 모델 ID다. 참고: Model configuration</translation>
         </message>
         <message>
@@ -5599,7 +5989,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.ANTHROPIC_FOUNDRY_RESOURCE</source>
-            <extracomment>Microsoft Foundry resource name (for example, my-resource). Required if ANTHROPIC_FOUNDRY_BASE_URL is not set (see Microsoft Foundry)</extracomment>
+            <extracomment>Microsoft Foundry resource name (for example, my-resource). Claude Code refuses a URL or host name. Required if ANTHROPIC_FOUNDRY_BASE_URL is not set (see Microsoft Foundry)</extracomment>
             <translation>Microsoft Foundry 리소스 이름 (예: my-resource). ANTHROPIC_FOUNDRY_BASE_URL이 설정되지 않은 경우 필수다 (참고: Microsoft Foundry)</translation>
         </message>
         <message>
@@ -5634,7 +6024,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.ANTHROPIC_VERTEX_PROJECT_ID</source>
-            <extracomment>GCP project ID for Google Cloud's Agent Platform requests. Overridden by GCLOUD_PROJECT, GOOGLE_CLOUD_PROJECT, or the project in your GOOGLE_APPLICATION_CREDENTIALS credential file. See Google Cloud's Agent Platform</extracomment>
+            <extracomment>GCP project ID that Google Cloud's Agent Platform requests are addressed to. See Configure GCP credentials</extracomment>
             <translation>Google Cloud's Agent Platform 요청에 사용할 GCP 프로젝트 ID. GCLOUD_PROJECT, GOOGLE_CLOUD_PROJECT, 또는 GOOGLE_APPLICATION_CREDENTIALS 자격 증명 파일의 프로젝트가 이 값을 재정의한다. 참고: Google Cloud's Agent Platform</translation>
         </message>
         <message>
@@ -5644,12 +6034,12 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.API_FORCE_IDLE_TIMEOUT</source>
-            <extracomment>Override the 5-minute body idle timeout that aborts a streaming model response when no bytes arrive. Set to 0 to turn the timeout off, for example when a slow gateway or local model pauses longer than 5 minutes between chunks, or 1 to keep it on for every provider. When unset, the timeout is active on providers other than the direct Anthropic API and Claude Platform on AWS. The stream watchdogs run independently of it and abort a long silent pause even when you set 0 here. Requires Claude Code v2.1.169 or later</extracomment>
+            <extracomment>Override the 5-minute body idle timeout that aborts a streaming model response when no bytes arrive. Set to 0 to turn the timeout off, for example when a slow gateway or local model pauses longer than 5 minutes between chunks, or 1 to keep it on for every provider. When unset, the timeout is active on providers other than the direct Anthropic API, Claude Platform on AWS, and Amazon Bedrock with CLAUDE_ENABLE_BYTE_WATCHDOG_BEDROCK=1 set. The stream watchdogs run independently of it and abort a long silent pause even when you set 0 here</extracomment>
             <translation>바이트가 도착하지 않을 때 스트리밍 모델 응답을 중단시키는 5분짜리 본문 유휴 타임아웃을 재정의한다. 예를 들어 느린 게이트웨이나 로컬 모델이 청크 사이에 5분보다 길게 멈추는 경우처럼 타임아웃을 끄려면 0으로, 모든 공급자에서 켜 두려면 1로 설정한다. 설정하지 않으면 Anthropic API 직접 연결과 AWS의 Claude Platform을 제외한 공급자에서 타임아웃이 활성화된다. 스트림 워치독은 이와 무관하게 동작하므로 여기에 0을 설정해도 길게 이어지는 무응답 구간은 중단시킨다. Claude Code v2.1.169 이상 필요</translation>
         </message>
         <message>
             <source>env.API_TIMEOUT_MS</source>
-            <extracomment>Timeout for API requests in milliseconds (default: 600000, or 10 minutes; maximum: 2147483647). Increase this when requests time out on slow networks or when routing through a proxy. Values above the maximum overflow the underlying timer and cause requests to fail immediately</extracomment>
+            <extracomment>Time in milliseconds that each API request attempt has to receive its response headers. It doesn't limit how long a streaming response runs after that. The default is 600000, or 10 minutes, and the maximum is 2147483647. When you set a positive value, each attempt at a non-streaming request has to finish within it. Increase this when requests time out on slow networks or when routing through a proxy. Set to 0 to remove this limit, which requires Claude Code v2.1.305 or later. With 0, a non-streaming attempt still times out after 300 seconds in a local session</extracomment>
             <translation>API 요청 타임아웃(밀리초) (기본값: 600000, 10분. 최댓값: 2147483647). 느린 네트워크에서 요청이 타임아웃되거나 프록시를 경유할 때 이 값을 늘린다. 최댓값을 넘는 값은 내부 타이머에서 오버플로가 발생해 요청이 즉시 실패한다</translation>
         </message>
         <message>
@@ -5664,7 +6054,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.BASH_DEFAULT_TIMEOUT_MS</source>
-            <extracomment>Default timeout for long-running bash commands (default: 120000, or 2 minutes)</extracomment>
+            <extracomment>Default timeout for a foreground Bash or PowerShell tool command, in milliseconds (default: 120000, or 2 minutes). A value above the default time limit for background commands replaces that default in unattended sessions. The background time limit requires Claude Code v2.1.285 or later</extracomment>
             <translation>오래 실행되는 bash 명령의 기본 타임아웃 (기본값: 120000, 2분)</translation>
         </message>
         <message>
@@ -5674,17 +6064,17 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.BASH_MAX_TIMEOUT_MS</source>
-            <extracomment>Maximum timeout the model can set for long-running bash commands (default: 600000, or 10 minutes). The effective ceiling is the larger of this and BASH_DEFAULT_TIMEOUT_MS</extracomment>
+            <extracomment>Maximum timeout the model can set for a foreground Bash or PowerShell tool command, in milliseconds (default: 600000, or 10 minutes). The effective ceiling is the larger of this and BASH_DEFAULT_TIMEOUT_MS. An effective ceiling longer than 2 hours also becomes the maximum time limit for background commands in unattended sessions. The background time limit requires Claude Code v2.1.285 or later</extracomment>
             <translation>모델이 오래 실행되는 bash 명령에 지정할 수 있는 최대 타임아웃 (기본값: 600000, 10분). 실제 상한은 이 값과 BASH_DEFAULT_TIMEOUT_MS 중 큰 쪽이다</translation>
         </message>
         <message>
             <source>env.BETA_TRACING_ENDPOINT</source>
-            <extracomment>OTLP endpoint for detailed beta tracing: with ENABLE_BETA_TRACING_DETAILED=1, logs and traces go there instead of to the configured exporters. Set it in your shell, user settings, or managed settings. Ignored in project and local settings</extracomment>
+            <extracomment>OTLP/HTTP endpoint for detailed beta tracing: with ENABLE_BETA_TRACING_DETAILED=1, logs and traces go there instead of to the configured exporters. Set it in your shell, user settings, or managed settings. Ignored in project and local settings</extracomment>
             <translation>상세 베타 트레이싱용 OTLP 엔드포인트. ENABLE_BETA_TRACING_DETAILED=1이면 로그와 트레이스가 설정된 익스포터 대신 그곳으로 전송된다. 셸, 사용자 설정 또는 관리형 설정에서 지정한다. 프로젝트 설정과 로컬 설정에서는 무시된다</translation>
         </message>
         <message>
             <source>env.CCR_FORCE_BUNDLE</source>
-            <extracomment>Set to 1 to force claude --cloud to bundle and upload your local repository even when GitHub access is available</extracomment>
+            <extracomment>Set to 1 to force claude --cloud to bundle and upload your local repository instead of cloning from its remote</extracomment>
             <translation>`1`로 설정하면 GitHub 접근이 가능한 경우에도 claude --cloud가 로컬 저장소를 번들로 묶어 업로드하도록 강제한다</translation>
         </message>
         <message>
@@ -5694,12 +6084,12 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_AFK_COUNTDOWN_MS</source>
-            <extracomment>How many milliseconds before auto-continue the on-screen countdown appears on an unanswered AskUserQuestion dialog. Default 20000 (20 seconds), capped at the auto-continue timeout. Has no effect unless auto-continue is on; see the askUserQuestionTimeout setting and CLAUDE_AFK_TIMEOUT_MS. Requires Claude Code v2.1.198 or later</extracomment>
+            <extracomment>How many milliseconds before auto-continue the on-screen countdown appears on an unanswered AskUserQuestion dialog. Default 20000 (20 seconds). See CLAUDE_AFK_TIMEOUT_MS. Requires Claude Code v2.1.198 or later. See https://code.claude.com/docs/en/env-vars</extracomment>
             <translation>응답이 없는 AskUserQuestion 대화 상자에서 자동 진행까지 몇 밀리초 남았을 때 화면에 카운트다운을 표시할지. 기본값 20000(20초)이며 자동 진행 타임아웃을 상한으로 한다. 자동 진행이 켜져 있지 않으면 아무 효과가 없다. askUserQuestionTimeout 설정과 CLAUDE_AFK_TIMEOUT_MS를 참고한다. Claude Code v2.1.198 이상 필요</translation>
         </message>
         <message>
             <source>env.CLAUDE_AFK_TIMEOUT_MS</source>
-            <extracomment>How many milliseconds of idle time before an unanswered AskUserQuestion dialog auto-continues without you. Auto-continue is off by default; opt in with the askUserQuestionTimeout setting. This variable is an override for demos and automated tests: when set, it takes precedence over that setting and turns auto-continue on even when the setting is unset or never. Setting 0 doesn't turn the timeout off; it closes the dialog immediately. In v2.1.198 and v2.1.199, auto-continue was on by default with a 60000 (60 seconds) timeout. Requires Claude Code v2.1.198 or later</extracomment>
+            <extracomment>How many milliseconds of idle time before an unanswered AskUserQuestion dialog auto-continues without you. Default 60000 (60 seconds). Requires Claude Code v2.1.198 or later. See https://code.claude.com/docs/en/env-vars</extracomment>
             <translation>응답이 없는 AskUserQuestion 대화 상자가 사용자 없이 자동 진행되기까지의 유휴 시간(밀리초). 자동 진행은 기본적으로 꺼져 있으며 askUserQuestionTimeout 설정으로 사용 설정한다. 이 변수는 데모와 자동화 테스트를 위한 재정의 수단이다. 설정하면 해당 설정보다 우선하며, 설정이 지정되지 않았거나 never인 경우에도 자동 진행을 켠다. `0`으로 설정해도 타임아웃이 꺼지지 않으며, 대화 상자를 즉시 닫는다. v2.1.198과 v2.1.199에서는 자동 진행이 기본으로 켜져 있었고 타임아웃은 60000(60초)이었다. Claude Code v2.1.198 이상 필요</translation>
         </message>
         <message>
@@ -5714,7 +6104,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS</source>
-            <extracomment>Stall timeout in milliseconds for subagents. Default 600000 (10 minutes); if you raise CLAUDE_STREAM_IDLE_TIMEOUT_MS while the stream watchdog is on, the default rises with it, as Handle slow or stalled API responses describes. The timer resets on each streaming progress event; if no progress arrives within the window, Claude Code aborts the subagent and reports the stall to the parent</extracomment>
+            <extracomment>Stall timeout in milliseconds for subagents. Also covers workflow agents on Claude Code v2.1.286 or later. Default 600000 (10 minutes); if you raise CLAUDE_STREAM_IDLE_TIMEOUT_MS while the stream watchdog is on, the default rises with it, as Handle slow or stalled API responses describes</extracomment>
             <translation>서브에이전트의 지연(stall) 타임아웃(밀리초). 기본값 600000(10분)이며, 스트림 워치독이 켜진 상태에서 CLAUDE_STREAM_IDLE_TIMEOUT_MS를 올리면 Handle slow or stalled API responses에서 설명하는 대로 기본값도 함께 올라간다. 스트리밍 진행 이벤트가 발생할 때마다 타이머가 초기화되며, 해당 시간 안에 진행이 없으면 Claude Code는 서브에이전트를 중단하고 지연 사실을 상위에 보고한다</translation>
         </message>
         <message>
@@ -5724,22 +6114,22 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_AUTO_BACKGROUND_TASKS</source>
-            <extracomment>Set to 1 to force-enable automatic backgrounding of long-running agent tasks. When enabled, subagents are moved to the background after running for approximately two minutes. Also enables automatic backgrounding of long MCP tool calls in non-interactive mode on Claude Code v2.1.212 or later</extracomment>
+            <extracomment>Set to 1 to force-enable automatic backgrounding of long-running agent tasks. When enabled, a subagent moves to the background after running for approximately two minutes. If Claude queued a tool call such as a file edit behind the subagent, the subagent finishes in the foreground before that call starts. Also enables automatic backgrounding of long MCP tool calls in non-interactive mode on Claude Code v2.1.212 or later</extracomment>
             <translation>`1`로 설정하면 오래 실행되는 에이전트 작업의 자동 백그라운드 전환을 강제로 활성화한다. 활성화하면 서브에이전트는 약 2분간 실행된 후 백그라운드로 옮겨진다. Claude Code v2.1.212 이상에서는 비대화형 모드의 긴 MCP 도구 호출에 대한 자동 백그라운드 전환도 함께 활성화한다</translation>
         </message>
         <message>
             <source>env.CLAUDE_AX_PREPARK_MS</source>
-            <extracomment>In screen reader mode, how many milliseconds Claude Code waits, with the cursor at the start of the line, before it writes a new or changed line. Default 50. Set 0 to write immediately. Claude Code caps the wait at 5000. Requires Claude Code v2.1.233 or later</extracomment>
+            <extracomment>In screen reader mode, how many milliseconds Claude Code waits before it writes a new or changed line. Default 0, so Claude Code doesn't wait. Before v2.1.287, the default was 50. Claude Code caps the wait at 5000. Ignored in project and local settings. Requires Claude Code v2.1.233 or later</extracomment>
             <translation>스크린 리더 모드에서 Claude Code가 새 줄이나 변경된 줄을 쓰기 전에 커서를 줄 시작에 둔 채 대기하는 시간(밀리초). 기본값 50. `0`으로 설정하면 즉시 쓴다. Claude Code는 대기 시간을 5000으로 제한한다. Claude Code v2.1.233 이상 필요</translation>
         </message>
         <message>
             <source>env.CLAUDE_AX_SCREEN_READER</source>
-            <extracomment>Set to 1 to render screen-reader friendly output: flat text without decorative borders or animations. Set to 0 to force screen-reader mode off even when axScreenReader is true. The --ax-screen-reader flag takes precedence. Requires Claude Code v2.1.181 or later</extracomment>
+            <extracomment>Set to 1 to render screen-reader friendly output: flat text without decorative borders or animations. Set to 0 to force screen-reader mode off even when axScreenReader is true. The --ax-screen-reader flag takes precedence. Ignored in project and local settings. Requires Claude Code v2.1.181 or later</extracomment>
             <translation>`1`로 설정하면 장식용 테두리나 애니메이션이 없는 평평한 텍스트, 즉 스크린 리더 친화적인 출력을 렌더링한다. `0`으로 설정하면 axScreenReader가 true인 경우에도 스크린 리더 모드를 강제로 끈다. --ax-screen-reader 플래그가 우선한다. Claude Code v2.1.181 이상 필요</translation>
         </message>
         <message>
             <source>env.CLAUDE_AX_STARTUP_QUIET_MS</source>
-            <extracomment>In screen reader mode, how many milliseconds Claude Code holds the first interface render after the startup confirmation line, so your screen reader can speak the line in full before new output interrupts it. Default 3000. Set 0 to render immediately. Claude Code caps the hold at 600000 (10 minutes). Your first keystroke ends the hold early. Requires Claude Code v2.1.217 or later</extracomment>
+            <extracomment>In screen reader mode, how many milliseconds Claude Code holds the first interface render after the startup confirmation line. Your screen reader can then speak the line in full before new output interrupts it. Default 3000. Set 0 to render immediately. Claude Code caps the hold at 600000 (10 minutes). Your first keystroke ends the hold early. Ignored in project and local settings. Requires Claude Code v2.1.217 or later</extracomment>
             <translation>스크린 리더 모드에서 Claude Code가 시작 확인 줄 이후 첫 인터페이스 렌더링을 몇 밀리초 동안 붙잡아 둘지. 스크린 리더가 새 출력에 방해받기 전에 그 줄을 끝까지 읽을 수 있게 한다. 기본값 3000. `0`으로 설정하면 즉시 렌더링한다. Claude Code는 대기 시간을 600000(10분)으로 제한한다. 첫 키 입력이 있으면 대기가 일찍 끝난다. Claude Code v2.1.217 이상 필요</translation>
         </message>
         <message>
@@ -5774,7 +6164,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_ALWAYS_ENABLE_EFFORT</source>
-            <extracomment>Set to 1 to send the effort parameter with every request, even when Claude Code does not recognize the model ID as effort-capable. Use this when routing through an LLM gateway or third-party provider that serves models under custom identifiers. Models that reject the effort parameter at the API, including Claude 3 models, Sonnet 4.0 and 4.5, Opus 4.0 and 4.1, and Haiku 4.5, are still excluded so requests do not fail</extracomment>
+            <extracomment>Set to 1 to send the effort parameter with every request, even when Claude Code does not recognize the model ID as effort-capable. Use this when routing through an LLM gateway or third-party provider that serves models under custom identifiers. Models that reject the effort parameter at the API, including Claude Opus 4.1, Claude Sonnet 4.5, Claude Haiku 4.5, and earlier models, are still excluded so requests do not fail</extracomment>
             <translation>`1`로 설정하면 Claude Code가 모델 ID를 effort 지원 모델로 인식하지 못하는 경우에도 모든 요청에 effort 파라미터를 함께 보낸다. 사용자 지정 식별자로 모델을 제공하는 LLM 게이트웨이나 서드파티 공급자를 경유할 때 사용한다. Claude 3 모델, Sonnet 4.0 및 4.5, Opus 4.0 및 4.1, Haiku 4.5 등 API에서 effort 파라미터를 거부하는 모델은 요청이 실패하지 않도록 여전히 제외된다</translation>
         </message>
         <message>
@@ -5784,7 +6174,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_ARTIFACT_AUTO_OPEN</source>
-            <extracomment>Set to 0 to stop Claude Code from opening the browser automatically when a new artifact is published. Republishing an existing artifact does not open the browser regardless of this setting</extracomment>
+            <extracomment>Set to 0 to stop Claude Code from opening the browser automatically when a new artifact is published</extracomment>
             <translation>`0`으로 설정하면 새 아티팩트가 게시될 때 Claude Code가 브라우저를 자동으로 열지 않는다. 기존 아티팩트를 다시 게시하는 경우에는 이 설정과 무관하게 브라우저가 열리지 않는다</translation>
         </message>
         <message>
@@ -5798,18 +6188,23 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <translation>`0`으로 설정하면 Claude가 자신에게 전달된 댓글에 스스로 답글을 다는 동작을 중단한다. Claude Code v2.1.228 이상 필요</translation>
         </message>
         <message>
+            <source>env.CLAUDE_CODE_ARTIFACT_PUBLISH_EDITS</source>
+            <extracomment>Set to 0 to stop Claude from applying small changes to an artifact's file as part of publishing it. Claude then edits the file with its file-editing tools and publishes it as a separate step. Requires Claude Code v2.1.300 or later</extracomment>
+            <translation>0으로 설정하면 Claude가 아티팩트를 게시하는 과정에서 아티팩트 파일에 작은 변경을 적용하지 않는다. 이 경우 Claude는 파일 편집 도구로 파일을 편집한 뒤 별도 단계로 게시한다. Claude Code v2.1.300 이상이 필요하다</translation>
+        </message>
+        <message>
             <source>env.CLAUDE_CODE_ATTRIBUTION_HEADER</source>
             <extracomment>Set to 0 to omit the attribution block, which carries the client version and a prompt fingerprint, from the start of the system prompt. Caching on a direct connection to the Anthropic API is unaffected either way. In some direct-connection setups, Claude Code keeps the block on auto mode classifier requests even when you set 0. In System prompt attribution block, check which connections and credentials this covers. Before v2.1.181 the block included a per-request token on custom base URLs and Microsoft Foundry connections, so on those versions set it to 0 when your LLM gateway caches on the request body or forwards requests to a third-party provider, or when you connect to Microsoft Foundry directly</extracomment>
             <translation>`0`으로 설정하면 클라이언트 버전과 프롬프트 핑거프린트를 담은 attribution 블록을 시스템 프롬프트 앞부분에서 생략한다. Anthropic API에 직접 연결한 경우의 캐싱은 어느 쪽이든 영향을 받지 않는다. 일부 직접 연결 구성에서는 `0`으로 설정해도 Claude Code가 auto 모드 분류기 요청에는 이 블록을 유지한다. 어떤 연결과 자격 증명이 해당되는지는 System prompt attribution block에서 확인한다. v2.1.181 이전에는 사용자 지정 base URL과 Microsoft Foundry 연결에서 이 블록에 요청별 토큰이 포함되었으므로, 해당 버전에서는 LLM 게이트웨이가 요청 본문 기준으로 캐싱하거나 요청을 서드파티 공급자로 전달할 때, 또는 Microsoft Foundry에 직접 연결할 때 `0`으로 설정한다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_AUTO_BACKGROUND_WORKER_CHECKIN_SECONDS</source>
-            <extracomment>When CLAUDE_AUTO_BACKGROUND_TASKS is enabled, seconds between reminders to Claude to check on background subagents that are still running. Accepts a plain integer from 1 to 86400 only; any other value or spelling reads as unset. When unset, there are no check-in reminders. Requires Claude Code v2.1.248 or later</extracomment>
+            <extracomment>Removed in v2.1.283. Use CLAUDE_CODE_WORKER_CHECKIN_SCHEDULE instead</extracomment>
             <translation>CLAUDE_AUTO_BACKGROUND_TASKS가 활성화된 경우, 아직 실행 중인 백그라운드 서브에이전트를 확인하라고 Claude에게 알리는 간격(초). 1에서 86400 사이의 순수 정수만 허용하며, 그 밖의 값이나 표기는 설정되지 않은 것으로 간주한다. 설정하지 않으면 확인 알림이 없다. Claude Code v2.1.248 이상 필요</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_AUTO_COMPACT_WINDOW</source>
-            <extracomment>Set the auto-compact window in tokens, from 100000 to 1000000. Accepts a plain integer such as 500000 only: a value like 500k reads as 500 and clamps to the 100K minimum. The effective window is also capped at the model's context window. Takes precedence over the /autocompact command, the --autocompact flag, and the autoCompactWindow setting. The status line's used_percentage always measures against the model's full context window, so once this variable is set, that percentage no longer indicates when compaction will run</extracomment>
+            <extracomment>Set the auto-compact window, how full the context gets before compaction, from 100000 to 1000000 tokens. Suffixed values such as 200k require v2.1.304 or later. For precedence over the other ways to set the window and the effect on the status line's used_percentage, see Set the auto-compact window</extracomment>
             <translation>자동 압축 윈도를 토큰 단위로 100000에서 1000000 사이로 설정한다. 500000처럼 순수 정수만 허용한다. 500k 같은 값은 500으로 읽혀 최소값 100K로 제한된다. 실제 윈도는 모델의 컨텍스트 윈도로도 제한된다. /autocompact 명령, --autocompact 플래그, autoCompactWindow 설정보다 우선한다. 상태 표시줄의 used_percentage는 항상 모델의 전체 컨텍스트 윈도를 기준으로 측정하므로, 이 변수를 설정하고 나면 그 비율은 더 이상 압축 시점을 나타내지 않는다</translation>
         </message>
         <message>
@@ -5818,9 +6213,29 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <translation>IDE 자동 연결을 재정의한다. 기본적으로 Claude Code는 지원되는 IDE의 통합 터미널에서 실행되면 자동으로 연결한다. `false`로 설정하면 이를 막는다. tmux가 상위 터미널을 가리는 경우처럼 자동 감지가 실패할 때 연결 시도를 강제하려면 `true`로 설정한다. autoConnectIde 전역 config 설정보다 우선한다</translation>
         </message>
         <message>
+            <source>env.CLAUDE_CODE_AUTO_MODE_MODEL</source>
+            <extracomment>Sets the model for the classifier requests Claude Code sends in auto mode. Use a full model ID such as claude-sonnet-4-6. For the cases where Claude Code ignores it, see Choose the classifier model. Requires Claude Code v2.1.302 or later</extracomment>
+            <translation>auto 모드에서 Claude Code가 보내는 분류기 요청에 사용할 모델을 설정한다. claude-sonnet-4-6 같은 전체 모델 ID를 사용한다. Claude Code가 이를 무시하는 경우는 분류기 모델 선택을 참고한다. Claude Code v2.1.302 이상이 필요하다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_AUTO_MODE_SERVER</source>
+            <extracomment>Controls whether Claude Code asks the server to review auto mode actions. Set to 0 to use Claude Code's own classifier requests instead. On a direct connection to the Anthropic API, requires v2.1.281 or later. The linked section lists which sessions ask the server when the variable is unset, and from which version. Requires Claude Code v2.1.271 or later</extracomment>
+            <translation>Claude Code가 서버에 auto 모드 동작의 검토를 요청할지 제어한다. 0으로 설정하면 대신 Claude Code 자체의 분류기 요청을 사용한다. Anthropic API에 직접 연결하는 경우 v2.1.281 이상이 필요하다. 링크된 섹션에는 변수가 설정되지 않았을 때 어떤 세션이 서버에 요청하는지와 그 시작 버전이 나열되어 있다. Claude Code v2.1.271 이상이 필요하다</translation>
+        </message>
+        <message>
             <source>env.CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS</source>
-            <extracomment>Time in milliseconds Claude Code waits for the AWS default credential provider chain to produce credentials before the request fails with AWS default-chain credential resolve timed out (default: 60000). Raise it when a step in your chain legitimately needs longer, such as a browser-based SSO sign-in with MFA through a wrapper like aws-vault. Applies wherever Claude Code signs with the default chain: Amazon Bedrock, Claude Platform on AWS, and the Mantle endpoint. Requires Claude Code v2.1.207 or later</extracomment>
+            <extracomment>Time in milliseconds Claude Code waits for the AWS default credential provider chain to produce credentials before the request fails with AWS default-chain credential resolve timed out (default: 60000). Raise it when a step in your chain legitimately needs longer, such as a browser-based SSO sign-in with MFA through a wrapper like aws-vault. Applies on Amazon Bedrock, Claude Platform on AWS, and the Mantle endpoint. See credential caching and resolution timeout. Requires Claude Code v2.1.207 or later</extracomment>
             <translation>AWS 기본 자격 증명 공급자 체인이 자격 증명을 생성할 때까지 Claude Code가 기다리는 시간(밀리초). 이 시간이 지나면 요청은 AWS default-chain credential resolve timed out 오류로 실패한다 (기본값: 60000). aws-vault 같은 래퍼를 통한 MFA 포함 브라우저 기반 SSO 로그인처럼 체인의 한 단계가 정당하게 더 오래 걸릴 때 값을 올린다. Claude Code가 기본 체인으로 서명하는 모든 곳, 즉 Amazon Bedrock, Claude Platform on AWS, Mantle 엔드포인트에 적용된다. Claude Code v2.1.207 이상 필요</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_BASH_EDIT_DIFF</source>
+            <extracomment>Set to 0 to turn off the diff of the files that changed while a Bash command ran, or 1 to record it in every permission mode. Takes precedence over the bashEditDiffEnabled setting. Requires Claude Code v2.1.269 or later</extracomment>
+            <translation>0으로 설정하면 Bash 명령이 실행되는 동안 변경된 파일의 diff를 끄고, 1로 설정하면 모든 권한 모드에서 기록한다. bashEditDiffEnabled 설정보다 우선한다. Claude Code v2.1.269 이상이 필요하다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_BG_TASKS_REPORT_RUNNING</source>
+            <extracomment>Set to 0 to make a non-interactive session report an idle status to its host at every turn end, even while background work is still running. By default, the session keeps reporting a running status past turn end while background work such as a background agent or a workflow run is still live. This keeps a host that watches the status, such as a remote session list, from announcing that Claude is waiting for your input mid-work. Background shell commands, such as a dev server, don't hold the running status. The running-status default and the 0 opt-out require Claude Code v2.1.269 or later; on earlier versions, set 1 to hold the running status</extracomment>
+            <translation>0으로 설정하면 비대화형 세션이 백그라운드 작업이 아직 실행 중이더라도 매 턴 종료 시 호스트에 유휴 상태를 보고한다. 기본적으로 세션은 백그라운드 에이전트나 워크플로 실행 같은 백그라운드 작업이 아직 활성 상태인 동안 턴이 끝난 뒤에도 실행 중 상태를 계속 보고한다. 이는 원격 세션 목록처럼 상태를 감시하는 호스트가 작업 도중에 Claude가 입력을 기다리고 있다고 알리는 것을 막아 준다. 개발 서버 같은 백그라운드 셸 명령은 실행 중 상태를 유지시키지 않는다. 실행 중 상태 기본값과 0 옵트아웃에는 Claude Code v2.1.269 이상이 필요하며, 그 이전 버전에서는 1로 설정하면 실행 중 상태가 유지된다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_BRIDGE_SESSION_ID</source>
@@ -5859,7 +6274,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_CONNECT_TIMEOUT_MS</source>
-            <extracomment>Removed in v2.1.186 and now a no-op. Previously set a separate timeout for the connect, TLS, and response-header phase of a streaming API request. Use API_TIMEOUT_MS for the per-request timeout. For the response-header phase of a streaming request, see CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS</extracomment>
+            <extracomment>Removed in v2.1.186 and now a no-op. Previously set a separate timeout for the connect, TLS, and response-header phase of a streaming API request. Use API_TIMEOUT_MS instead. For the response-header phase of a streaming request, see CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS</extracomment>
             <translation>v2.1.186에서 제거되어 현재는 아무 동작도 하지 않는다. 이전에는 스트리밍 API 요청의 연결, TLS, 응답 헤더 단계에 대한 별도 타임아웃을 설정했다. 요청별 타임아웃은 API_TIMEOUT_MS를 사용한다. 스트리밍 요청의 응답 헤더 단계는 CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS를 참고한다</translation>
         </message>
         <message>
@@ -5874,18 +6289,13 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_DISABLE_1M_CONTEXT</source>
-            <extracomment>Set to 1 to disable 1M context window support. When set, 1M model variants are unavailable in the model picker, and Claude Code holds sessions on models with a native 1M window, such as Sonnet 5 and the Fable models, to a 200K window; see Extended context for how the hold is enforced. Useful for enterprise environments with compliance requirements. For its role in correcting the window for an unrecognized [1m] model ID, see Correct the window for a gateway or custom model ID</extracomment>
+            <extracomment>Set to 1 to turn off 1M context window support. Claude Code removes [1m] model variants from the model picker and holds models that run with the 1M window by default to a 200K window. See Turn off 1M context. Useful for enterprise environments with compliance requirements. For its role in correcting the window for an unrecognized [1m] model ID, see Correct the window for a gateway or custom model ID</extracomment>
             <translation>`1`로 설정하면 1M 컨텍스트 윈도 지원을 비활성화한다. 설정하면 모델 선택기에서 1M 모델 변형을 사용할 수 없고, Claude Code는 Sonnet 5나 Fable 모델처럼 네이티브 1M 윈도를 가진 모델의 세션을 200K 윈도로 제한한다. 이 제한이 어떻게 적용되는지는 Extended context를 참고한다. 규정 준수 요구사항이 있는 엔터프라이즈 환경에 유용하다. 인식되지 않는 [1m] 모델 ID의 윈도를 바로잡는 역할에 대해서는 Correct the window for a gateway or custom model ID를 참고한다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING</source>
-            <extracomment>Set to 1 to disable adaptive reasoning on Opus 4.6 and Sonnet 4.6 and fall back to the fixed thinking budget controlled by MAX_THINKING_TOKENS. Has no effect on Fable models, Sonnet 5, or Opus 4.7 and later, which always use adaptive reasoning</extracomment>
+            <extracomment>Set to 1 to disable adaptive reasoning on Opus 4.6 and Sonnet 4.6 and fall back to the fixed thinking budget controlled by MAX_THINKING_TOKENS. Has no effect on Fable models, Sonnet 5 and later, Haiku 5.5, or Opus 4.7 and later, which always use adaptive reasoning</extracomment>
             <translation>`1`로 설정하면 Opus 4.6과 Sonnet 4.6에서 적응형 추론을 비활성화하고 MAX_THINKING_TOKENS로 제어되는 고정 사고 예산을 사용한다. 항상 적응형 추론을 사용하는 Fable 모델, Sonnet 5, Opus 4.7 이상에는 아무 효과가 없다</translation>
-        </message>
-        <message>
-            <source>env.CLAUDE_CODE_DISABLE_ADMIN_ENV_UNION</source>
-            <extracomment>Set to 1 to stop Claude Code from merging managed settings env blocks per key across admin sources, so only the highest-priority source's whole env block applies, as before v2.1.223. Set it in the environment that launches Claude Code, since Claude Code ignores a copy delivered through a settings env block. Requires Claude Code v2.1.223 or later</extracomment>
-            <translation>`1`로 설정하면 Claude Code가 여러 관리자 소스에 걸쳐 관리형 설정의 env 블록을 키 단위로 병합하지 않게 하여, v2.1.223 이전처럼 우선순위가 가장 높은 소스의 env 블록 전체만 적용된다. Claude Code는 설정 env 블록으로 전달된 사본을 무시하므로, 이 변수는 Claude Code를 실행하는 환경에서 설정한다. Claude Code v2.1.223 이상 필요</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_DISABLE_ADVISOR_TOOL</source>
@@ -5909,8 +6319,13 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_DISABLE_ATTACHMENTS</source>
-            <extracomment>Set to 1 to disable attachment processing. File mentions with @ syntax are sent as plain text instead of being expanded into file content</extracomment>
+            <extracomment>Set to 1 to disable attachment processing. File mentions with @ syntax are sent as plain text instead of being expanded into file content. Ignored in project and local settings</extracomment>
             <translation>`1`로 설정하면 첨부 파일 처리를 비활성화한다. @ 문법을 사용한 파일 언급이 파일 내용으로 확장되지 않고 일반 텍스트로 전송된다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_DISABLE_AUTH_REFRESH_LOCK</source>
+            <extracomment>Set to 1 to make a Claude Code process run its gcpAuthRefresh or awsAuthRefresh command itself instead of waiting while another process runs it. Requires Claude Code v2.1.286 or later</extracomment>
+            <translation>1로 설정하면 다른 프로세스가 gcpAuthRefresh 또는 awsAuthRefresh 명령을 실행하는 동안 기다리지 않고, Claude Code 프로세스가 해당 명령을 직접 실행한다. Claude Code v2.1.286 이상이 필요하다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_DISABLE_AUTO_MEMORY</source>
@@ -5919,7 +6334,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_DISABLE_BACKGROUND_TASKS</source>
-            <extracomment>Set to 1 to disable all background task functionality, including the run_in_background parameter on Bash and subagent tools, auto-backgrounding, and the Ctrl+B shortcut</extracomment>
+            <extracomment>Set to 1 to remove the run_in_background parameter from the Bash, PowerShell, and subagent tools and to turn off the Ctrl+B shortcut and background runs of forked skills. Claude Code then also stops moving subagents, long MCP tool calls, and timed-out shell commands to the background automatically. MCP tasks and the Monitor tool still run in the background. To turn off background sessions too, set CLAUDE_CODE_DISABLE_AGENT_VIEW to 1</extracomment>
             <translation>`1`로 설정하면 Bash 및 서브에이전트 도구의 run_in_background 파라미터, 자동 백그라운드 전환, Ctrl+B 단축키를 포함한 모든 백그라운드 작업 기능을 비활성화한다</translation>
         </message>
         <message>
@@ -5934,12 +6349,12 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_DISABLE_BG_EXIT_HANDOFF</source>
-            <extracomment>Set to 1 to stop a background session's running background shell commands, dynamic workflows, and, as of v2.1.198, background subagents when the supervisor stops, restarts, or updates that session's process, instead of handing them to the session's next process. Affects only that handoff: backgrounding a session with ← or /background still carries in-flight work over, and CLAUDE_DISABLE_ADOPT turns off both. Requires Claude Code v2.1.196 or later</extracomment>
+            <extracomment>Set to 1 to stop a background session's in-flight work when the supervisor stops, restarts, or updates that session's process, instead of handing it to the session's next process. That work is the session's running background shell commands, plus background subagents as of v2.1.198. Affects only that handoff: backgrounding a session with ← or /background still carries in-flight background work over. Requires Claude Code v2.1.196 or later</extracomment>
             <translation>`1`로 설정하면 슈퍼바이저가 백그라운드 세션의 프로세스를 중지, 재시작 또는 업데이트할 때 실행 중인 백그라운드 셸 명령, 다이나믹 워크플로, 그리고 v2.1.198부터는 백그라운드 서브에이전트를 그 세션의 다음 프로세스에 넘기지 않고 중단한다. 이 인계에만 영향을 미치며, ← 또는 /background로 세션을 백그라운드로 보낼 때는 진행 중인 작업이 그대로 이어진다. CLAUDE_DISABLE_ADOPT는 둘 다 끈다. Claude Code v2.1.196 이상 필요</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP</source>
-            <extracomment>Set to 1 to stop Claude Code from terminating background shell commands when the operating system reports memory pressure. By default, on macOS and Linux, Claude Code terminates a background shell started in the main session on a memory-pressure signal once the session has been idle for 30 minutes and no turn or subagent is running. Windows has no memory-pressure signal, so this variable has no effect there. Requires Claude Code v2.1.193 or later</extracomment>
+            <extracomment>Set to 1 to stop Claude Code from terminating background shell commands under memory pressure. By default, on macOS and Linux, Claude Code terminates background shells when the operating system reports critical memory pressure and the session has been idle for 30 minutes with no turn or subagent running. Windows has no memory-pressure signal, so this variable has no effect there. Requires Claude Code v2.1.193 or later</extracomment>
             <translation>`1`로 설정하면 운영체제가 메모리 압박을 보고할 때 Claude Code가 백그라운드 셸 명령을 종료하지 않게 한다. 기본적으로 macOS와 Linux에서 Claude Code는 세션이 30분간 유휴 상태이고 실행 중인 턴이나 서브에이전트가 없을 때 메모리 압박 신호를 받으면 메인 세션에서 시작된 백그라운드 셸을 종료한다. Windows에는 메모리 압박 신호가 없으므로 이 변수는 아무 효과가 없다. Claude Code v2.1.193 이상 필요</translation>
         </message>
         <message>
@@ -5959,12 +6374,17 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_DISABLE_CRON</source>
-            <extracomment>Set to 1 to disable scheduled tasks. The /loop skill and cron tools become unavailable and any already-scheduled tasks stop firing, including tasks that are already running mid-session</extracomment>
+            <extracomment>Set to 1 to disable session-scoped scheduled tasks. The /loop skill and cron tools become unavailable and any already-scheduled tasks stop firing, including tasks that are already running mid-session</extracomment>
             <translation>`1`로 설정하면 예약 작업을 비활성화한다. /loop 스킬과 cron 도구를 사용할 수 없게 되고, 이미 예약된 작업은 세션 도중 실행 중인 작업까지 포함해 더 이상 실행되지 않는다</translation>
         </message>
         <message>
+            <source>env.CLAUDE_CODE_DISABLE_DANGEROUS_RM_TIMEOUT</source>
+            <extracomment>Set to 1 to turn off the auto and bypassPermissions time limit and denials on critical-path removals. These removals then go to the classifier in auto mode, and get an untimed prompt in bypassPermissions mode wherever Claude Code can show one. Set it in the environment that launches Claude Code, since Claude Code ignores a copy delivered through a settings env block. Requires Claude Code v2.1.281 or later</extracomment>
+            <translation>1로 설정하면 auto 및 bypassPermissions의 시간 제한과 핵심 경로 삭제에 대한 거부를 끈다. 이 경우 해당 삭제는 auto 모드에서는 분류기로 넘어가고, bypassPermissions 모드에서는 Claude Code가 프롬프트를 표시할 수 있는 곳에서 시간 제한 없는 프롬프트를 받는다. 설정 env 블록으로 전달된 사본은 Claude Code가 무시하므로, Claude Code를 실행하는 환경에서 설정한다. Claude Code v2.1.281 이상이 필요하다</translation>
+        </message>
+        <message>
             <source>env.CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS</source>
-            <extracomment>Set to 1 to strip Anthropic-specific anthropic-beta request headers and beta tool-schema fields (such as defer_loading and eager_input_streaming) from API requests. Use this when a proxy gateway rejects requests with errors like "Unexpected value(s) for the anthropic-beta header" or "Extra inputs are not permitted". Standard fields (name, description, input_schema, cache_control) are preserved. MCP tool search is disabled and all MCP tools load upfront, even when you set ENABLE_TOOL_SEARCH. On Claude Code v2.1.227 or later, managed settings can keep tool search on. Disable pre-release capabilities covers where the override applies</extracomment>
+            <extracomment>Set to 1 to strip pre-release anthropic-beta request headers, the body fields that pair with them, and beta tool-schema fields such as defer_loading and eager_input_streaming from API requests. Use this when a proxy gateway rejects requests with an Unexpected value(s) error for the anthropic-beta header or an Extra inputs are not permitted error. Disable pre-release capabilities lists what the variable removes, including MCP tool search, and what Claude Code keeps sending</extracomment>
             <translation>`1`로 설정하면 API 요청에서 Anthropic 전용 anthropic-beta 요청 헤더와 베타 도구 스키마 필드(defer_loading, eager_input_streaming 등)를 제거한다. 프록시 게이트웨이가 "Unexpected value(s) for the anthropic-beta header"나 "Extra inputs are not permitted" 같은 오류로 요청을 거부할 때 사용한다. 표준 필드(name, description, input_schema, cache_control)는 유지된다. MCP 도구 검색은 비활성화되고, ENABLE_TOOL_SEARCH를 설정해도 모든 MCP 도구가 미리 불러와진다. Claude Code v2.1.227 이상에서는 관리형 설정으로 도구 검색을 켠 상태로 유지할 수 있다. 이 재정의가 어디에 적용되는지는 Disable pre-release capabilities에서 다룬다</translation>
         </message>
         <message>
@@ -5988,14 +6408,39 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <translation>`1`로 설정하면 파일 체크포인트를 비활성화한다. /rewind 명령으로 코드 변경을 복원할 수 없게 된다. fileCheckpointingEnabled 설정을 재정의한다</translation>
         </message>
         <message>
+            <source>env.CLAUDE_CODE_DISABLE_FILE_MENTIONS</source>
+            <extracomment>Set to 1 to stop Claude Code from expanding @ mentions of files and directories. Claude instead gets the mentioned paths with a note to read them using its file tools. Ignored in project and local settings. Requires Claude Code v2.1.299 or later</extracomment>
+            <translation>1로 설정하면 Claude Code가 파일과 디렉터리에 대한 @ 멘션을 확장하지 않는다. 대신 Claude는 멘션된 경로와 함께 파일 도구로 읽으라는 메모를 받는다. 프로젝트 및 로컬 설정에서는 무시된다. Claude Code v2.1.299 이상이 필요하다</translation>
+        </message>
+        <message>
             <source>env.CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS</source>
-            <extracomment>Set to 1 to remove built-in commit and PR workflow instructions and the git status snapshot from Claude's system prompt. Useful when using your own git workflow skills. Takes precedence over the includeGitInstructions setting when set</extracomment>
+            <extracomment>Set to 1 to remove built-in commit and PR workflow instructions and the git status snapshot from Claude's context. Useful when using your own git workflow skills. Takes precedence over the includeGitInstructions setting when set</extracomment>
             <translation>`1`로 설정하면 Claude의 시스템 프롬프트에서 내장 커밋 및 PR 워크플로 지침과 git status 스냅샷을 제거한다. 자체 git 워크플로 스킬을 사용할 때 유용하다. 설정하면 includeGitInstructions 설정보다 우선한다</translation>
         </message>
         <message>
+            <source>env.CLAUDE_CODE_DISABLE_INLINE_SHELL_RM_PROMPT</source>
+            <extracomment>Set to 1 to stop Claude Code from reading scripts passed to a shell with -c, such as bash -c 'rm -rf ~', for critical-path removals. Claude Code still checks the shell variable and positional parameter targets in those scripts, and the other critical-path checks keep running. Set it in the environment that launches Claude Code, since Claude Code ignores a copy delivered through a settings env block. Requires Claude Code v2.1.288 or later</extracomment>
+            <translation>1로 설정하면 Claude Code가 핵심 경로 삭제를 확인하기 위해 bash -c 'rm -rf ~'처럼 -c로 셸에 전달된 스크립트를 읽지 않는다. 그래도 Claude Code는 해당 스크립트의 셸 변수와 위치 매개변수 대상을 계속 확인하며, 다른 핵심 경로 검사도 계속 실행된다. 설정 env 블록으로 전달된 사본은 Claude Code가 무시하므로, Claude Code를 실행하는 환경에서 설정한다. Claude Code v2.1.288 이상이 필요하다</translation>
+        </message>
+        <message>
             <source>env.CLAUDE_CODE_DISABLE_LEGACY_MODEL_REMAP</source>
-            <extracomment>Set to 1 to prevent automatic remapping of Opus 4.0 and 4.1 to the current Opus version on the Anthropic API. Use when you intentionally want to pin an older model. The remap does not run on Amazon Bedrock, Google Cloud's Agent Platform, or Microsoft Foundry</extracomment>
+            <extracomment>Set to 1 to prevent automatic remapping of Opus 4 and Opus 4.1 to the current Opus version on the Anthropic API. Use when you intentionally want to pin an older model. The remap does not run on Amazon Bedrock, Google Cloud's Agent Platform, or Microsoft Foundry</extracomment>
             <translation>`1`로 설정하면 Anthropic API에서 Opus 4.0 및 4.1을 현재 Opus 버전으로 자동 재매핑하지 않는다. 의도적으로 이전 모델을 고정하려는 경우에 사용한다. 이 재매핑은 Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry에서는 동작하지 않는다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_DISABLE_MCP_TASK_BACKGROUND</source>
+            <extracomment>Set to 1 so that Claude waits for the result of an MCP task in an interactive session. While automatic backgrounding is on, it still moves the call to the background after two minutes by default. Requires Claude Code v2.1.304 or later</extracomment>
+            <translation>1로 설정하면 대화형 세션에서 Claude가 MCP 작업의 결과를 기다린다. 자동 백그라운드 전환이 켜져 있는 동안에는 기본적으로 2분 후 호출을 여전히 백그라운드로 옮긴다. Claude Code v2.1.304 이상이 필요하다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_DISABLE_MODEL_ACCESS_FALLBACK</source>
+            <extracomment>Set to 1 to stop Claude Code on Amazon Bedrock and Google Cloud's Agent Platform from switching to an older model when your account loses access to a session's model mid-session; the refused request fails at once instead. A fallback model chain you configure still switches on that refusal, and the startup model checks still fall back at launch. Requires Claude Code v2.1.285 or later</extracomment>
+            <translation>1로 설정하면 Amazon Bedrock과 Google Cloud의 Agent Platform에서 Claude Code가, 세션 도중 계정이 세션 모델에 대한 접근 권한을 잃었을 때 이전 모델로 전환하지 않는다. 거부된 요청은 즉시 실패한다. 직접 구성한 폴백 모델 체인은 그 거부 시에도 전환되며, 시작 시 모델 확인은 실행 시 계속 폴백한다. Claude Code v2.1.285 이상이 필요하다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_DISABLE_MOUNTED_DRIVE_RM_PROMPT</source>
+            <extracomment>Set to 1 to turn off the mounted drive prompt for paths such as /Volumes/USB. Set it in the environment that launches Claude Code, because Claude Code ignores it in a settings env block. Requires Claude Code v2.1.304 or later</extracomment>
+            <translation>1로 설정하면 /Volumes/USB 같은 경로에 대한 마운트된 드라이브 프롬프트를 끈다. 설정 env 블록에서는 Claude Code가 무시하므로, Claude Code를 실행하는 환경에서 설정한다. Claude Code v2.1.304 이상이 필요하다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_DISABLE_MOUSE</source>
@@ -6014,8 +6459,8 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC</source>
-            <extracomment>Set to any non-empty value, such as 1, to disable nonessential network traffic: auto-updates, telemetry, error reporting, the /feedback command, Claude-drafted feedback, release notes, the PR and MR status badge checks, and availability checks such as the fast mode check. It also stops the background runs of plugin command sources, which are local commands rather than network traffic, because they can trigger dependency installs. **Setting it to 0 or false still disables this traffic**, unlike most on/off variables; unset the variable to allow it again. Also disables feature-flag fetching, which makes Remote Control and the other features that need feature-flag fetching unavailable. Official plugin marketplace auto-install isn't covered; disable it with CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL. Doesn't affect gateway model discovery, which has its own opt-in</extracomment>
-            <translation>`1`처럼 비어 있지 않은 값으로 설정하면 비필수 네트워크 트래픽을 비활성화한다. 자동 업데이트, 텔레메트리, 오류 보고, /feedback 명령, Claude가 작성한 피드백, 릴리스 노트, PR 및 MR 상태 배지 확인, fast 모드 확인 같은 가용성 확인이 여기에 해당한다. 또한 플러그인 명령 소스의 백그라운드 실행도 중단하는데, 이는 네트워크 트래픽이 아니라 로컬 명령이지만 의존성 설치를 유발할 수 있기 때문이다. **`0`이나 `false`로 설정해도 이 트래픽은 여전히 비활성화된다.** 대부분의 켬/끔 변수와 달리, 다시 허용하려면 변수를 해제해야 한다. 기능 플래그 가져오기도 비활성화되므로 Remote Control을 비롯해 기능 플래그 가져오기가 필요한 다른 기능을 사용할 수 없게 된다. 공식 플러그인 마켓플레이스 자동 설치는 포함되지 않으며, 이는 CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL로 비활성화한다. 게이트웨이 모델 검색에는 영향을 주지 않으며, 이는 자체 사용 설정 방식을 따른다</translation>
+            <extracomment>Set to any non-empty value, such as 1, to disable nonessential network traffic: auto-updates, telemetry, error reporting, the /feedback command, Claude-drafted feedback, release notes, the PR and MR status badge checks, and availability checks such as the fast mode check. It also stops the background runs of plugin command sources, which are local commands rather than network traffic, because they can trigger dependency installs. Setting it to 0 or false still disables this traffic, unlike most on/off variables; unset the variable to allow it again. Also disables feature-flag fetching, which makes Remote Control and the other features that need feature-flag fetching unavailable. Official plugin marketplace auto-install isn't covered; disable it with CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL. Doesn't affect gateway model discovery, which has its own opt-in</extracomment>
+            <translation>`1`처럼 비어 있지 않은 값으로 설정하면 비필수 네트워크 트래픽을 비활성화한다. 자동 업데이트, 텔레메트리, 오류 보고, /feedback 명령, Claude가 작성한 피드백, 릴리스 노트, PR 및 MR 상태 배지 확인, fast 모드 확인 같은 가용성 확인이 여기에 해당한다. 또한 플러그인 명령 소스의 백그라운드 실행도 중단하는데, 이는 네트워크 트래픽이 아니라 로컬 명령이지만 의존성 설치를 유발할 수 있기 때문이다. `0`이나 `false`로 설정해도 이 트래픽은 여전히 비활성화된다. 대부분의 켬/끔 변수와 달리, 다시 허용하려면 변수를 해제해야 한다. 기능 플래그 가져오기도 비활성화되므로 Remote Control을 비롯해 기능 플래그 가져오기가 필요한 다른 기능을 사용할 수 없게 된다. 공식 플러그인 마켓플레이스 자동 설치는 포함되지 않으며, 이는 CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL로 비활성화한다. 게이트웨이 모델 검색에는 영향을 주지 않으며, 이는 자체 사용 설정 방식을 따른다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK</source>
@@ -6043,14 +6488,39 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <translation>`1`로 설정하면 시스템 전역 관리형 스킬 디렉터리에서 스킬을 불러오지 않는다. 운영자가 프로비저닝한 스킬을 불러오면 안 되는 컨테이너나 CI 세션에 유용하다</translation>
         </message>
         <message>
+            <source>env.CLAUDE_CODE_DISABLE_POWERSHELL_CMD_RM_DENY</source>
+            <extracomment>Set to 1 to turn off the PowerShell tool check that denies the cmd built-ins rd, rmdir, del, and erase on a system path, such as a drive root or your home directory. Claude Code ignores this variable in a settings file's env block. Requires Claude Code v2.1.283 or later</extracomment>
+            <translation>1로 설정하면 드라이브 루트나 홈 디렉터리 같은 시스템 경로에 대한 cmd 내장 명령 rd, rmdir, del, erase를 거부하는 PowerShell 도구 검사를 끈다. Claude Code는 설정 파일의 env 블록에 있는 이 변수를 무시한다. Claude Code v2.1.283 이상이 필요하다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK</source>
+            <extracomment>Set to 1 to turn off the automatic model switch when a safety classifier flags a request, the behavior the switchModelsOnFlag setting controls</extracomment>
+            <translation>1로 설정하면 안전 분류기가 요청을 플래그했을 때의 자동 모델 전환을 끈다. 이는 switchModelsOnFlag 설정이 제어하는 동작이다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_DISABLE_STRUCTURED_OUTPUTS</source>
+            <extracomment>Set to 1 to stop Claude Code from sending the structured-output output_config.format field and the anthropic-beta value that pairs with it, for an LLM gateway whose upstream rejects them. This leaves on the other pre-release capabilities that CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS turns off. Requires Claude Code v2.1.288 or later</extracomment>
+            <translation>1로 설정하면 상위 서버가 이를 거부하는 LLM 게이트웨이를 위해, Claude Code가 구조화 출력 필드 output_config.format과 이에 짝을 이루는 anthropic-beta 값을 보내지 않는다. CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS가 끄는 다른 사전 출시 기능은 켜진 상태로 유지된다. Claude Code v2.1.288 이상이 필요하다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_DISABLE_SUBSTITUTION_RM_PROMPT</source>
+            <extracomment>Set to 1 to turn off the critical-path check for a recursive rm whose target is entirely the output of a command substitution, such as rm -rf "$(pwd)". The other critical-path checks keep running. Set it in the environment that launches Claude Code, since Claude Code ignores a copy delivered through a settings env block. Requires Claude Code v2.1.281 or later</extracomment>
+            <translation>1로 설정하면 rm -rf "$(pwd)"처럼 대상 전체가 명령 치환의 출력인 재귀 rm에 대한 핵심 경로 검사를 끈다. 다른 핵심 경로 검사는 계속 실행된다. 설정 env 블록으로 전달된 사본은 Claude Code가 무시하므로, Claude Code를 실행하는 환경에서 설정한다. Claude Code v2.1.281 이상이 필요하다</translation>
+        </message>
+        <message>
             <source>env.CLAUDE_CODE_DISABLE_TERMINAL_TITLE</source>
-            <extracomment>Set to 1 to disable automatic terminal title updates based on conversation context. In Agent SDK and claude -p sessions, this also skips the background small/fast-model request that generates the session title</extracomment>
+            <extracomment>Set to 1 to disable automatic terminal title updates based on conversation context. This also skips the background small/fast-model request that generates a session title, and turns off status reports to your terminal</extracomment>
             <translation>`1`로 설정하면 대화 컨텍스트에 기반한 터미널 제목 자동 업데이트를 비활성화한다. Agent SDK와 claude -p 세션에서는 세션 제목을 생성하는 백그라운드 소형/고속 모델 요청도 함께 건너뛴다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_DISABLE_THINKING</source>
-            <extracomment>Set to 1 to omit the thinking parameter from API requests entirely. This is a compatibility option for proxies and gateways that reject the parameter. The variable's behavior is unchanged from earlier versions; on models that think by default, omitting the parameter means the model may still think. To explicitly disable extended thinking on the Anthropic API, use MAX_THINKING_TOKENS=0 instead, which is also ineffective on Fable models since they can't have thinking turned off. On third-party providers, 0 likewise omits the parameter, so the two variables behave the same there</extracomment>
+            <extracomment>Set to 1 to omit the thinking parameter from API requests entirely. This is a compatibility option for proxies and gateways that reject the parameter. On models that think by default, omitting the parameter means the model may still think. To explicitly disable extended thinking on the Anthropic API, use MAX_THINKING_TOKENS=0 instead. Neither variable turns thinking off on Opus 5.5, Sonnet 5.5, Haiku 5.5, or the Fable models, which can't have thinking turned off. On third-party providers, MAX_THINKING_TOKENS=0 likewise omits the parameter, so the two variables behave the same there</extracomment>
             <translation>`1`로 설정하면 API 요청에서 thinking 파라미터를 완전히 생략한다. 이 파라미터를 거부하는 프록시와 게이트웨이를 위한 호환성 옵션이다. 이 변수의 동작은 이전 버전과 동일하다. 기본적으로 사고하는 모델에서는 파라미터를 생략해도 모델이 여전히 사고할 수 있다. Anthropic API에서 확장 사고를 명시적으로 비활성화하려면 대신 MAX_THINKING_TOKENS=0을 사용하되, Fable 모델은 사고를 끌 수 없으므로 여기서도 효과가 없다. 서드파티 공급자에서는 `0`도 마찬가지로 파라미터를 생략하므로 두 변수의 동작이 같다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_DISABLE_ULTRAREVIEW_TRUST_CHECK</source>
+            <extracomment>Set to 1 so that claude ultrareview doesn't exit with Error: Workspace not trusted in a folder you haven't trusted when it can't ask you to trust it, such as in CI. Set it in the environment that launches Claude Code, not a settings env block, and only where every such run starts in a folder you trust. Runs that can ask still ask. Requires Claude Code v2.1.309 or later</extracomment>
+            <translation>1로 설정하면 CI처럼 신뢰 여부를 물어볼 수 없는 상황에서, 신뢰하지 않은 폴더에서 claude ultrareview가 Error: Workspace not trusted 오류로 종료되지 않는다. 설정 env 블록이 아니라 Claude Code를 실행하는 환경에서 설정하며, 이러한 모든 실행이 신뢰하는 폴더에서 시작되는 곳에서만 설정한다. 물어볼 수 있는 실행은 계속 묻는다. Claude Code v2.1.309 이상이 필요하다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_DISABLE_UNKNOWN_MODEL_WINDOW_ENFORCEMENT</source>
@@ -6063,18 +6533,33 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <translation>`1`로 설정하면 전체 화면 렌더링의 가상 스크롤을 비활성화하고 트랜스크립트의 모든 메시지를 렌더링한다. 전체 화면 모드에서 스크롤할 때 메시지가 있어야 할 자리에 빈 영역이 보이면 사용한다</translation>
         </message>
         <message>
+            <source>env.CLAUDE_CODE_DISABLE_WEB_FETCH</source>
+            <extracomment>Set to 1 to turn off the WebFetch tool. The WebSearch tool stays available. Requires Claude Code v2.1.285 or later</extracomment>
+            <translation>1로 설정하면 WebFetch 도구를 끈다. WebSearch 도구는 계속 사용할 수 있다. Claude Code v2.1.285 이상이 필요하다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_DISABLE_WINDOWS_SHELL_LAUNCHER</source>
+            <extracomment>Set to 1 to start PowerShell tool commands on Windows directly instead of through the cmd.exe launcher. By default, the launcher lets a PowerShell command running in the background carry over to the session's next process, such as when you background the session. If you set the variable, a backgrounded PowerShell command stops when the session's process exits. Bash commands aren't affected. Requires Claude Code v2.1.269 or later</extracomment>
+            <translation>1로 설정하면 Windows에서 PowerShell 도구 명령을 cmd.exe 런처를 거치지 않고 직접 시작한다. 기본적으로 런처는 백그라운드에서 실행 중인 PowerShell 명령이, 세션을 백그라운드로 보낼 때처럼 세션의 다음 프로세스로 이어지도록 한다. 이 변수를 설정하면 백그라운드로 전환된 PowerShell 명령은 세션의 프로세스가 종료될 때 중지된다. Bash 명령은 영향을 받지 않는다. Claude Code v2.1.269 이상이 필요하다</translation>
+        </message>
+        <message>
             <source>env.CLAUDE_CODE_DISABLE_WORKFLOWS</source>
             <extracomment>Set to 1 to disable workflows. Equivalent to the disableWorkflows setting</extracomment>
             <translation>`1`로 설정하면 워크플로를 비활성화한다. disableWorkflows 설정과 동일하다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_EFFORT_LEVEL</source>
-            <extracomment>Set the effort level for supported models. Values: low, medium, high, xhigh, max, or auto to use the model default. Available levels depend on the model. Takes precedence over --effort, /effort, and the modelSettings and effortLevel settings. See Adjust effort level</extracomment>
+            <extracomment>Set the effort level for supported models. Values: low, medium, high, xhigh, or max. Available levels depend on the model. Takes precedence over --effort, /effort, and the modelSettings and effortLevel settings. A maxEffortLevel cap still applies. Set it to auto or unset to have Claude Code send no effort level, so that the API applies its own default for the model. See Adjust effort level</extracomment>
             <translation>지원되는 모델의 effort 레벨을 설정한다. 값: low, medium, high, xhigh, max, 또는 모델 기본값을 사용하는 auto. 사용 가능한 레벨은 모델에 따라 다르다. --effort, /effort, 그리고 modelSettings 및 effortLevel 설정보다 우선한다. Adjust effort level 참고</translation>
         </message>
         <message>
+            <source>env.CLAUDE_CODE_EMIT_SESSION_STATE_EVENTS</source>
+            <extracomment>Set to 1 to add session_state_changed messages, which carry the session's state, to the message stream. Requires either the Agent SDK or --print, --output-format stream-json, and --verbose</extracomment>
+            <translation>1로 설정하면 세션의 상태를 담은 session_state_changed 메시지를 메시지 스트림에 추가한다. Agent SDK 또는 --print, --output-format stream-json, --verbose가 필요하다</translation>
+        </message>
+        <message>
             <source>env.CLAUDE_CODE_ENABLE_APPEND_SUBAGENT_PROMPT</source>
-            <extracomment>Set to 1 to enable appending extra text to the end of the system prompt of every subagent other than a forked subagent. The --append-subagent-system-prompt and --append-subagent-system-prompt-file flags supply the appended text and set this variable automatically, so you don't need to set it yourself. Requires Claude Code v2.1.205 or later</extracomment>
+            <extracomment>Set to 1 to enable appending extra text to the end of every subagent's system prompt. The --append-subagent-system-prompt flag supplies the appended text and sets this variable automatically, so you do not need to set it yourself. Requires Claude Code v2.1.205 or later. See https://code.claude.com/docs/en/sub-agents</extracomment>
             <translation>`1`로 설정하면 포크된 서브에이전트를 제외한 모든 서브에이전트의 시스템 프롬프트 끝에 추가 텍스트를 덧붙이는 기능을 활성화한다. --append-subagent-system-prompt와 --append-subagent-system-prompt-file 플래그가 덧붙일 텍스트를 제공하고 이 변수를 자동으로 설정하므로, 직접 설정할 필요는 없다. Claude Code v2.1.205 이상 필요</translation>
         </message>
         <message>
@@ -6093,6 +6578,11 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <translation>`1`로 설정하면 비대화형 모드에서 백그라운드 설치가 완료된 후 턴 경계에서 플러그인 상태를 새로 고친다. 새로 고침이 세션 도중 시스템 프롬프트를 변경하여 해당 턴의 프롬프트 캐싱을 무효화하므로 기본적으로 꺼져 있다</translation>
         </message>
         <message>
+            <source>env.CLAUDE_CODE_ENABLE_CFC</source>
+            <extracomment>Set to 1 to start a CLI session with Chrome integration on, or 0 to start with it off. Takes precedence over the claudeInChromeDefaultEnabled setting. The --chrome and --no-chrome flags take precedence over both. Claude Code ignores 1 in project and local settings</extracomment>
+            <translation>1로 설정하면 CLI 세션을 Chrome 통합이 켜진 상태로 시작하고, 0으로 설정하면 꺼진 상태로 시작한다. claudeInChromeDefaultEnabled 설정보다 우선한다. --chrome 및 --no-chrome 플래그는 둘 다보다 우선한다. Claude Code는 프로젝트 및 로컬 설정의 1을 무시한다</translation>
+        </message>
+        <message>
             <source>env.CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL</source>
             <extracomment>Set to 1 to route the "How is Claude doing?" session quality survey to your own OpenTelemetry collector when Anthropic-bound nonessential traffic is blocked. Survey ratings are emitted only as OTEL events to your configured collector. No survey data is sent to Anthropic in this mode. Applies when CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC, DISABLE_TELEMETRY, or DO_NOT_TRACK is set, and has no effect otherwise. CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY and the organization product feedback policy take precedence</extracomment>
             <translation>`1`로 설정하면 Anthropic으로 향하는 비필수 트래픽이 차단된 상황에서 "How is Claude doing?" 세션 품질 설문을 자체 OpenTelemetry 수집기로 보낸다. 설문 평가는 설정된 수집기로 OTEL 이벤트로만 전송된다. 이 모드에서는 어떤 설문 데이터도 Anthropic으로 전송되지 않는다. CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC, DISABLE_TELEMETRY 또는 DO_NOT_TRACK이 설정된 경우에 적용되며, 그 밖에는 아무 효과가 없다. CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY와 조직의 제품 피드백 정책이 우선한다</translation>
@@ -6101,6 +6591,11 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <source>env.CLAUDE_CODE_ENABLE_FINE_GRAINED_TOOL_STREAMING</source>
             <extracomment>Controls whether tool call inputs stream from the API as Claude generates them. With this off, a large tool input such as a long file write arrives only after Claude finishes generating it, which can look like it's hanging. Enabled by default on the Anthropic API. On Amazon Bedrock and Google Cloud's Agent Platform, enabled per model where the deployed container supports it. Set to 0 to opt out. Set to 1 to force on when routing through a proxy via ANTHROPIC_BASE_URL, ANTHROPIC_VERTEX_BASE_URL, or ANTHROPIC_BEDROCK_BASE_URL. Off by default on Microsoft Foundry and gateway connections</extracomment>
             <translation>Claude가 도구 호출 입력을 생성하는 동안 그 입력이 API에서 스트리밍될지를 제어한다. 이 기능이 꺼져 있으면 긴 파일 쓰기처럼 큰 도구 입력은 Claude가 생성을 마친 뒤에야 도착하므로 멈춘 것처럼 보일 수 있다. Anthropic API에서는 기본적으로 활성화되어 있다. Amazon Bedrock과 Google Cloud's Agent Platform에서는 배포된 컨테이너가 지원하는 모델에 한해 모델별로 활성화된다. 사용을 해제하려면 `0`으로 설정한다. ANTHROPIC_BASE_URL, ANTHROPIC_VERTEX_BASE_URL 또는 ANTHROPIC_BEDROCK_BASE_URL을 통해 프록시를 경유할 때 강제로 켜려면 `1`로 설정한다. Microsoft Foundry와 게이트웨이 연결에서는 기본적으로 꺼져 있다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_ENABLE_FUNCTION_HOOKS</source>
+            <extracomment>Enable Claude Mods (function hooks)</extracomment>
+            <translation>Claude Mods(함수 훅)를 활성화한다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY</source>
@@ -6114,13 +6609,18 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION</source>
-            <extracomment>Set to false to turn off prompt suggestions, the grayed-out predictions that appear in your prompt input. Takes precedence over the promptSuggestionEnabled setting, which is what the **Prompt suggestions** toggle in /config writes. Claude Code also pauses suggestions while your account is close to or at its usage limit. Set to true to keep them on until you reach the limit. Requires Claude Code v2.1.238 or later. See Prompt suggestions</extracomment>
-            <translation>`false`로 설정하면 프롬프트 입력란에 회색으로 나타나는 예측인 프롬프트 제안을 끈다. /config의 **Prompt suggestions** 토글이 기록하는 promptSuggestionEnabled 설정보다 우선한다. Claude Code는 계정이 사용 한도에 가깝거나 도달한 경우에도 제안을 일시 중단한다. 한도에 도달할 때까지 제안을 계속 켜 두려면 `true`로 설정한다. Claude Code v2.1.238 이상 필요. Prompt suggestions 참고</translation>
+            <extracomment>Set to false to turn off prompt suggestions, the grayed-out predictions that appear in your prompt input. Takes precedence over the promptSuggestionEnabled setting, which is what the Prompt suggestions toggle in /config writes. Claude Code also pauses suggestions while your account is close to or at its usage limit. Set to true to keep that pause from applying until you reach the limit. Requires Claude Code v2.1.238 or later. See Prompt suggestions</extracomment>
+            <translation>`false`로 설정하면 프롬프트 입력란에 회색으로 나타나는 예측인 프롬프트 제안을 끈다. /config의 Prompt suggestions 토글이 기록하는 promptSuggestionEnabled 설정보다 우선한다. Claude Code는 계정이 사용 한도에 가깝거나 도달한 경우에도 제안을 일시 중단한다. 한도에 도달할 때까지 제안을 계속 켜 두려면 `true`로 설정한다. Claude Code v2.1.238 이상 필요. Prompt suggestions 참고</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING</source>
             <extracomment>Enable file checkpointing for a non-interactive CLI run, so claude -p --resume &lt;session-id&gt; --rewind-files &lt;checkpoint-uuid&gt; can rewind files. The Agent SDK sets this internally when enable_file_checkpointing (Python) or enableFileCheckpointing (TypeScript) is enabled; the bare CLI never sets it. Without it, a non-interactive rewind fails with "File rewinding is not enabled". See https://code.claude.com/docs/en/agent-sdk/file-checkpointing</extracomment>
             <translation>비대화형 CLI 실행에 대해 파일 체크포인트를 활성화하여 claude -p --resume &lt;session-id&gt; --rewind-files &lt;checkpoint-uuid&gt;로 파일을 되돌릴 수 있게 한다. Agent SDK는 enable_file_checkpointing (Python) 또는 enableFileCheckpointing (TypeScript)이 활성화되면 이 변수를 내부적으로 설정하며, 순수 CLI는 절대 설정하지 않는다. 이 변수가 없으면 비대화형 되돌리기는 "File rewinding is not enabled" 오류로 실패한다. 참고: https://code.claude.com/docs/en/agent-sdk/file-checkpointing</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_ENABLE_SHARE_BUNDLE</source>
+            <extracomment>Set to 1 to make /share save its report and the whole session transcript to a local archive under ~/.claude/feedback-bundles/ instead of sending the report to Anthropic. If your organization's policy turns off /share, you can't turn it back on with this variable. Requires Claude Code v2.1.299 or later</extracomment>
+            <translation>1로 설정하면 /share가 보고서를 Anthropic으로 보내는 대신, 보고서와 전체 세션 트랜스크립트를 ~/.claude/feedback-bundles/ 아래의 로컬 아카이브에 저장한다. 조직 정책이 /share를 꺼 둔 경우 이 변수로 다시 켤 수 없다. Claude Code v2.1.299 이상이 필요하다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_ENABLE_TASKS</source>
@@ -6129,18 +6629,23 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_ENABLE_TELEMETRY</source>
-            <extracomment>Set to 1 to enable OpenTelemetry data collection for metrics and logging. Required before configuring OTel exporters. See Monitoring</extracomment>
+            <extracomment>Set to 1 to enable OpenTelemetry data collection for metrics and logging. Required before configuring OTel exporters. Set it in your shell, user settings, or managed settings. Ignored in project and local settings. See Monitoring</extracomment>
             <translation>`1`로 설정하면 메트릭과 로깅을 위한 OpenTelemetry 데이터 수집을 활성화한다. OTel 익스포터를 구성하기 전에 필요하다. Monitoring 참고</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_ENABLE_TODO_TOOLS</source>
-            <extracomment>Set to 1 to get the task-tracking tools on the models listed under Task tool availability, where Claude Code otherwise leaves them out. CLAUDE_CODE_ENABLE_TASKS still selects the Task tools or TodoWrite. Requires Claude Code v2.1.233 or later</extracomment>
+            <extracomment>Set to 1 to get the task-tracking tools on every model. Without it, Claude Code provides them by default only on the models listed under Task tool availability. CLAUDE_CODE_ENABLE_TASKS still selects the Task tools or TodoWrite. Requires Claude Code v2.1.233 or later</extracomment>
             <translation>1로 설정하면 Claude Code가 기본적으로 제외하는, Task tool availability에 나열된 모델에서도 작업 추적 도구를 사용한다. CLAUDE_CODE_ENABLE_TASKS는 여전히 Task 도구와 TodoWrite 중 어느 쪽을 쓸지 선택한다. Claude Code v2.1.233 이상 필요</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_ENHANCED_TELEMETRY_BETA</source>
             <extracomment>Enable the enhanced telemetry (tracing) beta. ENABLE_ENHANCED_TELEMETRY_BETA is also accepted. See https://code.claude.com/docs/en/monitoring-usage#traces-beta</extracomment>
             <translation>향상된 텔레메트리(트레이싱) 베타를 활성화한다. ENABLE_ENHANCED_TELEMETRY_BETA도 사용할 수 있다. 참고: https://code.claude.com/docs/en/monitoring-usage#traces-beta</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS</source>
+            <extracomment>Set to 1 to run dangerous rm commands with no prompt in bypassPermissions mode, which removes a safety prompt for destructive deletes. The linked section lists where it has no effect. Set it in the environment that launches Claude Code, because Claude Code ignores it in a settings env block. Requires Claude Code v2.1.311 or later</extracomment>
+            <translation>1로 설정하면 bypassPermissions 모드에서 위험한 rm 명령을 프롬프트 없이 실행하며, 이는 파괴적 삭제에 대한 안전 프롬프트를 제거한다. 링크된 섹션에는 이 변수가 효과가 없는 경우가 나열되어 있다. 설정 env 블록에서는 Claude Code가 무시하므로, Claude Code를 실행하는 환경에서 설정한다. Claude Code v2.1.311 이상이 필요하다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_EXIT_AFTER_STOP_DELAY</source>
@@ -6159,7 +6664,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS</source>
-            <extracomment>Override the default token limit for file reads. Useful when you need to read larger files in full</extracomment>
+            <extracomment>Override the default token limit for file reads, which is 25,000 tokens. Useful when you need to read larger files in full. A read that Claude makes with the allow_large parameter can go past this limit when the context window has room</extracomment>
             <translation>파일 읽기의 기본 토큰 한도를 재정의한다. 더 큰 파일을 전체로 읽어야 할 때 유용하다</translation>
         </message>
         <message>
@@ -6178,14 +6683,29 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <translation>1로 설정하면 터미널이 지원하지만 자동 감지되지 않는 경우 DEC private mode 2026 동기화 출력을 강제로 활성화한다. BSU/ESU를 구현하지만 기능 탐지에 응답하지 않는 Emacs eat 같은 에뮬레이터에 유용하다. tmux 아래에서는 효과가 없다. 전체 화면 렌더링으로 전환하는 CLAUDE_CODE_NO_FLICKER와 달리 이 변수는 렌더러를 바꾸지 않는다</translation>
         </message>
         <message>
+            <source>env.CLAUDE_CODE_FORCE_TERMINAL_IMAGES</source>
+            <extracomment>Set to 1 to draw mod Image elements as pictures when your terminal draws kitty graphics protocol images with Unicode placeholders and you still see an Image's dimmed alt text. See which terminals draw an Image and where not to set this variable</extracomment>
+            <translation>1로 설정하면 터미널이 유니코드 플레이스홀더를 사용하는 kitty 그래픽 프로토콜 이미지를 그리는데도 Image의 흐린 대체 텍스트가 보일 때, mod의 Image 요소를 그림으로 그린다. 어떤 터미널이 Image를 그리는지와 이 변수를 설정하지 말아야 할 곳은 해당 문서를 참고한다</translation>
+        </message>
+        <message>
             <source>env.CLAUDE_CODE_FORK_SUBAGENT</source>
-            <extracomment>Controls fork mode, which lets Claude spawn forked subagents itself and is on by default in interactive sessions only. Set to 1 to turn it on in claude -p and the Agent SDK as well, or 0 to turn it off in every kind of session. You can run /subtask whether or not fork mode is on. The interactive default requires Claude Code v2.1.232 or later; on earlier versions, set the variable to 1 to turn fork mode on</extracomment>
+            <extracomment>Controls fork mode, which is on by default and lets Claude start forks on its own. While fork mode is on, Claude also can't wait for a subagent in interactive terminal, VS Code, or desktop sessions on your machine. Set to 0 to turn fork mode off. For versions, see Turn fork mode off</extracomment>
             <translation>포크 모드를 제어한다. 포크 모드는 Claude가 스스로 포크된 서브에이전트를 생성할 수 있게 하며 대화형 세션에서만 기본적으로 켜져 있다. 1로 설정하면 claude -p와 Agent SDK에서도 켜지고, 0으로 설정하면 모든 종류의 세션에서 꺼진다. /subtask는 포크 모드가 켜져 있든 아니든 실행할 수 있다. 대화형 세션의 기본 활성화는 Claude Code v2.1.232 이상이 필요하며, 이전 버전에서는 이 변수를 1로 설정해 포크 모드를 켠다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_FORWARD_SUBAGENT_TEXT</source>
             <extracomment>Set to 1 to emit subagent text and thinking blocks in claude -p --output-format stream-json output, the same behavior as the --forward-subagent-text flag. Use the variable when a harness invokes claude and can't pass the flag itself. Unlike the flag, which exits with an error outside non-interactive mode with stream-json output, the variable is ignored there so that nested invocations keep working when it's set process-wide. Requires Claude Code v2.1.211 or later</extracomment>
             <translation>1로 설정하면 claude -p --output-format stream-json 출력에 서브에이전트 텍스트와 사고 블록을 내보내며, 이는 --forward-subagent-text 플래그와 동일한 동작이다. 하네스가 claude를 호출하면서 플래그를 직접 전달할 수 없을 때 이 변수를 사용한다. stream-json 출력을 사용하는 비대화형 모드 밖에서 오류로 종료하는 플래그와 달리, 이 변수는 그런 곳에서 무시되므로 프로세스 전역으로 설정해도 중첩 호출이 계속 동작한다. Claude Code v2.1.211 이상 필요</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_GATEWAY_HINT_HEADERS</source>
+            <extracomment>Set to 1 to send the gateway hint headers, such as x-claude-code-request-class and x-claude-code-compaction, on a custom proxy or a third-party provider such as Amazon Bedrock or Claude Platform on AWS. Set to 0 to stop sending them on every connection, including a direct connection to the Anthropic API, where Claude Code sends them by default. Requires Claude Code v2.1.273 or later</extracomment>
+            <translation>1로 설정하면 사용자 지정 프록시나 Amazon Bedrock, Claude Platform on AWS 같은 서드파티 제공자에서 x-claude-code-request-class, x-claude-code-compaction 같은 게이트웨이 힌트 헤더를 전송한다. 0으로 설정하면 Claude Code가 기본적으로 헤더를 보내는 Anthropic API 직접 연결을 포함해 모든 연결에서 전송하지 않는다. Claude Code v2.1.273 이상이 필요하다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_GATEWAY_MODEL_DISCOVERY_TIMEOUT_MS</source>
+            <extracomment>Timeout in milliseconds for the gateway model discovery request that CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY turns on (default: 3000). Raise it when your gateway needs longer than three seconds to answer /v1/models at startup. Takes plain digits only; 0, negative values, and other spellings keep the default. Requires Claude Code v2.1.269 or later</extracomment>
+            <translation>CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY가 켜는 게이트웨이 모델 검색 요청의 타임아웃(밀리초 단위, 기본값: 3000). 게이트웨이가 시작 시 /v1/models에 응답하는 데 3초보다 오래 걸릴 때 값을 높인다. 숫자만 허용하며, 0, 음수, 그 외의 표기는 기본값을 유지한다. Claude Code v2.1.269 이상이 필요하다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_GIT_BASH_PATH</source>
@@ -6213,6 +6733,11 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <translation>Claude Code가 Claude에게 확인을 요청하기 전까지 백그라운드 작업이 활성 목표를 대기시킬 수 있는 시간(분). 기본값 30. 0으로 설정하면 확인을 끈다. 값은 숫자만으로 된 정수 분 단위로 지정하며 최대 10080, 즉 일주일이다. 그 외의 값은 설정되지 않은 것으로 간주해 기본값을 사용한다. Claude Code v2.1.234 이상 필요</translation>
         </message>
         <message>
+            <source>env.CLAUDE_CODE_GZIP_REQUEST_BODIES</source>
+            <extracomment>Set to 0 to turn off gzip compression of Claude API, telemetry, and artifact publish request bodies sent to api.anthropic.com. By default, Claude Code compresses large request bodies on direct connections and skips compression when you send requests through a proxy, configure a client certificate, or set NODE_EXTRA_CA_CERTS. Use 0 if a TLS-inspecting proxy that Claude Code can't detect mishandles compressed requests</extracomment>
+            <translation>0으로 설정하면 api.anthropic.com으로 보내는 Claude API, 텔레메트리, 아티팩트 게시 요청 본문의 gzip 압축을 끈다. 기본적으로 Claude Code는 직접 연결에서 큰 요청 본문을 압축하고, 프록시를 통해 요청을 보내거나 클라이언트 인증서를 구성하거나 NODE_EXTRA_CA_CERTS를 설정한 경우에는 압축하지 않는다. Claude Code가 감지하지 못하는 TLS 검사 프록시가 압축된 요청을 잘못 처리하면 0을 사용한다</translation>
+        </message>
+        <message>
             <source>env.CLAUDE_CODE_HIDE_CWD</source>
             <extracomment>Set to 1 to hide the working directory in the startup logo. Useful for screenshares or recordings where the path exposes your OS username</extracomment>
             <translation>1로 설정하면 시작 로고에서 작업 디렉터리를 숨긴다. 경로에 OS 사용자 이름이 노출되는 화면 공유나 녹화에 유용하다</translation>
@@ -6233,6 +6758,11 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <translation>1로 설정하면 연결 중 IDE 잠금 파일 항목의 검증을 건너뛴다. IDE가 실행 중인데도 자동 연결이 IDE를 찾지 못할 때 사용한다</translation>
         </message>
         <message>
+            <source>env.CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS</source>
+            <extracomment>Context size, in tokens, at which idle compaction applies to a conversation (default: 200000). Accepts a positive whole number, and anything else is ignored. Values below 100000 are raised to 100000, the lowest threshold. Idle compaction is on by default for conversations that meet its conditions. To turn it off, set idleCompaction to false. Requires Claude Code v2.1.290 or later</extracomment>
+            <translation>대화에 유휴 압축이 적용되는 컨텍스트 크기(토큰 단위, 기본값: 200000). 양의 정수를 받으며 그 외에는 무시된다. 100000 미만의 값은 최저 임계값인 100000으로 올려진다. 유휴 압축은 조건을 충족하는 대화에 대해 기본적으로 켜져 있다. 끄려면 idleCompaction을 false로 설정한다. Claude Code v2.1.290 이상이 필요하다</translation>
+        </message>
+        <message>
             <source>env.CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS</source>
             <extracomment>How many subagents can be running in one session before the Agent tool refuses to spawn another (default: 20). Accepts a positive whole number in plain digits; anything else is ignored, so the variable can adjust the cap but can't disable it. Requires Claude Code v2.1.217 or later</extracomment>
             <translation>Agent 도구가 추가 생성을 거부하기 전까지 한 세션에서 동시에 실행될 수 있는 서브에이전트 수 (기본값: 20). 숫자만으로 된 양의 정수를 받으며 그 외의 값은 무시되므로, 이 변수로 상한을 조정할 수는 있어도 비활성화할 수는 없다. Claude Code v2.1.217 이상 필요</translation>
@@ -6243,13 +6773,18 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <translation>Claude Code가 활성 모델에 대해 가정하는 컨텍스트 윈도 크기를 재정의한다. v2.1.193부터는 Claude Code가 모델 ID를 어떻게 해석하는지에 따라 적용 방식이 달라진다. Correct the window for a gateway or custom model ID 참고. ANTHROPIC_BASE_URL을 통해 라우팅하는 모델의 컨텍스트 윈도가 그 이름에 대한 내장 크기와 일치하지 않을 때 사용한다</translation>
         </message>
         <message>
+            <source>env.CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH</source>
+            <extracomment>Maximum length in characters of MCP tool descriptions and MCP server instructions that Claude Code sends to the model. The value you set replaces both default limits: 4096, and 16384 for the description of a tool that Claude loads through tool search. Accepts a positive whole number in plain digits. Anything else is ignored and the defaults apply. Requires Claude Code v2.1.280 or later</extracomment>
+            <translation>Claude Code가 모델에 보내는 MCP 도구 설명과 MCP 서버 지침의 최대 길이(문자 수). 설정한 값은 두 기본 한도, 즉 4096과 도구 검색으로 Claude가 로드하는 도구 설명의 16384를 모두 대체한다. 숫자만으로 된 양의 정수를 받으며, 그 외에는 무시되고 기본값이 적용된다. Claude Code v2.1.280 이상이 필요하다</translation>
+        </message>
+        <message>
             <source>env.CLAUDE_CODE_MAX_OUTPUT_TOKENS</source>
-            <extracomment>Set the maximum number of output tokens for most requests. Defaults and caps vary by model; see max output tokens. Claude Code defaults to 32000 for model IDs it doesn't recognize, such as gateway-specific names, and lowers values above a model's cap to the cap. Increasing this value reduces the effective context window available before auto-compaction triggers</extracomment>
+            <extracomment>Set the maximum number of output tokens for most requests. Defaults and caps vary by model; see max output tokens. Claude Code lowers a value above a model's cap to the cap. For a model ID Claude Code can't resolve to a model it knows, the default is 32000 and the cap is 128000. Increasing this value reduces the effective context window available before auto-compaction triggers</extracomment>
             <translation>대부분의 요청에 대한 최대 출력 토큰 수를 설정한다. 기본값과 상한은 모델마다 다르다. max output tokens 참고. Claude Code는 게이트웨이 전용 이름처럼 인식하지 못하는 모델 ID에 대해 기본값 32000을 사용하며, 모델의 상한을 넘는 값은 상한으로 낮춘다. 이 값을 늘리면 자동 압축이 시작되기 전까지 사용할 수 있는 실질 컨텍스트 윈도가 줄어든다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_MAX_RETRIES</source>
-            <extracomment>Override the number of times to retry failed API requests (default: 10). Capped at 15 as of v2.1.186; as of v2.1.199, CLAUDE_CODE_RETRY_WATCHDOG raises the default and removes the cap. For unattended sessions that need to wait through longer outages, set CLAUDE_CODE_RETRY_WATCHDOG instead</extracomment>
+            <extracomment>Override the number of times to retry failed API requests (default: 10). Retrying can stop earlier on 529 overloaded errors. For example, with an API key on an Opus model, it stops at the third 529 and shows Repeated 529 Overloaded errors. If you set a fallback model, Claude Code switches to that model rather than showing the error. Capped at 15 as of v2.1.186; as of v2.1.199, CLAUDE_CODE_RETRY_WATCHDOG raises the default and removes the cap. For unattended sessions that need to wait through longer outages, set CLAUDE_CODE_RETRY_WATCHDOG instead</extracomment>
             <translation>실패한 API 요청을 재시도하는 횟수를 재정의한다 (기본값: 10). v2.1.186부터 15로 제한되며, v2.1.199부터는 CLAUDE_CODE_RETRY_WATCHDOG가 기본값을 높이고 이 상한을 없앤다. 더 긴 장애를 견뎌야 하는 무인 세션에서는 대신 CLAUDE_CODE_RETRY_WATCHDOG를 설정한다</translation>
         </message>
         <message>
@@ -6264,7 +6799,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY</source>
-            <extracomment>Maximum number of read-only tools and subagents that can execute in parallel (default: 10). Higher values increase parallelism but consume more resources</extracomment>
+            <extracomment>Maximum parallel tool executions (default: 10)</extracomment>
             <translation>병렬로 실행될 수 있는 읽기 전용 도구와 서브에이전트의 최대 수 (기본값: 10). 값이 클수록 병렬성은 높아지지만 리소스를 더 많이 사용한다</translation>
         </message>
         <message>
@@ -6274,7 +6809,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION</source>
-            <extracomment>Cap on the total number of WebSearch calls one session can make (default: 200). When Claude reaches the cap, further WebSearch calls return a notice telling it to continue with the information it already gathered. Accepts a positive whole number with no upper bound. Anything else is ignored and the default applies, so the cap can be raised but not turned off. Requires Claude Code v2.1.212 or later</extracomment>
+            <extracomment>Cap on WebSearch calls (default: 200). When Claude reaches the cap, further WebSearch calls return a notice telling it to continue with the information it already gathered and say so in its answer. Accepts a positive whole number with no upper bound. Anything else is ignored and the default applies, so the cap can be raised but not turned off. Requires Claude Code v2.1.212 or later</extracomment>
             <translation>한 세션이 호출할 수 있는 WebSearch 총 횟수의 상한 (기본값: 200). Claude가 상한에 도달하면 이후 WebSearch 호출은 이미 수집한 정보로 계속하라는 안내를 반환한다. 상한 없는 양의 정수를 받는다. 그 외의 값은 무시되고 기본값이 적용되므로, 상한을 올릴 수는 있어도 끌 수는 없다. Claude Code v2.1.212 이상 필요</translation>
         </message>
         <message>
@@ -6284,8 +6819,13 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS</source>
-            <extracomment>Elapsed time in milliseconds before a still-running MCP tool call moves to a background task (default: 120000, or 2 minutes). Set to 0 to turn automatic backgrounding off. Requires Claude Code v2.1.212 or later</extracomment>
+            <extracomment>Elapsed time in milliseconds before a still-running MCP tool call moves to a background task (default: 120000, or 2 minutes). Set to 0 to turn automatic backgrounding off and, in an interactive session, to make Claude wait for MCP tasks. Requires Claude Code v2.1.212 or later</extracomment>
             <translation>아직 실행 중인 MCP 도구 호출이 백그라운드 작업으로 전환되기까지의 경과 시간(밀리초) (기본값: 120000, 2분). 0으로 설정하면 자동 백그라운드 전환을 끈다. Claude Code v2.1.212 이상 필요</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_MCP_STARTUP_WAIT_MS</source>
+            <extracomment>How long in milliseconds the first turn of a non-interactive session waits for MCP servers that are still connecting, in place of the default first-turn wait. In a self-hosted environment, it changes only how long the wait lasts. Some servers keep a wait of their own regardless of the value; Connection timing lists them. Set to 0 to skip the wait for every other server. Requires Claude Code v2.1.274 or later</extracomment>
+            <translation>비대화형 세션의 첫 턴이 아직 연결 중인 MCP 서버를 기다리는 시간(밀리초 단위)이며, 기본 첫 턴 대기 시간을 대체한다. 자체 호스팅 환경에서는 대기 시간의 길이만 바꾼다. 일부 서버는 이 값과 관계없이 자체 대기 시간을 유지하며, 연결 타이밍에 이들이 나열되어 있다. 0으로 설정하면 다른 모든 서버에 대한 대기를 건너뛴다. Claude Code v2.1.274 이상이 필요하다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_MCP_TOOL_IDLE_TIMEOUT</source>
@@ -6304,13 +6844,23 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_NATIVE_CURSOR</source>
-            <extracomment>Set to 1 to show the terminal's own cursor at the input caret instead of a drawn block. The cursor respects the terminal's blink, shape, and focus settings</extracomment>
+            <extracomment>Set to 1 to show the terminal's own cursor at the input caret instead of a drawn block. The cursor respects the terminal's blink, shape, and focus settings. Setting 0 reads the same as leaving the variable unset, so it doesn't bring the drawn block back in a session where the terminal's own cursor is already on</extracomment>
             <translation>1로 설정하면 입력 캐럿 위치에 그려진 블록 대신 터미널 자체 커서를 표시한다. 이 커서는 터미널의 깜빡임, 모양, 포커스 설정을 따른다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_NEW_INIT</source>
             <extracomment>Set to 1 to make /init run an interactive setup flow. The flow asks which files to generate, including CLAUDE.md, skills, and hooks, before exploring the codebase and writing them. Without this variable, /init generates a CLAUDE.md automatically without prompting</extracomment>
             <translation>1로 설정하면 /init이 대화형 설정 흐름으로 실행된다. 이 흐름은 코드베이스를 탐색하고 파일을 작성하기 전에 CLAUDE.md, 스킬, 훅을 포함해 어떤 파일을 생성할지 묻는다. 이 변수가 없으면 /init은 확인을 요청하지 않고 CLAUDE.md를 자동으로 생성한다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_NONBLOCKING_STDOUT</source>
+            <extracomment>Set to 1 to write terminal output through a second non-blocking file descriptor, so a terminal that stops reading, such as a paused tmux control-mode pane or a stalled SSH connection, can't freeze Claude Code mid-session. Applies on macOS, Linux, and WSL when stdout is a terminal. Requires Claude Code v2.1.261 or later</extracomment>
+            <translation>1로 설정하면 터미널 출력을 두 번째 논블로킹 파일 디스크립터로 기록하여, 일시 중지된 tmux control-mode 창이나 멈춘 SSH 연결처럼 읽기를 멈춘 터미널이 세션 도중 Claude Code를 멈추게 하지 못하도록 한다. stdout이 터미널일 때 macOS, Linux, WSL에서 적용된다. Claude Code v2.1.261 이상이 필요하다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_NONSTREAMING_TIMEOUT_RETRIES</source>
+            <extracomment>Limit how many times Claude Code re-sends a non-streaming request that times out. With 0, the request fails on the first timeout. See Tune retry behavior for the timeout. Requires Claude Code v2.1.285 or later</extracomment>
+            <translation>타임아웃된 비스트리밍 요청을 Claude Code가 다시 보내는 횟수를 제한한다. 0이면 첫 타임아웃에서 요청이 실패한다. 타임아웃에 대해서는 재시도 동작 조정을 참고한다. Claude Code v2.1.285 이상이 필요하다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_NO_FLICKER</source>
@@ -6363,6 +6913,16 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <translation>종료 시 OpenTelemetry 익스포터가 작업을 마치기까지의 타임아웃(밀리초) (기본값: 2000). 종료 시 메트릭이 유실되면 늘린다. Monitoring 참고</translation>
         </message>
         <message>
+            <source>env.CLAUDE_CODE_OVERLOADED_RETRY_BASE_DELAY_MS</source>
+            <extracomment>Starting delay in milliseconds, in place of the default 500, of the exponential backoff between automatic retries of a request that the API rejects with a 529 overloaded error. Raise it to spread the retries over a longer window when the API is at capacity. Give whole milliseconds from 500 to 32000 in plain digits; Claude Code treats any other value as unset. Has no effect when CLAUDE_CODE_RETRY_WATCHDOG is set to 1, or when the rejected request was sent in fast mode. Requires Claude Code v2.1.292 or later</extracomment>
+            <translation>API가 529 overloaded 오류로 거부한 요청을 자동으로 재시도할 때 지수 백오프의 시작 지연(밀리초 단위)이며, 기본값 500을 대체한다. API 용량이 가득 찼을 때 재시도를 더 긴 시간 창에 분산하려면 값을 높인다. 숫자만으로 500에서 32000 사이의 정수 밀리초를 지정하며, 그 외의 값은 Claude Code가 미설정으로 취급한다. CLAUDE_CODE_RETRY_WATCHDOG가 1로 설정되었거나 거부된 요청이 fast 모드로 전송된 경우에는 효과가 없다. Claude Code v2.1.292 이상이 필요하다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_OVERLOADED_RETRY_MAX_DELAY_MS</source>
+            <extracomment>Ceiling in milliseconds, in place of the default 32000, on the exponential backoff between automatic retries of a request that the API rejects with a 529 overloaded error. Raise it so that later retries keep spreading apart when the API is at capacity. Give whole milliseconds from 32000 to 64000 in plain digits; Claude Code treats any other value as unset. Has no effect when CLAUDE_CODE_RETRY_WATCHDOG is set to 1, or when the rejected request was sent in fast mode. Requires Claude Code v2.1.296 or later</extracomment>
+            <translation>API가 529 overloaded 오류로 거부한 요청을 자동으로 재시도할 때 지수 백오프의 상한(밀리초 단위)이며, 기본값 32000을 대체한다. API 용량이 가득 찼을 때 이후 재시도 간격이 계속 벌어지도록 하려면 값을 높인다. 숫자만으로 32000에서 64000 사이의 정수 밀리초를 지정하며, 그 외의 값은 Claude Code가 미설정으로 취급한다. CLAUDE_CODE_RETRY_WATCHDOG가 1로 설정되었거나 거부된 요청이 fast 모드로 전송된 경우에는 효과가 없다. Claude Code v2.1.296 이상이 필요하다</translation>
+        </message>
+        <message>
             <source>env.CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE</source>
             <extracomment>Set to 1 to let Claude Code run your package manager's upgrade command in the background when a new version is available. Applies to Homebrew and WinGet installations. Other package managers continue to show the upgrade command without running it. See Auto updates</extracomment>
             <translation>1로 설정하면 새 버전이 있을 때 Claude Code가 패키지 매니저의 업그레이드 명령을 백그라운드에서 실행하도록 허용한다. Homebrew와 WinGet 설치에 적용된다. 다른 패키지 매니저는 업그레이드 명령을 실행하지 않고 계속 표시만 한다. Auto updates 참고</translation>
@@ -6378,13 +6938,23 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <translation>플러그인 루트 디렉터리를 재정의한다. 이름과 달리 이 값은 캐시 자체가 아니라 상위 디렉터리를 지정한다: 마켓플레이스와 플러그인 캐시는 이 경로 아래 하위 디렉터리에 있다. 기본값은 ~/.claude/plugins</translation>
         </message>
         <message>
+            <source>env.CLAUDE_CODE_PLUGIN_DIRS</source>
+            <extracomment>Plugin directories to load for the session, each loaded the way a --plugin-dir flag loads it. Separate multiple paths with : on Unix or ; on Windows. Give each path as an absolute path or start it with ~, because Claude Code skips relative paths. Requires Claude Code v2.1.280 or later. See Load a plugin for one session</extracomment>
+            <translation>세션에 로드할 플러그인 디렉터리이며, 각각 --plugin-dir 플래그로 로드하는 방식과 동일하게 로드된다. 여러 경로는 Unix에서는 :, Windows에서는 ;로 구분한다. Claude Code는 상대 경로를 건너뛰므로 각 경로를 절대 경로로 지정하거나 ~로 시작한다. Claude Code v2.1.280 이상이 필요하다. 한 세션용 플러그인 로드를 참고한다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_PLUGIN_DIR_WATCH</source>
+            <extracomment>Controls whether Claude Code reloads a mod when the mod's files change. Reloading applies to a mod you load from a directory with --plugin-dir, and it's on by default in interactive sessions. Set to 1 to turn it on in non-interactive sessions as well, or 0 to turn it off in every session. Requires Claude Code v2.1.287 or later. See mod settings and environment variables</extracomment>
+            <translation>mod의 파일이 변경될 때 Claude Code가 mod를 다시 로드할지 제어한다. 다시 로드는 --plugin-dir로 디렉터리에서 로드한 mod에 적용되며, 대화형 세션에서는 기본적으로 켜져 있다. 1로 설정하면 비대화형 세션에서도 켜고, 0으로 설정하면 모든 세션에서 끈다. Claude Code v2.1.287 이상이 필요하다. mod 설정 및 환경 변수를 참고한다</translation>
+        </message>
+        <message>
             <source>env.CLAUDE_CODE_PLUGIN_GIT_TIMEOUT_MS</source>
-            <extracomment>Timeout in milliseconds for git operations when installing or updating plugins (default: 120000). Increase this value for large repositories or slow network connections. See Git operations time out</extracomment>
+            <extracomment>Timeout in milliseconds for cloning or refreshing a plugin marketplace (default: 120000). Increase this value for large repositories or slow network connections. See Git clone timed out</extracomment>
             <translation>플러그인을 설치하거나 업데이트할 때 git 작업의 타임아웃(밀리초) (기본값: 120000). 대규모 저장소나 느린 네트워크 연결에서는 이 값을 늘린다. Git operations time out 참고</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_PLUGIN_KEEP_MARKETPLACE_ON_FAILURE</source>
-            <extracomment>Set to 1 to skip the re-clone attempt and keep using the existing marketplace cache when a git pull fails. Useful in offline or airgapped environments where re-cloning would fail the same way. See Marketplace updates fail in offline environments</extracomment>
+            <extracomment>Set to 1 to skip the re-clone attempt and keep using the existing marketplace checkout when a marketplace refresh can't reach or authenticate to the remote. Useful in offline or airgapped environments where re-cloning would fail the same way. See Marketplace updates fail in offline environments</extracomment>
             <translation>1로 설정하면 git pull이 실패할 때 재클론 시도를 건너뛰고 기존 마켓플레이스 캐시를 계속 사용한다. 재클론도 똑같이 실패할 오프라인이나 망 분리 환경에서 유용하다. Marketplace updates fail in offline environments 참고</translation>
         </message>
         <message>
@@ -6404,7 +6974,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS</source>
-            <extracomment>Ceiling in milliseconds on idle waiting for background subagents and workflows after the final turn in non-interactive mode with the -p flag. Idle waiting starts over each time Claude takes a turn to handle a background result. Default: 600000, or 10 minutes. When idle waiting reaches the ceiling, Claude Code stops waiting for the remaining background tasks and exits. Set to 0 to wait indefinitely. This cap is separate from the five-second grace period that applies to plain background shells. Requires Claude Code v2.1.182 or later</extracomment>
+            <extracomment>Ceiling in milliseconds on idle waiting for background work, such as subagents and workflows, after the final turn in non-interactive mode with the -p flag. Idle waiting starts over each time Claude takes a turn to handle a background result. Default: 600000, or 10 minutes. When idle waiting reaches the ceiling, Claude Code stops waiting for the remaining background tasks. A running background command that the main conversation started holds the run open past it. Set to 0 to wait indefinitely. Requires Claude Code v2.1.182 or later</extracomment>
             <translation>-p 플래그를 사용하는 비대화형 모드에서 마지막 턴 이후 백그라운드 서브에이전트와 워크플로를 유휴 대기하는 시간의 상한(밀리초). 유휴 대기는 Claude가 백그라운드 결과를 처리하려고 턴을 진행할 때마다 다시 시작된다. 기본값: 600000, 즉 10분. 유휴 대기가 상한에 도달하면 Claude Code는 남은 백그라운드 작업을 기다리지 않고 종료한다. 0으로 설정하면 무기한 대기한다. 이 상한은 일반 백그라운드 셸에 적용되는 5초 유예 시간과는 별개다. Claude Code v2.1.182 이상 필요</translation>
         </message>
         <message>
@@ -6454,23 +7024,38 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_RESUME_INTERRUPTED_TURN</source>
-            <extracomment>Set to 1 to automatically resume if the previous session ended mid-turn. Used in SDK mode so the model continues without requiring the SDK to re-send the prompt. To turn this off, unset the variable or set it to 0. Before v2.1.221, Claude Code ignored 0 and other falsy values, so setting 0 still triggered the resume in non-interactive mode and unsetting the variable was the only way to turn it off</extracomment>
+            <extracomment>Set to 1 to automatically resume if the previous session ended mid-turn. Used in SDK mode so the model continues without requiring the SDK to re-send the prompt. To turn this off, unset the variable or set it to 0. For the VS Code chat panel, see Continue conversations after a reload</extracomment>
             <translation>1로 설정하면 이전 세션이 턴 도중에 끝난 경우 자동으로 이어서 진행한다. SDK가 프롬프트를 다시 보내지 않아도 모델이 계속 진행하도록 SDK 모드에서 사용한다. 끄려면 변수를 해제하거나 0으로 설정한다. v2.1.221 이전에는 Claude Code가 0과 그 밖의 거짓 값을 무시했기 때문에, 0으로 설정해도 비대화형 모드에서 재개가 일어났고 변수를 해제하는 것만이 끄는 유일한 방법이었다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_RESUME_INTERRUPTED_TURN_MAX_AGE_MS</source>
-            <extracomment>Maximum age in milliseconds of the last transcript message for a session that ended mid-turn to continue automatically on resume. When the last message is older than this bound, Claude Code skips both the CLAUDE_CODE_RESUME_INTERRUPTED_TURN automatic resume and the injected CLAUDE_CODE_RESUME_PROMPT continuation message, and the session starts idle so you continue explicitly. Unset or 0 means no bound; a negative or non-numeric value applies a one-hour bound. Spawn scripts for long-running agents can set this so a restart against an old transcript doesn't re-run a stale prompt. Claude Code sets a one-hour bound itself when it restarts a crashed agent view session that inherited its conversation from an interactive session. Requires Claude Code v2.1.211 or later</extracomment>
+            <extracomment>Maximum age in milliseconds of the last transcript message for a session that ended mid-turn to continue automatically on resume. When the last message is older than this bound, Claude Code skips the CLAUDE_CODE_RESUME_INTERRUPTED_TURN automatic resume and its CLAUDE_CODE_RESUME_PROMPT continuation message, and the session starts idle so you continue explicitly. Unset or 0 sets no bound, except that some turns resume only within six hours of their last message, such as one that ended with an API error. A positive value bounds every turn, including those; a negative or non-numeric value applies a one-hour bound. Spawn scripts for long-running agents can set this so a restart against an old transcript doesn't re-run a stale prompt. Claude Code sets a one-hour bound itself when it restarts a crashed agent view session that inherited its conversation from an interactive session. Requires Claude Code v2.1.211 or later</extracomment>
             <translation>턴 도중에 끝난 세션이 재개 시 자동으로 이어지기 위한, 마지막 트랜스크립트 메시지의 최대 경과 시간(밀리초). 마지막 메시지가 이 한도보다 오래되면 Claude Code는 CLAUDE_CODE_RESUME_INTERRUPTED_TURN에 의한 자동 재개와 주입되는 CLAUDE_CODE_RESUME_PROMPT 이어가기 메시지를 모두 건너뛰고, 세션은 유휴 상태로 시작하므로 사용자가 명시적으로 이어서 진행한다. 설정하지 않거나 0이면 한도가 없고, 음수나 숫자가 아닌 값은 1시간 한도를 적용한다. 오래 실행되는 에이전트의 실행 스크립트는 이 값을 설정해 오래된 트랜스크립트로 재시작할 때 낡은 프롬프트가 다시 실행되지 않게 할 수 있다. 대화형 세션에서 대화를 상속받은 에이전트 뷰 세션이 비정상 종료 후 재시작될 때는 Claude Code가 스스로 1시간 한도를 적용한다. Claude Code v2.1.211 이상 필요</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_RESUME_PROMPT</source>
-            <extracomment>Override the continuation message injected when resuming a session that ended mid-turn. Defaults to Continue from where you left off.. Spawn scripts for long-running agents can set this to a more directive boot message. An empty string uses the default</extracomment>
+            <extracomment>Override the continuation message Claude Code sends to Claude when CLAUDE_CODE_RESUME_INTERRUPTED_TURN continues an interrupted turn instead of resending its prompt, or when you resume a deferred tool call with -p. Defaults to Continue from where you left off.. An empty string uses the default</extracomment>
             <translation>턴 도중에 끝난 세션을 재개할 때 주입되는 이어가기 메시지를 재정의한다. 기본값은 Continue from where you left off.이다. 오래 실행되는 에이전트의 실행 스크립트는 이 값을 더 지시적인 시작 메시지로 설정할 수 있다. 빈 문자열이면 기본값을 사용한다</translation>
         </message>
         <message>
+            <source>env.CLAUDE_CODE_RESUME_SHOWS_CUT_OFF_CALLS</source>
+            <extracomment>Set to 1 to keep interrupted tool calls, marked as cut off, in a turn that CLAUDE_CODE_RESUME_INTERRUPTED_TURN continues. When unset, those calls are dropped before the turn continues. Some calls stay dropped, such as calls to subagents, skills, workflows, and tools that wait on a person. For the VS Code chat panel, see Continue conversations after a reload. Requires Claude Code v2.1.309 or later</extracomment>
+            <translation>1로 설정하면 CLAUDE_CODE_RESUME_INTERRUPTED_TURN이 이어서 진행하는 턴에서, 중단된 도구 호출을 cut off로 표시하여 유지한다. 설정하지 않으면 턴을 이어가기 전에 해당 호출이 제거된다. 서브에이전트, 스킬, 워크플로, 사람을 기다리는 도구에 대한 호출처럼 일부 호출은 계속 제거된다. VS Code 채팅 패널은 다시 로드 후 대화 이어가기를 참고한다. Claude Code v2.1.309 이상이 필요하다</translation>
+        </message>
+        <message>
             <source>env.CLAUDE_CODE_RETRY_WATCHDOG</source>
-            <extracomment>Set to 1 for unattended sessions such as eval harnesses, CI jobs, or remote workers. Retries 429 and 529 capacity errors indefinitely instead of failing after CLAUDE_CODE_MAX_RETRIES attempts. Claude Code fails at once on a 429 that reports a spend limit or exhausted usage credits, even one from a gateway spend cap that resets on a schedule. Before v2.1.239, the watchdog retried these indefinitely. The watchdog backs off up to 5 minutes between attempts, or until the limit resets when the response carries a rate-limit reset time, so a session that hits a usage limit waits out the remaining window. On v2.1.199 or later it also raises the default retry count for other transient errors, such as server errors, timeouts, and dropped connections, to 300, roughly three hours of backoff, and removes the cap of 15 on CLAUDE_CODE_MAX_RETRIES if you set that variable explicitly. Requires Claude Code v2.1.186 or later</extracomment>
+            <extracomment>Set to 1 for unattended sessions such as eval harnesses, CI jobs, or remote workers. Retries 429 and 529 capacity errors indefinitely instead of failing after CLAUDE_CODE_MAX_RETRIES attempts. Claude Code fails at once when a standard-speed request gets a 429 that reports a spend limit or exhausted usage credits, even one from a gateway spend cap that resets on a schedule. Before v2.1.239, the watchdog retried these indefinitely. For fast mode requests, see Handle rate limits. The watchdog backs off up to 5 minutes between attempts, or until the limit resets when the response carries a rate-limit reset time, so a session that hits a usage limit waits out the remaining window. On v2.1.199 or later it also raises the default retry count for other transient errors, such as server errors, timeouts, and dropped connections, to 300, roughly three hours of backoff, and removes the cap of 15 on CLAUDE_CODE_MAX_RETRIES if you set that variable explicitly. Requires Claude Code v2.1.186 or later</extracomment>
             <translation>평가 하네스, CI 작업, 원격 워커처럼 무인으로 실행되는 세션에서는 1로 설정한다. CLAUDE_CODE_MAX_RETRIES 횟수만큼 시도한 뒤 실패하는 대신 429와 529 용량 오류를 무기한 재시도한다. 지출 한도나 소진된 사용 크레딧을 알리는 429에 대해서는, 정해진 주기로 초기화되는 게이트웨이 지출 상한에서 온 것이라도 Claude Code가 즉시 실패한다. v2.1.239 이전에는 워치독이 이런 오류도 무기한 재시도했다. 워치독은 시도 사이에 최대 5분까지, 또는 응답에 속도 제한 초기화 시각이 담겨 있으면 제한이 초기화될 때까지 대기 시간을 늘리므로, 사용량 제한에 걸린 세션은 남은 시간을 기다린다. v2.1.199 이상에서는 서버 오류, 타임아웃, 연결 끊김 같은 다른 일시적 오류의 기본 재시도 횟수도 300, 즉 약 3시간 분량의 백오프로 높이고, CLAUDE_CODE_MAX_RETRIES를 명시적으로 설정한 경우 그 15회 상한을 없앤다. Claude Code v2.1.186 이상 필요</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_RETRY_WATCHDOG_MAX_WAIT_MS</source>
+            <extracomment>Maximum time in milliseconds that each API request spends waiting out 429 and 529 errors when CLAUDE_CODE_RETRY_WATCHDOG is set. Once that time is spent, the next such error ends the request. Give a positive whole number in plain digits, such as 1800000 for 30 minutes. When unset, the wait has no limit. Requires Claude Code v2.1.295 or later</extracomment>
+            <translation>CLAUDE_CODE_RETRY_WATCHDOG가 설정된 경우, 각 API 요청이 429 및 529 오류가 지나가기를 기다리며 보내는 최대 시간(밀리초 단위). 그 시간을 모두 소진하면 다음 해당 오류에서 요청이 종료된다. 30분을 뜻하는 1800000처럼 숫자만으로 된 양의 정수를 지정한다. 설정하지 않으면 대기 시간에 제한이 없다. Claude Code v2.1.295 이상이 필요하다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_RETRY_WATCHDOG_USAGE_LIMIT_RECHECK_MS</source>
+            <extracomment>Minimum interval in milliseconds between checks of whether a usage limit was already lifted, while a request waits for that limit to reset with CLAUDE_CODE_RETRY_WATCHDOG set. When a check finds the limit lifted, the request goes out at once. Give a whole number in plain digits from 60000, one minute, to 10800000, three hours. Checks are made only for a claude.ai subscription's session or weekly limit while usage credits aren't in use, and not while CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC is set. When this variable is unset or its value is outside that range, no checks are made. Requires Claude Code v2.1.305 or later</extracomment>
+            <translation>CLAUDE_CODE_RETRY_WATCHDOG가 설정된 상태에서 요청이 사용량 한도 초기화를 기다리는 동안, 사용량 한도가 이미 해제되었는지 확인하는 최소 간격(밀리초 단위). 확인 결과 한도가 해제되었으면 요청이 즉시 전송된다. 1분인 60000부터 3시간인 10800000까지 숫자만으로 된 정수를 지정한다. 확인은 사용량 크레딧을 사용하지 않는 claude.ai 구독의 세션 또는 주간 한도에 대해서만 수행되며, CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC가 설정된 동안에는 수행되지 않는다. 이 변수가 설정되지 않았거나 값이 해당 범위를 벗어나면 확인을 하지 않는다. Claude Code v2.1.305 이상이 필요하다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_SAFE_MODE</source>
@@ -6494,7 +7079,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS</source>
-            <extracomment>Override the time budget in milliseconds for SessionEnd hooks. Applies to session exit, /clear, and switching sessions via interactive /resume. By default the budget is 1.5 seconds, automatically raised to the highest per-hook timeout configured in settings files, up to 60 seconds. Timeouts on plugin-provided hooks do not raise the budget</extracomment>
+            <extracomment>Override the time budget in milliseconds for SessionEnd hooks. The value is also the timeout for each hook that sets no timeout of its own. Applies to session exit, /clear, and switching sessions via interactive /resume. By default the budget is 1.5 seconds, automatically raised to the highest per-hook timeout configured in settings files, up to 60 seconds. Timeouts on plugin-provided hooks do not raise the budget</extracomment>
             <translation>SessionEnd 훅의 시간 예산(밀리초)을 재정의한다. 세션 종료, /clear, 대화형 /resume을 통한 세션 전환에 적용된다. 기본 예산은 1.5초이며, 설정 파일에 구성된 훅별 타임아웃 중 가장 큰 값까지 최대 60초로 자동으로 올라간다. 플러그인이 제공하는 훅의 타임아웃은 이 예산을 올리지 않는다</translation>
         </message>
         <message>
@@ -6514,12 +7099,12 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_SIMPLE</source>
-            <extracomment>Set to 1 to run with a minimal system prompt and only the Bash, file read, and file edit tools. MCP tools from --mcp-config are still available. Disables auto-discovery of hooks, skills, custom commands, subagents, plugins, MCP servers, auto memory, and CLAUDE.md. Skills in a directory you pass with --add-dir still load. OAuth tokens and keychain credentials are not read, so Anthropic authentication must come from ANTHROPIC_API_KEY or an apiKeyHelper in --settings. Equivalent to passing --bare</extracomment>
+            <extracomment>Set to 1 to run with a minimal system prompt and only the Bash, file read, and file edit tools. MCP tools from --mcp-config are still available. Disables auto-discovery of hooks, skills, custom commands, subagents, installed plugins, MCP servers, auto memory, and CLAUDE.md. Skills in a directory you pass with --add-dir still load. OAuth tokens and keychain credentials are not read, so Anthropic authentication must come from ANTHROPIC_API_KEY or an apiKeyHelper in --settings. Equivalent to passing --bare</extracomment>
             <translation>1로 설정하면 최소한의 시스템 프롬프트와 Bash, 파일 읽기, 파일 편집 도구만으로 실행한다. --mcp-config의 MCP 도구는 계속 사용할 수 있다. 훅, 스킬, 커스텀 명령, 서브에이전트, 플러그인, MCP 서버, 자동 메모리, CLAUDE.md의 자동 탐색을 비활성화한다. --add-dir로 전달한 디렉터리의 스킬은 계속 로드된다. OAuth 토큰과 키체인 자격 증명을 읽지 않으므로 Anthropic 인증은 ANTHROPIC_API_KEY나 --settings의 apiKeyHelper에서 와야 한다. --bare를 전달하는 것과 같다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT</source>
-            <extracomment>Set to 1 to use a shorter system prompt and abbreviated tool descriptions on any model. Set to 0, false, no, or off to opt out even on models where the experiment or server configuration would otherwise enable it. The full tool set, hooks, MCP servers, and CLAUDE.md discovery remain enabled</extracomment>
+            <extracomment>Choose between Claude Code's full system prompt and a shorter one with abbreviated tool descriptions. When unset, Haiku 4.5, Sonnet 5, Opus 4.7, and earlier models in those families use the full prompt by default, and newer models use the shorter one. Set to 1 to use the shorter prompt on any model. Set to 0, false, no, or off to use the full prompt on any model, even where an experiment or server configuration would otherwise select the shorter one. Either prompt keeps the full tool set, hooks, MCP servers, and CLAUDE.md discovery</extracomment>
             <translation>1로 설정하면 모든 모델에서 더 짧은 시스템 프롬프트와 축약된 도구 설명을 사용한다. 실험이나 서버 구성에 의해 활성화되는 모델에서도 사용을 해제하려면 0, false, no, off로 설정한다. 전체 도구 집합, 훅, MCP 서버, CLAUDE.md 탐색은 계속 활성화된 상태로 유지된다</translation>
         </message>
         <message>
@@ -6558,6 +7143,11 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <translation>Amazon Bedrock Mantle의 AWS 인증을 건너뛴다 (예: LLM 게이트웨이를 사용할 때)</translation>
         </message>
         <message>
+            <source>env.CLAUDE_CODE_SKIP_MODEL_ACCESS_MEMORY</source>
+            <extracomment>The startup model checks on Amazon Bedrock and Google Cloud's Agent Platform remember on this machine which models they found your account can't invoke, for up to a day. Set to 1 to turn that memory off. Requires Claude Code v2.1.285 or later</extracomment>
+            <translation>Amazon Bedrock과 Google Cloud의 Agent Platform에서 시작 시 모델 확인은 계정이 호출할 수 없다고 확인한 모델을 이 머신에 최대 하루 동안 기억한다. 1로 설정하면 이 기억을 끈다. Claude Code v2.1.285 이상이 필요하다</translation>
+        </message>
+        <message>
             <source>env.CLAUDE_CODE_SKIP_PROMPT_HISTORY</source>
             <extracomment>Set to 1 to skip writing prompt history and session transcripts to disk. Sessions started with this variable set do not appear in --resume, --continue, or up-arrow history. Useful for ephemeral scripted sessions</extracomment>
             <translation>1로 설정하면 프롬프트 히스토리와 세션 트랜스크립트를 디스크에 기록하지 않는다. 이 변수를 설정한 채 시작한 세션은 --resume, --continue, 위쪽 화살표 히스토리에 나타나지 않는다. 일시적인 스크립트 세션에 유용하다</translation>
@@ -6566,6 +7156,11 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <source>env.CLAUDE_CODE_SKIP_VERTEX_AUTH</source>
             <extracomment>Skip Google authentication for Google Cloud's Agent Platform (for example, when using an LLM gateway)</extracomment>
             <translation>Google Cloud's Agent Platform의 Google 인증을 건너뛴다 (예: LLM 게이트웨이를 사용할 때)</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_STARTUP_FAILURE_RESULTS</source>
+            <extracomment>Set to 1 to have a session started with --output-format stream-json write a result message naming why Claude Code refused to start for startup failures that otherwise end with stderr alone. Requires Claude Code v2.1.274 or later</extracomment>
+            <translation>1로 설정하면 --output-format stream-json으로 시작한 세션이, 그렇지 않으면 stderr만 남기고 끝나는 시작 실패에 대해 Claude Code가 시작을 거부한 이유를 명시하는 result 메시지를 기록한다. Claude Code v2.1.274 이상이 필요하다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_STOP_HOOK_BLOCK_CAP</source>
@@ -6589,7 +7184,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_SUBPROCESS_ENV_SCRUB</source>
-            <extracomment>Set to 1 to strip credentials from subprocess environments (Bash tool, hooks, MCP stdio servers): Anthropic and cloud provider credentials, any other variable that Claude Code recognizes as a credential, and credentials embedded in package registry URLs. The parent Claude process keeps these credentials for API calls, but child processes cannot read them, reducing exposure to prompt injection attacks that attempt to exfiltrate secrets via shell expansion. On Linux, this also runs Bash subprocesses in an isolated PID namespace so they cannot read host process environments via /proc; as a side effect, ps, pgrep, and kill cannot see or signal host processes. claude-code-action sets this automatically when allowed_non_write_users is configured</extracomment>
+            <extracomment>Set to 1 to strip credentials from the environments of the subprocesses Claude Code starts, such as Bash commands, hooks, and stdio MCP servers. The scrub recognizes a credential by its variable name or its value, and it leaves GitHub tokens and proxy settings in place. See What the subprocess environment scrub removes. claude-code-action sets this automatically when allowed_non_write_users is configured</extracomment>
             <translation>1로 설정하면 하위 프로세스 환경(Bash 도구, 훅, MCP stdio 서버)에서 자격 증명을 제거한다: Anthropic 및 클라우드 공급자 자격 증명, Claude Code가 자격 증명으로 인식하는 그 밖의 모든 변수, 그리고 패키지 레지스트리 URL에 포함된 자격 증명이 대상이다. 부모 claude 프로세스는 API 호출을 위해 이 자격 증명을 유지하지만 자식 프로세스는 읽을 수 없으므로, 셸 확장을 통해 비밀을 빼내려는 프롬프트 인젝션 공격에 대한 노출이 줄어든다. Linux에서는 Bash 하위 프로세스를 격리된 PID 네임스페이스에서도 실행해 /proc를 통해 호스트 프로세스의 환경을 읽을 수 없게 하며, 그 부작용으로 ps, pgrep, kill이 호스트 프로세스를 보거나 시그널을 보낼 수 없다. claude-code-action은 allowed_non_write_users가 구성되어 있으면 이 값을 자동으로 설정한다</translation>
         </message>
         <message>
@@ -6604,12 +7199,12 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_SYNC_SKILLS</source>
-            <extracomment>Set to 1 to download your enabled claude.ai skills into ~/.claude/skills/synced/ and resync every 10 minutes. Before it runs the first query, Claude Code waits up to CLAUDE_CODE_SYNC_SKILLS_WAIT_TIMEOUT_MS for the list of your skills. The downloads themselves finish in the background, and Claude waits for a skill's download when it invokes that skill. The synced folder name is reserved for this download. Before v2.1.227, the skills downloaded into ~/.claude/skills/ directly. Applies only in non-interactive mode with the -p flag. Requires claude.ai authentication. Claude Code on the web sessions receive your enabled claude.ai skills automatically; you don't need to set this there. Claude Code applies extra rules to the downloaded skills, such as not running their ! commands on your machine</extracomment>
+            <extracomment>Set to 1 in non-interactive mode with the -p flag to make Claude Code download the skills enabled for your claude.ai account in that run and wait for the list of them, up to CLAUDE_CODE_SYNC_SKILLS_WAIT_TIMEOUT_MS, before it runs the first query. Requires claude.ai authentication. Terminal sessions where you sign in with your claude.ai account sync these skills without this variable, so set it only when a -p run needs your current skills on its first query</extracomment>
             <translation>1로 설정하면 활성화된 claude.ai 스킬을 ~/.claude/skills/synced/ 에 다운로드하고 10분마다 다시 동기화한다. 첫 쿼리를 실행하기 전에 Claude Code는 스킬 목록을 최대 CLAUDE_CODE_SYNC_SKILLS_WAIT_TIMEOUT_MS까지 기다린다. 다운로드 자체는 백그라운드에서 완료되며, Claude는 어떤 스킬을 호출할 때 그 스킬의 다운로드를 기다린다. synced 폴더 이름은 이 다운로드 용도로 예약되어 있다. v2.1.227 이전에는 스킬이 ~/.claude/skills/ 에 직접 다운로드되었다. -p 플래그를 사용하는 비대화형 모드에서만 적용된다. claude.ai 인증이 필요하다. Claude Code on the web 세션은 활성화된 claude.ai 스킬을 자동으로 받으므로 거기서는 이 변수를 설정할 필요가 없다. Claude Code는 다운로드된 스킬에 추가 규칙을 적용하는데, 예를 들어 스킬의 ! 명령을 사용자 머신에서 실행하지 않는다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_SYNC_SKILLS_INSTALL_TIMEOUT_MS</source>
-            <extracomment>Timeout in milliseconds for a mid-session skills resync when CLAUDE_CODE_SYNC_SKILLS is set (default: 30000). Bounds the download triggered when the host requests a skill reload during the session. When exceeded, the resync stops and remaining downloads continue in the background</extracomment>
+            <extracomment>Timeout in milliseconds for the skills resync that runs mid-session when an app built on the Agent SDK reloads skills (default: 30000). When exceeded, the reload continues with whichever skills have arrived, and the remaining downloads finish in the background</extracomment>
             <translation>CLAUDE_CODE_SYNC_SKILLS가 설정된 경우 세션 중간의 스킬 재동기화 타임아웃(밀리초) (기본값: 30000). 세션 중 호스트가 스킬 리로드를 요청할 때 시작되는 다운로드의 시간을 제한한다. 초과하면 재동기화는 중단되고 남은 다운로드는 백그라운드에서 계속된다</translation>
         </message>
         <message>
@@ -6634,18 +7229,18 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_TEAM_TEARDOWN_PARK_TIMEOUT_MS</source>
-            <extracomment>Override, in milliseconds, how long a non-interactive session waits at exit for its agent team to finish tearing down. Accepts 1000 to 60000; an out-of-range value is ignored and the default of 10000 applies. Requires Claude Code v2.1.206 or later</extracomment>
+            <extracomment>Override, in milliseconds, how long a non-interactive session waits at exit for its agent team to finish tearing down. Accepts 1000 to 60000; an out-of-range value is ignored and the default of 10000 applies. Requires Claude Code v2.1.206 or later. See https://code.claude.com/docs/en/agent-teams</extracomment>
             <translation>비대화형 세션이 종료 시 에이전트 팀의 정리 완료를 기다리는 시간을 밀리초 단위로 재정의한다. 1000에서 60000까지 허용하며, 범위를 벗어난 값은 무시되고 기본값 10000이 적용된다. Claude Code v2.1.206 이상 필요</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_TMPDIR</source>
-            <extracomment>Override the temp directory used for internal temp files. Claude Code appends /claude-{uid}/ on Unix or /claude/ on Windows to this path. Default: /tmp on macOS, os.tmpdir() on Linux and Windows. As of v2.1.161, on macOS and Linux, sandboxed Bash subprocesses receive a short fallback $TMPDIR under the system default when your override is a long path, since some tools fail when temp paths get too long. Unsandboxed Bash commands inherit your shell's $TMPDIR unchanged. Claude Code's own temp files always use your override. Set it in your shell, user settings, or managed settings. Ignored in project and local settings</extracomment>
+            <extracomment>Override the temp directory used for internal temp files. Claude Code appends /claude-{uid}/ to this path on Unix, or /claude/ on Windows. Default: /tmp on macOS, os.tmpdir() on Linux and Windows. On macOS and Linux, sandboxed Bash subprocesses receive a short fallback $TMPDIR under the system default when your override is a long path, since some tools fail when temp paths get too long. Unsandboxed Bash commands inherit your shell's $TMPDIR when it is set. On native Windows, when your shell doesn't set $TMPDIR, a Bash command that references $TMPDIR receives your override, or %TEMP% when you haven't set one. Claude Code's own temp files always use your override. Set it in your shell, user settings, or managed settings. Ignored in project and local settings</extracomment>
             <translation>내부 임시 파일에 사용되는 임시 디렉터리를 재정의한다. Claude Code는 이 경로에 Unix에서는 /claude-{uid}/를, Windows에서는 /claude/를 덧붙인다. 기본값: macOS에서는 /tmp, Linux와 Windows에서는 os.tmpdir(). v2.1.161부터 macOS와 Linux에서는 재정의한 경로가 길 경우 샌드박스된 Bash 하위 프로세스가 시스템 기본값 아래의 짧은 대체 $TMPDIR을 받는다. 임시 경로가 너무 길어지면 실패하는 도구가 있기 때문이다. 샌드박스되지 않은 Bash 명령은 셸의 $TMPDIR을 그대로 상속한다. Claude Code 자체 임시 파일은 항상 재정의한 값을 사용한다. 셸, 사용자 설정, 또는 관리형 설정에서 설정한다. 프로젝트 설정과 로컬 설정에서는 무시된다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_TMUX_TRUECOLOR</source>
-            <extracomment>Set to any non-empty value, such as 1, to allow 24-bit truecolor output inside tmux. **Setting it to 0 or false still allows truecolor**, unlike most on/off variables; unset the variable to restore the 256-color clamp. By default, Claude Code clamps to 256 colors when $TMUX is set because tmux does not pass through truecolor escape sequences unless configured to. Set this after adding set -ga terminal-overrides ',*:Tc' to your ~/.tmux.conf. See Terminal configuration for other tmux settings</extracomment>
-            <translation>1처럼 비어 있지 않은 값으로 설정하면 tmux 안에서 24비트 트루컬러 출력을 허용한다. **0이나 false로 설정해도 여전히 트루컬러가 허용된다.** 대부분의 on/off 변수와 다르며, 256색 제한을 복원하려면 변수를 해제한다. 기본적으로 Claude Code는 $TMUX가 설정되어 있으면 256색으로 제한하는데, tmux가 별도로 구성되지 않는 한 트루컬러 이스케이프 시퀀스를 통과시키지 않기 때문이다. ~/.tmux.conf에 set -ga terminal-overrides ',*:Tc'를 추가한 뒤 이 변수를 설정한다. 다른 tmux 설정은 Terminal configuration을 참고한다</translation>
+            <extracomment>Set to any non-empty value, such as 1, to allow 24-bit truecolor output inside tmux. Setting it to 0 or false still allows truecolor, unlike most on/off variables; unset the variable to restore the 256-color clamp. By default, Claude Code clamps to 256 colors when $TMUX is set because tmux does not pass through truecolor escape sequences unless configured to. Set this after adding set -ga terminal-overrides ',*:Tc' to your ~/.tmux.conf. See Terminal configuration for other tmux settings</extracomment>
+            <translation>1처럼 비어 있지 않은 값으로 설정하면 tmux 안에서 24비트 트루컬러 출력을 허용한다. 0이나 false로 설정해도 여전히 트루컬러가 허용된다. 대부분의 on/off 변수와 다르며, 256색 제한을 복원하려면 변수를 해제한다. 기본적으로 Claude Code는 $TMUX가 설정되어 있으면 256색으로 제한하는데, tmux가 별도로 구성되지 않는 한 트루컬러 이스케이프 시퀀스를 통과시키지 않기 때문이다. ~/.tmux.conf에 set -ga terminal-overrides ',*:Tc'를 추가한 뒤 이 변수를 설정한다. 다른 tmux 설정은 Terminal configuration을 참고한다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_TOOL_MEMORY_CGROUP_EXCLUDE</source>
@@ -6658,8 +7253,13 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <translation>Linux와 WSL에서, 4G 같은 크기로 설정하면 Bash와 PowerShell 도구 명령이 사용할 수 있는 메모리를 제한하며, v2.1.246 이상에서는 Monitor 도구 명령도 제한한다. 크기는 순수한 숫자로 쓰되, 숫자만 쓰면 바이트 수를 의미하고 K, M, G, T 접미사를 붙일 수도 있다. 0이나 off로 설정하면 상한을 끈다. Claude Code가 시작한 첫 프로세스가 상한을 켜거나 끈 뒤에는, 값을 바꿔도 다음에 claude를 실행할 때 적용된다. Claude Code v2.1.233 이상 필요</translation>
         </message>
         <message>
+            <source>env.CLAUDE_CODE_TRANSCRIPT_LOCAL_GC</source>
+            <extracomment>Set to 1 to limit how large the transcript file of a long -p or Agent SDK session grows. After each compaction, once the file is larger than 5 MB, Claude Code removes the history from before that compaction. On v2.1.296 or later, the file stays as it is when removing that history would shrink it by less than 10%. Resuming the session restores the same conversation whether or not the file was trimmed. Set it in the environment you start Claude Code from, since a settings env block can't turn it on. Requires Claude Code v2.1.287 or later</extracomment>
+            <translation>1로 설정하면 긴 -p 또는 Agent SDK 세션의 트랜스크립트 파일이 커지는 크기를 제한한다. 각 압축(compaction) 이후 파일이 5 MB보다 커지면 Claude Code가 그 압축 이전의 기록을 제거한다. v2.1.296 이상에서는 기록을 제거해도 파일이 10% 미만으로만 줄어드는 경우 파일을 그대로 둔다. 세션을 이어서 진행하면 파일이 잘렸는지와 관계없이 동일한 대화가 복원된다. 설정 env 블록으로는 켤 수 없으므로 Claude Code를 시작하는 환경에서 설정한다. Claude Code v2.1.287 이상이 필요하다</translation>
+        </message>
+        <message>
             <source>env.CLAUDE_CODE_USER_DIALOG_TIMEOUT_MS</source>
-            <extracomment>Deadline in milliseconds for dialogs Claude Code forwards to a remote client, such as a Remote Control or SDK host, and for the approval dialog for a held cross-session message, before Claude Code cancels them; permission prompts and AskUserQuestion questions use their own flows and aren't governed by it. Also bounds the mid-session Fable usage-credits consent prompt in a session that may be running unattended. Control inbound messages and non-interactive sessions cover the full held-message expiry rules, including the cases where the deadline doesn't apply. Overrides the dialogExpiry setting; 0 or a negative value disables the deadline</extracomment>
+            <extracomment>Deadline in milliseconds before Claude Code cancels a dialog it forwards to a remote client such as a Remote Control or SDK host, or the approval dialog for a held cross-session message; permission prompts and AskUserQuestion questions use their own flows and aren't governed by it. On Claude Code v2.1.236 or later, it also bounds the mid-session Fable usage-credits consent prompt in a session that may be running unattended. Control inbound messages and non-interactive sessions cover the full held-message expiry rules, including the cases where the deadline doesn't apply. Overrides the dialogExpiry setting. 0 or a negative value disables the deadline. Ignored in project and local settings</extracomment>
             <translation>Remote Control이나 SDK 호스트 같은 원격 클라이언트로 Claude Code가 전달하는 대화 상자, 그리고 보류된 세션 간 메시지의 승인 대화 상자를 Claude Code가 취소하기까지의 기한(밀리초). 권한 프롬프트와 AskUserQuestion 질문은 자체 흐름을 사용하므로 이 값의 적용을 받지 않는다. 또한 무인으로 실행 중일 수 있는 세션에서 세션 도중에 뜨는 Fable 사용 크레딧 동의 프롬프트의 시간도 제한한다. 기한이 적용되지 않는 경우를 포함한 보류 메시지 만료 규칙 전체는 Control inbound messages와 non-interactive sessions에서 다룬다. dialogExpiry 설정을 재정의하며, 0이나 음수 값은 기한을 비활성화한다</translation>
         </message>
         <message>
@@ -6684,7 +7284,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_CODE_USE_NATIVE_FILE_SEARCH</source>
-            <extracomment>Set to 1 to discover custom commands, subagents, and output styles using Node.js file APIs instead of ripgrep. Set this if the bundled ripgrep binary is unavailable or blocked in your environment. Does not affect the Grep or file search tools</extracomment>
+            <extracomment>Set to 1 to discover custom commands, subagents, and output styles using Node.js file APIs instead of ripgrep (for environments where the bundled ripgrep is unavailable). See https://code.claude.com/docs/en/env-vars</extracomment>
             <translation>1로 설정하면 ripgrep 대신 Node.js 파일 API를 사용해 사용자 정의 명령, 서브에이전트, 출력 스타일을 탐색한다. 환경에서 번들된 ripgrep 바이너리를 사용할 수 없거나 차단된 경우 설정한다. Grep이나 파일 검색 도구에는 영향을 주지 않는다</translation>
         </message>
         <message>
@@ -6698,9 +7298,39 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <translation>Google Cloud의 Agent Platform을 사용한다</translation>
         </message>
         <message>
+            <source>env.CLAUDE_CODE_WARN_DISK_FREE_GIB</source>
+            <extracomment>Set to a whole number of GiB, such as 10, to have Claude Code warn Claude when free space on the working directory's filesystem falls below that amount. The warning is a system reminder saying how much is free. The reminder is off when the variable is unset, 0, or not plain digits. Set it in the environment that launches Claude Code, since Claude Code ignores a copy delivered through a settings env block. Requires Claude Code v2.1.304 or later</extracomment>
+            <translation>10처럼 GiB 단위의 정수로 설정하면, 작업 디렉터리가 있는 파일 시스템의 여유 공간이 그 값 아래로 떨어질 때 Claude Code가 Claude에게 경고한다. 경고는 남은 공간을 알려 주는 시스템 리마인더이다. 변수가 설정되지 않았거나 0이거나 숫자만으로 되어 있지 않으면 리마인더는 꺼진다. 설정 env 블록으로 전달된 사본은 Claude Code가 무시하므로, Claude Code를 실행하는 환경에서 설정한다. Claude Code v2.1.304 이상이 필요하다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_WARN_MEMORY_FREE_GIB</source>
+            <extracomment>On Linux and WSL, set to a whole number of GiB such as 4 to have Claude Code warn Claude when available memory falls below that amount. The warning is a system reminder saying how much is available. The reminder is off when the variable is unset, 0, or not plain digits. Set it in the environment that launches Claude Code, since Claude Code ignores a copy delivered through a settings env block. Requires Claude Code v2.1.304 or later</extracomment>
+            <translation>Linux와 WSL에서 4처럼 GiB 단위의 정수로 설정하면, 사용 가능한 메모리가 그 값 아래로 떨어질 때 Claude Code가 Claude에게 경고한다. 경고는 사용 가능한 양을 알려 주는 시스템 리마인더이다. 변수가 설정되지 않았거나 0이거나 숫자만으로 되어 있지 않으면 리마인더는 꺼진다. 설정 env 블록으로 전달된 사본은 Claude Code가 무시하므로, Claude Code를 실행하는 환경에서 설정한다. Claude Code v2.1.304 이상이 필요하다</translation>
+        </message>
+        <message>
             <source>env.CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS</source>
             <extracomment>Set to the number of milliseconds WebFetch keeps each fetched URL's response cached. The default is 900000, which is 15 minutes. Takes plain digits only; 0, a decimal, or any other spelling keeps the default. Claude Code reads the value once per launch, so a change in a settings env block applies when you next launch claude. Requires Claude Code v2.1.233 or later</extracomment>
             <translation>WebFetch가 가져온 각 URL의 응답을 캐시에 유지하는 시간을 밀리초 수로 설정한다. 기본값은 900000이며 15분이다. 순수한 숫자만 받으며, 0이나 소수, 그 밖의 다른 표기는 기본값을 유지한다. Claude Code는 실행할 때마다 값을 한 번만 읽으므로, 설정의 env 블록에서 값을 바꾸면 다음에 claude를 실행할 때 적용된다. Claude Code v2.1.233 이상 필요</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_WEBFETCH_DEADLINE_MS</source>
+            <extracomment>Upper bound in milliseconds on how long WebFetch waits for a page to download, including any redirects it follows. A download that hasn't completed by then fails with a deadline error. The default is 300000, which is five minutes. Set to 0 to remove the limit. Takes plain digits only; a decimal or any other spelling keeps the default. Requires Claude Code v2.1.268 or later</extracomment>
+            <translation>WebFetch가 페이지 다운로드를 기다리는 시간(리디렉션 따라가기 포함)의 상한(밀리초 단위). 그 시간까지 완료되지 않은 다운로드는 기한 오류로 실패한다. 기본값은 5분인 300000이다. 0으로 설정하면 제한이 없어진다. 숫자만 허용하며, 소수나 그 외의 표기는 기본값을 유지한다. Claude Code v2.1.268 이상이 필요하다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_WEB_SEARCH_REFILLS_PER_HOUR</source>
+            <extracomment>Rate at which a session's WebSearch limit refills, in calls per hour. The default is 100 in an interactive terminal session. In a non-interactive session the default is 0, which turns refill off. Takes plain digits only; any other spelling reads as unset. Requires Claude Code v2.1.290 or later</extracomment>
+            <translation>세션의 WebSearch 한도가 다시 채워지는 속도(시간당 호출 수). 기본값은 대화형 터미널 세션에서 100이다. 비대화형 세션에서는 기본값이 0이며, 이는 재충전을 끈다. 숫자만 허용하며, 그 외의 표기는 미설정으로 읽힌다. Claude Code v2.1.290 이상이 필요하다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_WORKER_CHECKIN_SCHEDULE</source>
+            <extracomment>When CLAUDE_AUTO_BACKGROUND_TASKS is set to 1, how long Claude Code waits before each reminder to Claude to check on background subagents that are still running. Takes one or more comma-separated waits in whole seconds from 1 to 86400, such as 600 or 600,1800,3600. Each value is the wait before the next reminder, and the last value repeats. Takes plain digits only; any other value or spelling reads as unset. When unset, there are no reminders. Requires Claude Code v2.1.283 or later</extracomment>
+            <translation>CLAUDE_AUTO_BACKGROUND_TASKS가 1로 설정된 경우, 아직 실행 중인 백그라운드 서브에이전트를 확인하라고 Claude Code가 Claude에게 알리는 각 리마인더 전에 기다리는 시간. 1에서 86400 사이의 정수 초를 쉼표로 구분해 하나 이상 지정하며, 예로 600 또는 600,1800,3600이 있다. 각 값은 다음 리마인더 전의 대기 시간이고 마지막 값이 반복된다. 숫자만 허용하며, 그 외의 값이나 표기는 미설정으로 읽힌다. 설정하지 않으면 리마인더가 없다. Claude Code v2.1.283 이상이 필요하다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS</source>
+            <extracomment>How many agents a single workflow run executes at once, from 1 to 256. By default, a run executes up to 16 agents at once, fewer when Claude Code has fewer CPUs available; queued agent() calls wait for a free slot. Each running agent's transcript stays in Claude Code's memory, so higher values raise memory use. Takes plain digits only; out-of-range values and other spellings keep the default. Requires Claude Code v2.1.269 or later</extracomment>
+            <translation>단일 워크플로 실행이 동시에 실행하는 에이전트 수(1에서 256). 기본적으로 실행당 최대 16개의 에이전트를 동시에 실행하며, Claude Code가 사용할 수 있는 CPU가 적으면 그보다 적게 실행한다. 대기 중인 agent() 호출은 빈 슬롯을 기다린다. 실행 중인 각 에이전트의 트랜스크립트가 Claude Code의 메모리에 남으므로 값이 높을수록 메모리 사용량이 늘어난다. 숫자만 허용하며, 범위를 벗어난 값과 그 외의 표기는 기본값을 유지한다. Claude Code v2.1.269 이상이 필요하다</translation>
         </message>
         <message>
             <source>env.CLAUDE_CODE_WORKFLOW_PREFIX_STAGGER_MS</source>
@@ -6708,18 +7338,23 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <translation>워크플로 에이전트가 자신의 첫 요청을 보내기 전에, 같은 접두사를 공유하는 형제 에이전트의 첫 응답이 시작되기를 기다리는 시간의 상한(밀리초). 팬아웃으로 프롬프트 캐시 접두사를 공유하는 여러 에이전트가 시작될 때, Claude Code는 첫 번째 에이전트를 제외한 나머지를 최대 이 시간만큼 붙잡아 두어, 나머지가 접두사를 각자 캐시 없이 처리하는 대신 캐시된 접두사를 읽도록 한다. 기본값 5000. 0으로 설정하면 대기를 비활성화한다. DISABLE_PROMPT_CACHING이 설정되어 있으면 에이전트는 절대 기다리지 않는다. Claude Code v2.1.229 이상 필요</translation>
         </message>
         <message>
+            <source>env.CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG</source>
+            <extracomment>Set to 1 to show, above the prompt, a line for each of the last three checks the You should know mod made in this session. Use it to confirm the mod is checking when no notes appear. Requires Claude Code v2.1.287 or later</extracomment>
+            <translation>1로 설정하면 You should know mod가 이 세션에서 수행한 마지막 세 번의 검사 각각에 대해 프롬프트 위에 한 줄씩 표시한다. 알림이 나타나지 않을 때 mod가 검사를 수행하는지 확인하는 데 사용한다. Claude Code v2.1.287 이상이 필요하다</translation>
+        </message>
+        <message>
             <source>env.CLAUDE_CONFIG_DIR</source>
-            <extracomment>Override the configuration directory (default: ~/.claude). All settings, session history, and plugins are stored under this path. For credentials, see where Claude Code stores credentials. Useful for running multiple accounts side by side: for example, alias claude-work='CLAUDE_CONFIG_DIR=~/.claude-work claude'. Set it in your shell, user settings, or managed settings. Ignored in project and local settings</extracomment>
+            <extracomment>Override the configuration directory (default: ~/.claude). All settings, session history, and plugins are stored under this path. For credentials, see where Claude Code stores credentials. Useful for running multiple accounts side by side: for example, alias claude-work='CLAUDE_CONFIG_DIR=~/.claude-work claude'. Set it in your shell, user settings, or managed settings. In a settings file, write the absolute path. Ignored in project and local settings</extracomment>
             <translation>구성 디렉터리를 재정의한다 (기본값: ~/.claude). 모든 설정, 세션 기록, 플러그인이 이 경로 아래에 저장된다. 자격 증명은 Claude Code가 자격 증명을 저장하는 위치를 참고한다. 여러 계정을 나란히 실행할 때 유용하다. 예를 들어 alias claude-work='CLAUDE_CONFIG_DIR=~/.claude-work claude'처럼 쓴다. 셸, 사용자 설정, 또는 관리형 설정에서 설정한다. 프로젝트 설정과 로컬 설정에서는 무시된다</translation>
         </message>
         <message>
             <source>env.CLAUDE_DISABLE_ADOPT</source>
-            <extracomment>Set to 1 to stop in-flight background work instead of carrying it over when you background a session by pressing ← or with /background. Claude Code asks you to confirm before backgrounding, then stops the tasks that would otherwise carry over. Requires Claude Code v2.1.195 or later</extracomment>
+            <extracomment>Set to 1 to stop in-flight background work instead of carrying it over when you background a session by pressing ← or with /background. Claude Code asks you to confirm before backgrounding, then stops the tasks that would otherwise carry over. Requires Claude Code v2.1.195 or later. See https://code.claude.com/docs/en/env-vars</extracomment>
             <translation>1로 설정하면 ←를 누르거나 /background로 세션을 백그라운드로 보낼 때, 진행 중인 백그라운드 작업을 이어가지 않고 중지한다. Claude Code는 백그라운드로 보내기 전에 확인을 요청한 다음, 원래라면 이어졌을 작업을 중지한다. Claude Code v2.1.195 이상 필요</translation>
         </message>
         <message>
             <source>env.CLAUDE_EFFORT</source>
-            <extracomment>Set automatically in Bash tool subprocesses and hook commands to the effort level in effect when the subprocess starts: low, medium, high, xhigh, or max. Ultracode is not a distinct level and reports as xhigh. Matches the effort.level field passed to hooks. Only set when the current model supports the effort parameter</extracomment>
+            <extracomment>Set automatically in Bash tool subprocesses and hook commands to the effort level in effect when the subprocess starts: low, medium, high, xhigh, or max. Matches the effort.level field passed to hooks. Only set when the current model supports the effort parameter</extracomment>
             <translation>Bash 도구 하위 프로세스와 훅 명령에서, 하위 프로세스가 시작될 때 적용 중인 노력 수준으로 자동 설정된다: low, medium, high, xhigh, max. Ultracode는 별도의 수준이 아니며 xhigh로 보고된다. 훅에 전달되는 effort.level 필드와 일치한다. 현재 모델이 effort 파라미터를 지원할 때만 설정된다</translation>
         </message>
         <message>
@@ -6739,8 +7374,13 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_ENV_FILE</source>
-            <extracomment>Path to a shell script whose contents Claude Code runs before each Bash command in the same shell process, so exports in the file are visible to the command. Use to persist virtualenv or conda activation across commands. Also populated dynamically by SessionStart, Setup, CwdChanged, and FileChanged hooks</extracomment>
+            <extracomment>Path to a shell script whose contents Claude Code runs before each Bash command in the same shell process, so exports in the file are visible to the command. Use to persist virtualenv or conda activation across commands. PowerShell commands receive its variables too, in v2.1.296 or later, under the conditions in Persisted variables in PowerShell commands. Also populated dynamically by SessionStart, Setup, CwdChanged, and FileChanged hooks</extracomment>
             <translation>Claude Code가 각 Bash 명령 전에 같은 셸 프로세스에서 내용을 실행하는 셸 스크립트의 경로. 따라서 파일 안의 export가 해당 명령에 보인다. virtualenv나 conda 활성화를 여러 명령에 걸쳐 유지할 때 사용한다. SessionStart, Setup, CwdChanged, FileChanged 훅에 의해 동적으로 채워지기도 한다</translation>
+        </message>
+        <message>
+            <source>env.CLAUDE_JOB_DIR</source>
+            <extracomment>Set by Claude Code in each background session to that session's ~/.claude/jobs/&lt;id&gt; directory. Shell commands that the session runs inherit it. Write scratch files to $CLAUDE_JOB_DIR/tmp. Claude's Write and Edit calls there don't prompt for permission, and the directory is removed when the session is deleted</extracomment>
+            <translation>Claude Code가 각 백그라운드 세션에 해당 세션의 ~/.claude/jobs/&lt;id&gt; 디렉터리로 설정한다. 세션이 실행하는 셸 명령이 이를 상속한다. 임시 파일은 $CLAUDE_JOB_DIR/tmp 에 쓴다. 그곳에 대한 Claude의 Write 및 Edit 호출은 권한 프롬프트를 표시하지 않으며, 세션이 삭제되면 디렉터리도 제거된다</translation>
         </message>
         <message>
             <source>env.CLAUDE_PID</source>
@@ -6769,7 +7409,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.CLAUDE_SUBAGENT_BG_SHELL_MAX_MS</source>
-            <extracomment>Maximum lifetime in milliseconds for a background shell command that a subagent started. Default 3600000 (60 minutes). When you set 0, Claude Code applies the default instead of removing the cap. When the subagent runs in the foreground, Claude Code also ends the command when that subagent gives its final response, regardless of this cap. See the background command lifetime rules. Claude Code doesn't cap main-session background commands this way. For the memory-pressure limit that covers them, see How backgrounding works</extracomment>
+            <extracomment>Removed in v2.1.260 and now a no-op. Previously capped how long a background shell command that a subagent started could run, in milliseconds, with a 60-minute default. See the background command lifetime rules</extracomment>
             <translation>서브에이전트가 시작한 백그라운드 셸 명령의 최대 수명(밀리초). 기본값 3600000(60분). 0으로 설정하면 Claude Code는 상한을 없애는 대신 기본값을 적용한다. 서브에이전트가 포그라운드에서 실행 중일 때는, 이 상한과 무관하게 해당 서브에이전트가 최종 응답을 내놓는 시점에 Claude Code가 명령을 종료하기도 한다. 백그라운드 명령 수명 규칙을 참고한다. Claude Code는 메인 세션의 백그라운드 명령에는 이런 방식으로 상한을 두지 않는다. 그것들에 적용되는 메모리 압박 제한은 How backgrounding works를 참고한다</translation>
         </message>
         <message>
@@ -6789,7 +7429,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.DISABLE_AUTO_COMPACT</source>
-            <extracomment>Set to 1 to disable automatic compaction when approaching the context limit. The manual /compact command remains available. Use when you want explicit control over when compaction occurs. Overrides the autoCompactEnabled setting</extracomment>
+            <extracomment>Set to 1 to disable automatic compaction when approaching the context limit, along with idle compaction. The manual /compact command remains available. Use when you want explicit control over when compaction occurs. Overrides the autoCompactEnabled setting</extracomment>
             <translation>1로 설정하면 컨텍스트 한도에 근접할 때의 자동 압축을 비활성화한다. 수동 /compact 명령은 계속 사용할 수 있다. 압축 시점을 명시적으로 제어하고 싶을 때 사용한다. autoCompactEnabled 설정을 재정의한다</translation>
         </message>
         <message>
@@ -6809,8 +7449,8 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.DISABLE_ERROR_REPORTING</source>
-            <extracomment>Set to any non-empty value, such as 1, to opt out of error reporting. **Setting it to 0 or false still opts out**, unlike most on/off variables; unset the variable to turn error reporting back on</extracomment>
-            <translation>1처럼 비어 있지 않은 값으로 설정하면 오류 보고를 사용 해제한다. **0이나 false로 설정해도 여전히 사용 해제된다.** 대부분의 on/off 변수와 다르며, 오류 보고를 다시 켜려면 변수를 해제한다</translation>
+            <extracomment>Set to any non-empty value, such as 1, to opt out of error reporting. Setting it to 0 or false still opts out, unlike most on/off variables; unset the variable to turn error reporting back on</extracomment>
+            <translation>1처럼 비어 있지 않은 값으로 설정하면 오류 보고를 사용 해제한다. 0이나 false로 설정해도 여전히 사용 해제된다. 대부분의 on/off 변수와 다르며, 오류 보고를 다시 켜려면 변수를 해제한다</translation>
         </message>
         <message>
             <source>env.DISABLE_EXTRA_USAGE_COMMAND</source>
@@ -6824,7 +7464,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.DISABLE_GROWTHBOOK</source>
-            <extracomment>Set to 1 or true to disable GrowthBook feature-flag fetching and use code defaults for every flag. This makes Remote Control and the other features that need feature-flag fetching unavailable. Setting it to 0 or false leaves fetching on. Telemetry event logging stays on unless DISABLE_TELEMETRY is also set</extracomment>
+            <extracomment>Set to 1 or true to disable feature-flag fetching and use code defaults for every flag. This makes Remote Control and the other features that need feature-flag fetching unavailable. Setting it to 0 or false leaves fetching on. Telemetry event logging stays on unless DISABLE_TELEMETRY is also set</extracomment>
             <translation>1이나 true로 설정하면 GrowthBook 기능 플래그 가져오기를 비활성화하고 모든 플래그에 코드 기본값을 사용한다. 이렇게 하면 Remote Control과 기능 플래그 가져오기가 필요한 다른 기능을 사용할 수 없게 된다. 0이나 false로 설정하면 가져오기가 켜진 상태로 유지된다. DISABLE_TELEMETRY도 함께 설정하지 않는 한 텔레메트리 이벤트 로깅은 켜진 상태로 유지된다</translation>
         </message>
         <message>
@@ -6864,23 +7504,23 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.DISABLE_PROMPT_CACHING_HAIKU</source>
-            <extracomment>Set to 1 to disable prompt caching for Haiku models</extracomment>
+            <extracomment>Set to 1 to disable prompt caching for the default Haiku model, wherever it runs</extracomment>
             <translation>1로 설정하면 Haiku 모델에 대해 프롬프트 캐싱을 비활성화한다</translation>
         </message>
         <message>
             <source>env.DISABLE_PROMPT_CACHING_OPUS</source>
-            <extracomment>Set to 1 to disable prompt caching for Opus models</extracomment>
+            <extracomment>Set to 1 to disable prompt caching for the default Opus model</extracomment>
             <translation>1로 설정하면 Opus 모델에 대해 프롬프트 캐싱을 비활성화한다</translation>
         </message>
         <message>
             <source>env.DISABLE_PROMPT_CACHING_SONNET</source>
-            <extracomment>Set to 1 to disable prompt caching for Sonnet models</extracomment>
+            <extracomment>Set to 1 to disable prompt caching for the default Sonnet model</extracomment>
             <translation>1로 설정하면 Sonnet 모델에 대해 프롬프트 캐싱을 비활성화한다</translation>
         </message>
         <message>
             <source>env.DISABLE_TELEMETRY</source>
-            <extracomment>Set to any non-empty value, such as 1, to opt out of telemetry. **Setting it to 0 or false still opts out**, unlike most on/off variables; unset the variable to turn telemetry back on. Telemetry events don't include user data like code, file paths, or bash commands. Also disables feature-flag fetching with the same effect as DISABLE_GROWTHBOOK, which makes Remote Control and the other features that need feature-flag fetching unavailable. See Turn telemetry off for your organization</extracomment>
-            <translation>1처럼 비어 있지 않은 값으로 설정하면 텔레메트리를 사용 해제한다. **0이나 false로 설정해도 여전히 사용 해제된다.** 대부분의 on/off 변수와 다르며, 텔레메트리를 다시 켜려면 변수를 해제한다. 텔레메트리 이벤트에는 코드, 파일 경로, bash 명령 같은 사용자 데이터가 포함되지 않는다. 또한 DISABLE_GROWTHBOOK과 같은 효과로 기능 플래그 가져오기를 비활성화하며, 이는 Remote Control과 기능 플래그 가져오기가 필요한 다른 기능을 사용할 수 없게 만든다. 참고: Turn telemetry off for your organization</translation>
+            <extracomment>Set to any non-empty value, such as 1, to opt out of telemetry. Setting it to 0 or false still opts out, unlike most on/off variables; unset the variable to turn telemetry back on. Telemetry events don't include user data like code, file paths, or Bash commands. Also disables feature-flag fetching. See Turn telemetry off for your organization</extracomment>
+            <translation>1처럼 비어 있지 않은 값으로 설정하면 텔레메트리를 사용 해제한다. 0이나 false로 설정해도 여전히 사용 해제된다. 대부분의 on/off 변수와 다르며, 텔레메트리를 다시 켜려면 변수를 해제한다. 텔레메트리 이벤트에는 코드, 파일 경로, bash 명령 같은 사용자 데이터가 포함되지 않는다. 또한 DISABLE_GROWTHBOOK과 같은 효과로 기능 플래그 가져오기를 비활성화하며, 이는 Remote Control과 기능 플래그 가져오기가 필요한 다른 기능을 사용할 수 없게 만든다. 참고: Turn telemetry off for your organization</translation>
         </message>
         <message>
             <source>env.DISABLE_UPDATES</source>
@@ -6894,12 +7534,12 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.DO_NOT_TRACK</source>
-            <extracomment>Set to 1 to opt out of telemetry, with the same effect as DISABLE_TELEMETRY, including making Remote Control and the other features that need feature-flag fetching unavailable. Claude Code reads this variable as a standard boolean, so 0 leaves telemetry on, and honors it as the cross-tool convention recognized by many developer CLIs</extracomment>
+            <extracomment>Set to 1 to opt out of telemetry, with the same effect as DISABLE_TELEMETRY, including on feature-flag fetching. Claude Code reads this variable as a standard boolean, so 0 leaves telemetry on, and honors it as the cross-tool convention recognized by many developer CLIs</extracomment>
             <translation>1로 설정하면 텔레메트리를 사용 해제하며, Remote Control과 기능 플래그 가져오기가 필요한 다른 기능을 사용할 수 없게 만드는 것을 포함해 DISABLE_TELEMETRY와 같은 효과를 낸다. Claude Code는 이 변수를 표준 불리언으로 읽으므로 0이면 텔레메트리가 켜진 상태로 유지되며, 많은 개발자 CLI가 인정하는 도구 간 관례로서 이 변수를 존중한다</translation>
         </message>
         <message>
             <source>env.ENABLE_BETA_TRACING_DETAILED</source>
-            <extracomment>Set to 1, together with BETA_TRACING_ENDPOINT, to turn on detailed beta tracing, which adds content-bearing span attributes and the claude_code.hook span. Interactive CLI sessions also require your organization to be allowlisted for the beta. Both variables are ignored in project and local settings</extracomment>
+            <extracomment>Set to 1, and set BETA_TRACING_ENDPOINT to your OTLP/HTTP collector endpoint, to turn on detailed beta tracing, which adds content-bearing span attributes and the claude_code.hook span. Interactive CLI sessions also require your organization to be allowlisted for the beta. Both variables are ignored in project and local settings</extracomment>
             <translation>BETA_TRACING_ENDPOINT와 함께 1로 설정하면 상세 베타 추적을 켜며, 이는 콘텐츠를 담은 span 속성과 claude_code.hook span을 추가한다. 대화형 CLI 세션의 경우 조직이 해당 베타의 허용 목록에 등록되어 있어야 한다. 두 변수 모두 프로젝트 설정과 로컬 설정에서는 무시된다</translation>
         </message>
         <message>
@@ -6909,23 +7549,23 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.ENABLE_PROMPT_CACHING_1H</source>
-            <extracomment>Set to 1 to request a 1-hour prompt cache TTL instead of the default 5 minutes. Intended for API key, Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry, and Claude Platform on AWS users. Subscription users within included usage receive the 1-hour TTL automatically on the main conversation. Subscription users drawing on usage credits can set it to keep the 1-hour TTL. 1-hour cache writes are billed at a higher rate. To choose the TTL per request bucket instead, use CLAUDE_CODE_PROMPT_CACHE_TTL and CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL, which take precedence over this variable</extracomment>
+            <extracomment>Set to 1 to request a 1-hour prompt cache TTL instead of the default 5 minutes. Intended for API key, Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry, and Claude Platform on AWS users. For subscription users within included usage, Claude Code requests the 1-hour TTL automatically on the main conversation. Subscription users drawing on usage credits can set it to keep the 1-hour TTL. 1-hour cache writes are billed at a higher rate. To choose the TTL separately for the main conversation and for requests outside it, use CLAUDE_CODE_PROMPT_CACHE_TTL and CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL, which take precedence over this variable</extracomment>
             <translation>1로 설정하면 기본값인 5분 대신 1시간 프롬프트 캐시 TTL을 요청한다. API 키, Amazon Bedrock, Google Cloud의 Agent Platform, Microsoft Foundry, AWS의 Claude Platform 사용자를 위한 것이다. 포함된 사용량 범위 안의 구독 사용자는 메인 대화에서 1시간 TTL을 자동으로 받는다. 사용 크레딧을 사용하는 구독 사용자는 1시간 TTL을 유지하도록 이 값을 설정할 수 있다. 1시간 캐시 쓰기는 더 높은 요율로 청구된다. 요청 버킷별로 TTL을 선택하려면 대신 CLAUDE_CODE_PROMPT_CACHE_TTL과 CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL을 사용하며, 이들은 이 변수보다 우선한다</translation>
         </message>
         <message>
             <source>env.ENABLE_PROMPT_CACHING_1H_BEDROCK</source>
-            <extracomment>Deprecated. Use ENABLE_PROMPT_CACHING_1H instead</extracomment>
+            <extracomment>Deprecated. Use ENABLE_PROMPT_CACHING_1H instead. Has no effect on Claude apps gateway sessions, even when the gateway routes to Amazon Bedrock</extracomment>
             <translation>사용 중단됨. 대신 ENABLE_PROMPT_CACHING_1H를 사용한다</translation>
         </message>
         <message>
             <source>env.ENABLE_TOOL_SEARCH</source>
-            <extracomment>Controls MCP tool search. Unset, Claude Code defers all MCP tools by default. It still loads them upfront on Google Cloud's Agent Platform models earlier than the Claude 4.5 generation, on a Microsoft Foundry deployment hosted on Azure, and when ANTHROPIC_BASE_URL points to a non-first-party host. true always defers and sends the beta header, except on those same Agent Platform models and Microsoft Foundry deployments; requests fail on proxies that don't support tool_reference. auto loads upfront when tool definitions fit within 10% of context. auto:N sets a custom threshold, such as auto:5 for 5%. false loads all tools upfront. A value you set yourself is ignored when CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS is set. Before v2.1.221, Claude Code disabled tool search for all models on Google Cloud's Agent Platform unless you set this variable to true</extracomment>
+            <extracomment>Controls MCP tool search. Unset or true defers MCP tools, except in the cases that keep tool search off. auto turns tool search on once definitions reach 10% of the context window. auto:N sets a custom threshold, such as auto:5 for 5%. false loads all tools upfront. If a gateway rejects tool search, see Tool search through an LLM gateway</extracomment>
             <translation>MCP 도구 검색을 제어한다. 설정하지 않으면 Claude Code는 기본적으로 모든 MCP 도구를 지연 로드한다. 단, Claude 4.5 세대보다 이전인 Google Cloud의 Agent Platform 모델에서, Azure에 호스팅된 Microsoft Foundry 배포에서, 그리고 ANTHROPIC_BASE_URL이 퍼스트파티가 아닌 호스트를 가리킬 때는 여전히 도구를 미리 로드한다. true는 앞서 말한 동일한 Agent Platform 모델과 Microsoft Foundry 배포를 제외하고 항상 지연 로드하며 베타 헤더를 보낸다. tool_reference를 지원하지 않는 프록시에서는 요청이 실패한다. auto는 도구 정의가 컨텍스트의 10% 안에 들어갈 때 미리 로드한다. auto:N은 5%를 뜻하는 auto:5처럼 사용자 지정 임계값을 설정한다. false는 모든 도구를 미리 로드한다. CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS가 설정되어 있으면 직접 설정한 값은 무시된다. v2.1.221 이전에는 이 변수를 true로 설정하지 않는 한 Claude Code가 Google Cloud의 Agent Platform의 모든 모델에 대해 도구 검색을 비활성화했다</translation>
         </message>
         <message>
             <source>env.FALLBACK_FOR_ALL_PRIMARY_MODELS</source>
-            <extracomment>Set to any non-empty value, such as 1, to make every model stop retrying with a repeated-overload error when no fallback model is configured. **Setting it to 0 or false still enables this**, unlike most on/off variables; unset the variable to restore the default retry behavior. Without it, models Claude Code recognizes as Opus, Fable, or Mythos models stop retrying this way when you authenticate with an API key or a third-party provider rather than a Claude subscription. As of v2.1.160, a configured fallback model chain triggers on repeated overload errors for any primary model, so this variable does not affect switching to a fallback model</extracomment>
-            <translation>1처럼 비어 있지 않은 값으로 설정하면, 대체 모델이 구성되어 있지 않을 때 모든 모델이 과부하 오류가 반복되면 재시도를 중단하게 한다. **0이나 false로 설정해도 여전히 이 동작이 활성화된다.** 대부분의 on/off 변수와 다르며, 기본 재시도 동작을 복원하려면 변수를 해제한다. 이 변수가 없으면, Claude 구독이 아니라 API 키나 서드파티 공급자로 인증할 때 Claude Code가 Opus, Fable, Mythos 모델로 인식하는 모델만 이런 식으로 재시도를 중단한다. v2.1.160부터는 구성된 대체 모델 체인이 어떤 기본 모델에 대해서든 과부하 오류가 반복될 때 작동하므로, 이 변수는 대체 모델로의 전환에는 영향을 주지 않는다</translation>
+            <extracomment>Set to any non-empty value to make all models (not only Opus) stop retrying with a repeated-overload error when no fallback model is configured. See https://code.claude.com/docs/en/env-vars</extracomment>
+            <translation>1처럼 비어 있지 않은 값으로 설정하면, 대체 모델이 구성되어 있지 않을 때 모든 모델이 과부하 오류가 반복되면 재시도를 중단하게 한다. 0이나 false로 설정해도 여전히 이 동작이 활성화된다. 대부분의 on/off 변수와 다르며, 기본 재시도 동작을 복원하려면 변수를 해제한다. 이 변수가 없으면, Claude 구독이 아니라 API 키나 서드파티 공급자로 인증할 때 Claude Code가 Opus, Fable, Mythos 모델로 인식하는 모델만 이런 식으로 재시도를 중단한다. v2.1.160부터는 구성된 대체 모델 체인이 어떤 기본 모델에 대해서든 과부하 오류가 반복될 때 작동하므로, 이 변수는 대체 모델로의 전환에는 영향을 주지 않는다</translation>
         </message>
         <message>
             <source>env.FORCE_AUTOUPDATE_PLUGINS</source>
@@ -6934,7 +7574,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.FORCE_HYPERLINK</source>
-            <extracomment>Set to 1 to enable clickable OSC 8 hyperlinks when your terminal supports them but isn't auto-detected, or 0 to disable them. When unset, Claude Code enables hyperlinks only when it detects terminal support. Claude Code parses this value as a number, not a Boolean, so a value such as false, no, or off enables hyperlinks rather than disabling them. Claude Code renders the footer PR or merge request badge as a hyperlink even when it can't detect terminal support, such as over SSH. Set 0 to render the badge as plain text</extracomment>
+            <extracomment>Set to 1 to enable clickable OSC 8 hyperlinks when your terminal supports them but isn't auto-detected, or 0 to disable them. When unset, Claude Code enables hyperlinks only when it detects terminal support. Claude Code parses this value as a number, not a Boolean, so a value such as false, no, or off enables hyperlinks rather than disabling them. The footer PR or merge request badge renders as a hyperlink even when Claude Code can't detect terminal support, such as over SSH. Set 0 to render the badge as plain text</extracomment>
             <translation>1로 설정하면 터미널이 지원하지만 자동으로 감지되지 않는 경우에도 클릭 가능한 OSC 8 하이퍼링크를 활성화하고, 0으로 설정하면 비활성화한다. 설정하지 않으면 Claude Code는 터미널 지원을 감지했을 때만 하이퍼링크를 활성화한다. Claude Code는 이 값을 불리언이 아니라 숫자로 해석하므로, false, no, off 같은 값은 하이퍼링크를 비활성화하는 대신 활성화한다. Claude Code는 SSH 연결처럼 터미널 지원을 감지할 수 없는 경우에도 푸터의 PR 또는 병합 요청 배지를 하이퍼링크로 렌더링한다. 배지를 일반 텍스트로 렌더링하려면 0으로 설정한다</translation>
         </message>
         <message>
@@ -6959,22 +7599,22 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.IS_DEMO</source>
-            <extracomment>Set to any non-empty value, such as 1, to enable demo mode: hides your email and organization name from the header and /status output, and skips onboarding. **Setting it to 0 or false still enables demo mode**, unlike most on/off variables; unset the variable to turn it off. Useful when streaming or recording a session</extracomment>
-            <translation>1처럼 비어 있지 않은 값으로 설정하면 데모 모드를 활성화한다. 헤더와 /status 출력에서 이메일과 조직 이름을 숨기고 온보딩을 건너뛴다. **0이나 false로 설정해도 여전히 데모 모드가 활성화된다.** 대부분의 on/off 변수와 다르며, 끄려면 변수를 해제한다. 세션을 스트리밍하거나 녹화할 때 유용하다</translation>
+            <extracomment>Set to any non-empty value, such as 1, to enable demo mode: hides your email and organization name from the header and /status output, and skips onboarding. Setting it to 0 or false still enables demo mode, unlike most on/off variables; unset the variable to turn it off. Useful when streaming or recording a session</extracomment>
+            <translation>1처럼 비어 있지 않은 값으로 설정하면 데모 모드를 활성화한다. 헤더와 /status 출력에서 이메일과 조직 이름을 숨기고 온보딩을 건너뛴다. 0이나 false로 설정해도 여전히 데모 모드가 활성화된다. 대부분의 on/off 변수와 다르며, 끄려면 변수를 해제한다. 세션을 스트리밍하거나 녹화할 때 유용하다</translation>
         </message>
         <message>
             <source>env.MAX_MCP_OUTPUT_TOKENS</source>
-            <extracomment>Maximum number of tokens allowed in MCP tool responses. Claude Code displays a warning when output exceeds 10,000 tokens. Tools that declare anthropic/maxResultSizeChars use that character limit for text content instead, but image content from those tools is still subject to this variable (default: 25000)</extracomment>
+            <extracomment>Maximum number of tokens allowed in MCP tool responses (default: 25000). Claude Code displays a warning when output exceeds 10,000 tokens. Tools that declare anthropic/maxResultSizeChars use that character limit for text content instead, but image content from those tools is still subject to this variable. A successful text result longer than 50,000 characters from a tool without that annotation is saved to a file regardless of this variable</extracomment>
             <translation>MCP 도구 응답에 허용되는 최대 토큰 수. Claude Code는 출력이 10,000 토큰을 초과하면 경고를 표시한다. anthropic/maxResultSizeChars를 선언하는 도구는 텍스트 콘텐츠에 대해 그 문자 제한을 대신 사용하지만, 해당 도구의 이미지 콘텐츠는 여전히 이 변수의 적용을 받는다 (기본값: 25000)</translation>
         </message>
         <message>
             <source>env.MAX_STRUCTURED_OUTPUT_RETRIES</source>
-            <extracomment>Number of times Claude Code retries when the model's response fails validation against the --json-schema in non-interactive mode with the -p flag. The same retry count applies when a workflow subagent's structured output fails validation. Defaults to 5</extracomment>
+            <extracomment>Number of attempts Claude Code allows when the model's response fails validation against the --json-schema in non-interactive mode with the -p flag; after that many failed attempts with no valid output, the run fails. The same cap applies when a workflow subagent's structured output fails validation. Defaults to 5, a first attempt plus four retries</extracomment>
             <translation>-p 플래그를 사용하는 비대화형 모드에서 모델의 응답이 --json-schema 검증에 실패했을 때 Claude Code가 재시도하는 횟수. 워크플로 서브에이전트의 구조화된 출력이 검증에 실패할 때도 같은 재시도 횟수가 적용된다. 기본값은 5다</translation>
         </message>
         <message>
             <source>env.MAX_THINKING_TOKENS</source>
-            <extracomment>Fixed token budget for extended thinking. Claude Code caps it at one token below the request's max output tokens and never below 1,024; see CLAUDE_CODE_MAX_OUTPUT_TOKENS for how that limit is set. When unset and thinking is enabled, models with adaptive reasoning choose their own thinking depth, and other models use the cap. Set to 0 to disable thinking on the Anthropic API, except on Fable models, which can't have thinking turned off; on third-party providers, 0 omits the thinking parameter instead. With thinking turned off on the Anthropic API, Claude Code sends effort high instead of a higher level to models it knows don't accept that combination, such as Opus 5. Nonzero values are ignored on adaptive reasoning models unless CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING is set</extracomment>
+            <extracomment>Fixed token budget for extended thinking. Claude Code caps it at one token below the request's max output tokens and never below 1,024. See CLAUDE_CODE_MAX_OUTPUT_TOKENS for how that limit is set. When unset and thinking is enabled, models with adaptive reasoning choose their own thinking depth, and other models use the cap. Set to 0 to disable thinking on the Anthropic API, except on Opus 5.5, Sonnet 5.5, Haiku 5.5, and the Fable models, which can't have thinking turned off. On third-party providers, 0 omits the thinking parameter instead. With thinking turned off on the Anthropic API, Claude Code sends effort high instead of a higher level to models it knows don't accept that combination, such as Opus 5. For a positive value, Claude Code ignores the number itself on adaptive reasoning models, except when CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING turns adaptive reasoning off</extracomment>
             <translation>확장 사고를 위한 고정 토큰 예산. Claude Code는 이를 요청의 최대 출력 토큰보다 1 토큰 작은 값으로 제한하며 1,024 미만으로는 절대 내리지 않는다. 그 한도가 정해지는 방식은 CLAUDE_CODE_MAX_OUTPUT_TOKENS를 참고한다. 설정하지 않았고 사고가 활성화되어 있으면, 적응형 추론 모델은 스스로 사고 깊이를 선택하고 다른 모델은 그 상한을 사용한다. 0으로 설정하면 Anthropic API에서 사고를 비활성화하지만, 사고를 끌 수 없는 Fable 모델은 예외다. 서드파티 공급자에서는 0이 대신 thinking 파라미터를 생략한다. Anthropic API에서 사고를 끈 상태에서는, Claude Code가 Opus 5처럼 그 조합을 받아들이지 않는 것으로 알려진 모델에는 더 높은 수준 대신 effort high를 보낸다. 적응형 추론 모델에서는 CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING이 설정되어 있지 않는 한 0이 아닌 값이 무시된다</translation>
         </message>
         <message>
@@ -6984,7 +7624,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.MCP_CONNECTION_NONBLOCKING</source>
-            <extracomment>Controls whether startup waits for MCP servers to connect before the first query. MCP startup is non-blocking by default: servers connect in the background and their tools become available as they finish. Set to 0 to make Claude Code wait for servers to connect before the first query. Servers configured with alwaysLoad: true still make startup wait regardless, except when served from the discovery cache, since their tools must be present when the first prompt is built. In non-interactive mode (-p), Claude Code also waits for still-pending servers before the first turn regardless of this variable, with a longer deadline when you pass --mcp-config explicitly; see that flag's entry for the cached-server exception</extracomment>
+            <extracomment>Controls whether startup waits for MCP servers to connect before the first query. MCP startup is non-blocking by default: servers connect in the background and their tools become available as they finish. Set to 0 to make Claude Code wait for servers to connect before the first query. Servers configured with alwaysLoad: true still make startup wait regardless, except when served from the discovery cache, since their tools must be present when the first prompt is built. In non-interactive mode (-p) without --input-format stream-json, Claude Code also waits for still-pending servers before the first turn regardless of this variable. When you pass --mcp-config explicitly, the wait has a longer deadline; see that flag's entry for the cached-server exception</extracomment>
             <translation>첫 쿼리 전에 시작 과정이 MCP 서버의 연결을 기다릴지 여부를 제어한다. MCP 시작은 기본적으로 논블로킹이다. 서버가 백그라운드에서 연결되고 연결이 끝나는 대로 해당 도구를 사용할 수 있게 된다. 0으로 설정하면 Claude Code가 첫 쿼리 전에 서버 연결을 기다린다. alwaysLoad: true로 구성된 서버는 첫 프롬프트를 구성할 때 그 도구가 있어야 하므로, 디스커버리 캐시에서 제공되는 경우를 제외하고는 이 설정과 무관하게 여전히 시작 과정을 대기시킨다. 비대화형 모드(-p)에서는 이 변수와 무관하게 Claude Code가 첫 턴 전에 아직 대기 중인 서버도 기다리며, --mcp-config를 명시적으로 전달하면 기한이 더 길어진다. 캐시된 서버 예외는 해당 플래그의 항목을 참고한다</translation>
         </message>
         <message>
@@ -7019,7 +7659,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.MCP_PROTOCOL_NEGOTIATION</source>
-            <extracomment>On the v2 MCP client runtime only, whether Claude Code probes servers for MCP protocol revision 2026-07-28. Set auto to probe HTTP, claude.ai connector, and stdio servers; a server that doesn't answer the probe connects on the earlier protocol instead, as SSE and WebSocket servers always do. Set legacy to skip the probe for every server. Without the variable, Claude Code probes HTTP and claude.ai connector servers on Claude Code v2.1.232 or later, with the exceptions the MCP client runtimes section lists. Any other value is ignored with a warning in the debug log. Requires Claude Code v2.1.221 or later</extracomment>
+            <extracomment>On the v2 MCP client runtime only, controls whether Claude Code probes servers for MCP protocol revision 2026-07-28. Set legacy to skip the probe, so that every server connects with the handshake from before that revision. Set auto to probe the server kinds that support the probe: HTTP and stdio servers, claude.ai connectors, and the connectors of cloud and Remote Control sessions. With the variable unset, Claude Code probes those same kinds by default; see MCP client runtimes. Any other value is ignored with a warning in the debug log. Requires Claude Code v2.1.221 or later</extracomment>
             <translation>v2 MCP 클라이언트 런타임에서만, Claude Code가 서버에 MCP 프로토콜 리비전 2026-07-28을 탐지 요청할지 여부. auto로 설정하면 HTTP, claude.ai 커넥터, stdio 서버를 탐지한다. 탐지에 응답하지 않는 서버는 SSE와 WebSocket 서버가 항상 그러하듯 이전 프로토콜로 연결된다. legacy로 설정하면 모든 서버에 대해 탐지를 건너뛴다. 이 변수가 없으면 Claude Code v2.1.232 이상에서는 MCP 클라이언트 런타임 절에 나열된 예외를 제외하고 HTTP 및 claude.ai 커넥터 서버를 탐지한다. 그 밖의 값은 무시되며 디버그 로그에 경고가 남는다. Claude Code v2.1.221 이상 필요</translation>
         </message>
         <message>
@@ -7029,7 +7669,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.MCP_SDK_GENERATION</source>
-            <extracomment>Pin which MCP client runtime this process connects to MCP servers with: v1, built on MCP TypeScript SDK 1.x, or v2, built on MCP TypeScript SDK 2.0. Without the variable, Claude Code uses v2 on Claude Code v2.1.232 or later, except where that section says it uses v1. On Claude Code v2.1.221 or later, the v2 runtime checks the issuer an MCP OAuth server returns in its authorization response and fails the sign-in with an error that begins Issuer mismatch in authorization response when it doesn't match. The v1 runtime doesn't run this check. If you set an unrecognized value, Claude Code ignores it and writes a warning to the debug log. Claude Code reads the value once per process. Requires Claude Code v2.1.218 or later</extracomment>
+            <extracomment>Pin which MCP client runtime this process connects to MCP servers with: v1, built on MCP TypeScript SDK 1.x, or v2, built on MCP TypeScript SDK 2.0. Without the variable, Claude Code uses v2, starting with the versions listed in that section. On Claude Code v2.1.221 or later, the v2 runtime checks the issuer an MCP OAuth server returns in its authorization response and fails the sign-in with an error that begins Issuer mismatch in authorization response when it doesn't match. The v1 runtime doesn't run this check. If you set an unrecognized value, Claude Code ignores it and writes a warning to the debug log. Claude Code reads the value once per process. Requires Claude Code v2.1.218 or later</extracomment>
             <translation>이 프로세스가 MCP 서버에 연결할 때 사용할 MCP 클라이언트 런타임을 고정한다: MCP TypeScript SDK 1.x 기반의 v1, 또는 MCP TypeScript SDK 2.0 기반의 v2. 이 변수가 없으면 Claude Code v2.1.232 이상에서는 해당 절에서 v1을 사용한다고 명시한 경우를 제외하고 v2를 사용한다. Claude Code v2.1.221 이상에서 v2 런타임은 MCP OAuth 서버가 인증 응답에 반환하는 issuer를 확인하고, 일치하지 않으면 Issuer mismatch in authorization response로 시작하는 오류와 함께 로그인을 실패시킨다. v1 런타임은 이 확인을 수행하지 않는다. 인식되지 않는 값을 설정하면 Claude Code는 이를 무시하고 디버그 로그에 경고를 기록한다. Claude Code는 프로세스당 한 번 값을 읽는다. Claude Code v2.1.218 이상 필요</translation>
         </message>
         <message>
@@ -7169,8 +7809,13 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.OTEL_LOG_ASSISTANT_RESPONSES</source>
-            <extracomment>Set to 1 to include the model's response text on assistant_response OpenTelemetry log events. When unset, the value of OTEL_LOG_USER_PROMPTS is used instead. Set to 0 to keep responses redacted even when OTEL_LOG_USER_PROMPTS is set. Requires Claude Code v2.1.193 or later. See Monitoring</extracomment>
+            <extracomment>Set to 1 to include the model's response text on assistant_response OpenTelemetry log events. When unset, Claude Code uses the value of OTEL_LOG_USER_PROMPTS instead. Set to 0 to keep responses redacted even when OTEL_LOG_USER_PROMPTS is set. Set it in your shell, user settings, or managed settings. Ignored in project and local settings. Requires Claude Code v2.1.193 or later. See Monitoring</extracomment>
             <translation>`1`로 설정하면 assistant_response OpenTelemetry 로그 이벤트에 모델의 응답 텍스트를 포함한다. 설정하지 않으면 OTEL_LOG_USER_PROMPTS의 값이 대신 사용된다. `0`으로 설정하면 OTEL_LOG_USER_PROMPTS가 설정되어 있어도 응답을 계속 가린 상태로 유지한다. Claude Code v2.1.193 이상 필요. 참고: Monitoring</translation>
+        </message>
+        <message>
+            <source>env.OTEL_LOG_MANAGED_SETTINGS</source>
+            <extracomment>Set to 1 to add the redacted managed settings, and a SHA-256 digest of the settings before redaction, to managed_settings_resolved OpenTelemetry log events. Disabled by default. Set it in your shell, user settings, or managed settings; a value in project or local settings doesn't turn it on. Requires Claude Code v2.1.274 or later. See Monitoring</extracomment>
+            <translation>1로 설정하면 관리형 설정의 민감 정보를 가린(redacted) 사본과, 가리기 전 설정의 SHA-256 다이제스트를 managed_settings_resolved OpenTelemetry 로그 이벤트에 추가한다. 기본적으로 비활성화되어 있다. 셸, 사용자 설정 또는 관리형 설정에서 설정하며, 프로젝트 또는 로컬 설정의 값은 이를 켜지 않는다. Claude Code v2.1.274 이상이 필요하다. 모니터링을 참고한다</translation>
         </message>
         <message>
             <source>env.OTEL_LOG_RAW_API_BODIES</source>
@@ -7179,17 +7824,17 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.OTEL_LOG_TOOL_CONTENT</source>
-            <extracomment>Set to 1 to include tool input and output content in OpenTelemetry span events. Disabled by default to protect sensitive data. See Monitoring</extracomment>
+            <extracomment>Set to 1 to include tool content in the tool.output OpenTelemetry span event. Span attributes carry tool content under their own gates. Requires tracing. Disabled by default to protect sensitive data. Set it in your shell, user settings, or managed settings. Ignored in project and local settings, apart from the off values that section describes. See Monitoring</extracomment>
             <translation>`1`로 설정하면 OpenTelemetry 스팬 이벤트에 도구 입력 및 출력 콘텐츠를 포함한다. 민감한 데이터를 보호하기 위해 기본적으로 비활성화되어 있다. 참고: Monitoring</translation>
         </message>
         <message>
             <source>env.OTEL_LOG_TOOL_DETAILS</source>
-            <extracomment>Set to 1 to include tool input arguments, MCP server names, user-authored workflow names, raw error strings on tool failures, the refusal category on api_refusal events, and other tool details in OpenTelemetry traces and logs. Disabled by default to protect PII. See Monitoring</extracomment>
+            <extracomment>Set to 1 to include tool input arguments; MCP server names; user-authored workflow names; raw error strings on tool failures; the refusal category on api_refusal events; real agent, skill, plugin, and MCP server names on cost and token metrics; and other tool details in OpenTelemetry metrics, traces, and logs. Disabled by default to protect PII. Set it in your shell, user settings, or managed settings. Ignored in project and local settings, apart from the off values that section describes. See Monitoring</extracomment>
             <translation>`1`로 설정하면 OpenTelemetry 트레이스와 로그에 도구 입력 인자, MCP 서버 이름, 사용자가 작성한 워크플로 이름, 도구 실패 시의 원시 오류 문자열, api_refusal 이벤트의 거부 카테고리, 그 밖의 도구 세부 정보를 포함한다. PII를 보호하기 위해 기본적으로 비활성화되어 있다. 참고: Monitoring</translation>
         </message>
         <message>
             <source>env.OTEL_LOG_USER_PROMPTS</source>
-            <extracomment>Set to 1 to include user prompt text in OpenTelemetry traces and logs. Disabled by default (prompts are redacted). See Monitoring</extracomment>
+            <extracomment>Set to 1 to include user prompt text in OpenTelemetry traces and logs. Disabled by default (prompts are redacted). Set it in your shell, user settings, or managed settings. Ignored in project and local settings, apart from the off values that section describes. See Monitoring</extracomment>
             <translation>`1`로 설정하면 OpenTelemetry 트레이스와 로그에 사용자 프롬프트 텍스트를 포함한다. 기본적으로 비활성화되어 있다 (프롬프트는 가려진다). 참고: Monitoring</translation>
         </message>
         <message>
@@ -7206,6 +7851,11 @@ See https://code.claude.com/docs/en/permissions</extracomment>
             <source>env.OTEL_METRICS_INCLUDE_ENTRYPOINT</source>
             <extracomment>Set to true to include the session entrypoint in metrics attributes (default: excluded). Added in v2.1.152. See Monitoring</extracomment>
             <translation>`true`로 설정하면 메트릭 속성에 세션 진입점을 포함한다 (기본값: 제외). v2.1.152에 추가됨. 참고: Monitoring</translation>
+        </message>
+        <message>
+            <source>env.OTEL_METRICS_INCLUDE_REPOSITORY</source>
+            <extracomment>Set to true to tag OpenTelemetry metrics and events with vcs.* attributes identifying the session's repository (default: excluded). Requires Claude Code v2.1.269 or later. See Repository attributes</extracomment>
+            <translation>true로 설정하면 OpenTelemetry 지표와 이벤트에 세션의 저장소를 식별하는 vcs.* 속성을 태그한다(기본값: 제외). Claude Code v2.1.269 이상이 필요하다. 저장소 속성을 참고한다</translation>
         </message>
         <message>
             <source>env.OTEL_METRICS_INCLUDE_RESOURCE_ATTRIBUTES</source>
@@ -7249,7 +7899,7 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.TASK_MAX_OUTPUT_LENGTH</source>
-            <extracomment>Maximum number of characters of a background task's output that the TaskOutput tool keeps (default: 32000; maximum: 160000). If you set the taskOutputMaxChars setting, Claude Code ignores this variable</extracomment>
+            <extracomment>Removed in v2.1.277 and now a no-op, together with the TaskOutput tool it sized. Previously set the maximum number of characters of a background task's output that the TaskOutput tool kept. Claude reads a background task's output file with Read instead</extracomment>
             <translation>TaskOutput 도구가 유지하는 백그라운드 작업 출력의 최대 문자 수 (기본값: 32000, 최대: 160000). taskOutputMaxChars 설정을 지정하면 Claude Code는 이 변수를 무시한다</translation>
         </message>
         <message>
@@ -7274,17 +7924,17 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.VERTEX_REGION_CLAUDE_4_0_OPUS</source>
-            <extracomment>Override region for Claude 4.0 Opus when using Google Cloud's Agent Platform</extracomment>
+            <extracomment>Override region for Claude Opus 4 when using Google Cloud's Agent Platform</extracomment>
             <translation>Google Cloud의 Agent Platform을 사용할 때 Claude 4.0 Opus의 리전을 재정의한다</translation>
         </message>
         <message>
             <source>env.VERTEX_REGION_CLAUDE_4_0_SONNET</source>
-            <extracomment>Override region for Claude 4.0 Sonnet when using Google Cloud's Agent Platform</extracomment>
+            <extracomment>Override region for Claude Sonnet 4 when using Google Cloud's Agent Platform</extracomment>
             <translation>Google Cloud의 Agent Platform을 사용할 때 Claude 4.0 Sonnet의 리전을 재정의한다</translation>
         </message>
         <message>
             <source>env.VERTEX_REGION_CLAUDE_4_1_OPUS</source>
-            <extracomment>Override region for Claude 4.1 Opus when using Google Cloud's Agent Platform</extracomment>
+            <extracomment>Override region for Claude Opus 4.1 when using Google Cloud's Agent Platform</extracomment>
             <translation>Google Cloud의 Agent Platform을 사용할 때 Claude 4.1 Opus의 리전을 재정의한다</translation>
         </message>
         <message>
@@ -7314,8 +7964,18 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.VERTEX_REGION_CLAUDE_4_8_OPUS</source>
-            <extracomment>Override region for Claude Opus 4.8 when using Google Cloud's Agent Platform. Added in v2.1.154</extracomment>
+            <extracomment>Override region for Claude Opus 4.8 when using Google Cloud's Agent Platform</extracomment>
             <translation>Google Cloud의 Agent Platform을 사용할 때 Claude Opus 4.8의 리전을 재정의한다. v2.1.154에 추가됨</translation>
+        </message>
+        <message>
+            <source>env.VERTEX_REGION_CLAUDE_5_5_OPUS</source>
+            <extracomment>Override region for Claude Opus 5.5 when using Google Cloud's Agent Platform. Added in v2.1.280</extracomment>
+            <translation>Google Cloud의 Agent Platform 사용 시 Claude Opus 5.5의 리전을 재정의한다. v2.1.280에서 추가되었다</translation>
+        </message>
+        <message>
+            <source>env.VERTEX_REGION_CLAUDE_5_5_SONNET</source>
+            <extracomment>Override region for Claude Sonnet 5.5 when using Google Cloud's Agent Platform. Added in v2.1.284</extracomment>
+            <translation>Google Cloud의 Agent Platform 사용 시 Claude Sonnet 5.5의 리전을 재정의한다. v2.1.284에서 추가되었다</translation>
         </message>
         <message>
             <source>env.VERTEX_REGION_CLAUDE_5_OPUS</source>
@@ -7334,13 +7994,18 @@ See https://code.claude.com/docs/en/permissions</extracomment>
         </message>
         <message>
             <source>env.VERTEX_REGION_CLAUDE_FABLE_5_1</source>
-            <extracomment>Override region for Claude Fable 5.1 when using Google Cloud's Agent Platform. Added in v2.1.255</extracomment>
+            <extracomment>Override region for Claude Fable 5.1 when using Google Cloud's Agent Platform. Added in v2.1.257</extracomment>
             <translation>Google Cloud의 Agent Platform을 사용할 때 Claude Fable 5.1의 리전을 재정의한다. v2.1.255에 추가됨</translation>
         </message>
         <message>
             <source>env.VERTEX_REGION_CLAUDE_HAIKU_4_5</source>
             <extracomment>Override region for Claude Haiku 4.5 when using Google Cloud's Agent Platform</extracomment>
             <translation>Google Cloud의 Agent Platform을 사용할 때 Claude Haiku 4.5의 리전을 재정의한다</translation>
+        </message>
+        <message>
+            <source>env.VERTEX_REGION_CLAUDE_HAIKU_5_5</source>
+            <extracomment>Override region for Claude Haiku 5.5 when using Google Cloud's Agent Platform. Added in v2.1.293</extracomment>
+            <translation>Google Cloud의 Agent Platform 사용 시 Claude Haiku 5.5의 리전을 재정의한다. v2.1.293에서 추가되었다</translation>
         </message>
     </context>
 </TS>

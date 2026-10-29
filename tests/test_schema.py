@@ -1,6 +1,7 @@
 """스키마 헬퍼·카테고리 단위 테스트(Qt 불필요)."""
 from qclaudecodesettingeditorwidget import categories as C
 from qclaudecodesettingeditorwidget import schema as S
+from qclaudecodesettingeditorwidget.constants import ENV_KEY
 
 
 def test_schema_loads_and_has_env():
@@ -14,7 +15,7 @@ def test_every_top_level_key_is_categorized_once():
     keys = list(s["properties"])
     cats = C.categorize(keys)
     seen = [k for _, ks in cats for k in ks]
-    assert sorted(seen) == sorted(k for k in keys if k != C.ENV_KEY)
+    assert sorted(seen) == sorted(k for k in keys if k != ENV_KEY)
     assert len(seen) == len(set(seen))
 
 

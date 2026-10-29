@@ -10,16 +10,17 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .categories import ENV_KEY, Category
+from .categories import Category
+from .constants import ENV_KEY
 from .i18n import tr
 from .keys import EnvVar, SettingKey
-from .schema import find_managed_only_paths
+from .schema import find_inapplicable_paths
 
 _MISSING = object()
 
 
 class HiddenKeyError(ValueError):
-    """이 위젯에 노출되지 않은 키(숨긴 카테고리·관리형 전용·env 페이지 없음 등)를 API 로 바꾸려 할 때."""
+    """이 위젯에 노출되지 않은 키(숨긴 카테고리·대상 스코프/버전 밖·env 페이지 없음 등)를 API 로 바꾸려 할 때."""
 
     def __init__(self, keys: list[str]):
         self.keys = list(keys)
@@ -27,9 +28,9 @@ class HiddenKeyError(ValueError):
 
 
 class SettingsApiMixin:
-    """widget.py 가 제공해야 하는 것: _schema, _categories, _show_managed, _env_enabled, _page_by_key(키→페이지),
+    """widget.py 가 제공해야 하는 것: _schema, _categories, _env_enabled, _page_by_key(키→페이지),
     _meta(키→KeyMeta), _passthrough, _key_value(k), _set_key_value(k, v), _env_dict(), _set_env_dict(d),
-    _set_keys(), _on_changed(), _file_path, fileLoaded/fileSaved 시그널."""
+    _set_keys(), _on_changed(), isKeyApplicable(path), _file_path, fileLoaded/fileSaved 시그널."""
 
     # ------------------------------------------------------------------ 전체 읽기/쓰기
     def settings(self) -> dict[str, Any]:
@@ -51,7 +52,7 @@ class SettingsApiMixin:
     def setSettings(self, data: dict[str, Any] | None, *, trusted: bool = False) -> None:
         """설정 전체를 교체한다.
 
-        trusted=False(기본): 이 위젯에 노출되지 않은 키(숨긴 카테고리·관리형 전용·env 페이지 없음 등)는
+        trusted=False(기본): 이 위젯에 노출되지 않은 키(숨긴 카테고리·대상 스코프/버전 밖·env 페이지 없음 등)는
         현재 보존값과 동일할 때만 허용하고, 바뀌었으면 HiddenKeyError 를 낸다(우회 방지).
         trusted=True: 파일 등 신뢰 소스에서 읽은 문서. 노출되지 않은 키는 읽기 전용으로 보존한다.
         """
@@ -200,25 +201,24 @@ class SettingsApiMixin:
         k = SettingKey.coerce(key)
         if k == ENV_KEY:
             return self._env_enabled
-        meta = self._meta.get(k)
-        if meta is not None and k in self._page_by_key:
-            return self._show_managed or not meta.managed_only
+        if k in self._page_by_key:
+            return self.isKeyApplicable(k)
         if k in self._schema.get("properties", {}):
             return False  # 숨긴 카테고리
         return bool(Category.OTHER & self._categories)  # 스키마 밖 키는 OTHER 가 노출될 때만
 
-    def managedOnlyKeys(self) -> list[str]:
-        """관리형 전용으로 판별된 최상위 키(현재 노출 카테고리 기준)."""
-        return [k for k in self._page_by_key if self._meta[k].managed_only]
+    def inapplicableKeys(self) -> list[str]:
+        """노출 카테고리에 있지만 대상 스코프·버전에서 효력이 없어 숨긴 최상위 키."""
+        return [k for k in self._page_by_key if not self.isKeyApplicable(k)]
 
     def _check_value(self, k: str, value: Any) -> None:
-        """단건 변경 허용 검사: 키 노출 여부 + (관리형 숨김 시) 중첩 관리형 경로."""
+        """단건 변경 허용 검사: 키 노출 여부 + 값 안의 중첩 경로(대상 스코프·버전 밖이면 거부)."""
         if not self.isKeyExposed(k):
             raise HiddenKeyError([k])
-        if not self._show_managed and k != ENV_KEY and value is not None:
+        if k != ENV_KEY and value is not None:
             prop = self._schema.get("properties", {}).get(k)
             if prop is not None:
-                paths = find_managed_only_paths(prop, value, self._schema, k)
+                paths = find_inapplicable_paths(prop, value, self._schema, self.isKeyApplicable, k)
                 if paths:
                     raise HiddenKeyError(paths)
 

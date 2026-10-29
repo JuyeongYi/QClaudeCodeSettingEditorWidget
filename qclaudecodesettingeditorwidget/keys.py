@@ -1,572 +1,499 @@
-"""설정 키·환경변수 이름 enum (tools/refresh_resources.py 가 스키마·문서에서 자동 생성 — 직접 수정하지 말 것).
+"""설정 키 enum + 키별 메타데이터 — Claude Code v2.1.312 기준.
 
-멤버 이름이 곧 키다: SettingKey.model == "model", EnvVar.API_TIMEOUT_MS == "API_TIMEOUT_MS".
-식별자가 될 수 없는 키만 이름이 다르다(SettingKey.schema.value == "$schema"). 값은 항상 실제 키 문자열이다.
+tools/refresh_resources.py 가 공식 문서(settings-reference)·schemastore 스키마·CHANGELOG 에서 자동 생성한다.
+직접 수정하지 말 것: 보정은 tools/resource_overrides.json 에 적고 다시 생성한다.
+
+멤버 이름이 곧 키다: SettingKey.model == "model". 식별자가 될 수 없는 키만 이름이 다르다
+(SettingKey.schema.value == "$schema"). 각 멤버의 .info 가 SettingInfo(스코프·타입·기본값·값 후보·버전).
+중첩 경로(sandbox.bwrapPath 등)의 메타데이터는 NESTED_SETTINGS, 통합 조회는 setting_info(path).
+스코프·타입·주제는 constants 의 enum, 버전은 Version 으로 적고 문자열은 키와 JSON 값(기본값·값 후보)에만 쓴다.
 """
 from __future__ import annotations
 
-from enum import Enum
-
-
-class KeyEnum(str, Enum):
-    """str 겸용 enum: dict 키·비교·f-string 모두 실제 키 문자열로 동작한다."""
-
-    def __str__(self) -> str:
-        return str(self.value)
-
-    def __format__(self, spec: str) -> str:
-        return format(str(self.value), spec)
-
-    @classmethod
-    def coerce(cls, key: object) -> str:
-        """enum 멤버·멤버 이름·키 문자열 → 실제 키 문자열."""
-        if isinstance(cls, type) and isinstance(key, cls):
-            return str(key.value)
-        if isinstance(key, Enum):
-            return str(key.value)
-        text = str(key)
-        try:
-            return str(cls[text].value)  # 멤버 이름
-        except KeyError:
-            return text
+from .constants import JsonType, Scope, Topic
+from .env_keys import EnvVar
+from .spec import KeyEnum, SettingInfo, Version
 
 
 class SettingKey(KeyEnum):
     """settings.json 최상위 키."""
 
-    schema = "$schema"
-    apiKeyHelper = "apiKeyHelper"
-    autoMemoryEnabled = "autoMemoryEnabled"
-    autoUpdatesChannel = "autoUpdatesChannel"
-    awsCredentialExport = "awsCredentialExport"
-    awsAuthRefresh = "awsAuthRefresh"
-    claudeMdExcludes = "claudeMdExcludes"
-    cleanupPeriodDays = "cleanupPeriodDays"
-    env = "env"
-    attribution = "attribution"
-    includeGitInstructions = "includeGitInstructions"
-    includeCoAuthoredBy = "includeCoAuthoredBy"
-    plansDirectory = "plansDirectory"
-    respectGitignore = "respectGitignore"
-    permissions = "permissions"
-    language = "language"
-    model = "model"
-    availableModels = "availableModels"
-    modelOverrides = "modelOverrides"
-    effortLevel = "effortLevel"
-    fastMode = "fastMode"
-    fastModePerSessionOptIn = "fastModePerSessionOptIn"
-    feedbackSurveyRate = "feedbackSurveyRate"
-    enableAllProjectMcpServers = "enableAllProjectMcpServers"
-    enabledMcpjsonServers = "enabledMcpjsonServers"
-    disabledMcpjsonServers = "disabledMcpjsonServers"
-    allowedMcpServers = "allowedMcpServers"
-    deniedMcpServers = "deniedMcpServers"
-    httpHookAllowedEnvVars = "httpHookAllowedEnvVars"
-    hooks = "hooks"
-    disableAllHooks = "disableAllHooks"
-    allowedChannelPlugins = "allowedChannelPlugins"
-    allowedHttpHookUrls = "allowedHttpHookUrls"
-    allowManagedHooksOnly = "allowManagedHooksOnly"
-    allowManagedPermissionRulesOnly = "allowManagedPermissionRulesOnly"
-    statusLine = "statusLine"
-    fileSuggestion = "fileSuggestion"
-    enabledPlugins = "enabledPlugins"
-    extraKnownMarketplaces = "extraKnownMarketplaces"
-    strictKnownMarketplaces = "strictKnownMarketplaces"
-    skippedMarketplaces = "skippedMarketplaces"
-    skippedPlugins = "skippedPlugins"
-    forceLoginMethod = "forceLoginMethod"
-    forceLoginOrgUUID = "forceLoginOrgUUID"
-    otelHeadersHelper = "otelHeadersHelper"
-    outputStyle = "outputStyle"
-    skipWebFetchPreflight = "skipWebFetchPreflight"
-    sandbox = "sandbox"
-    spinnerVerbs = "spinnerVerbs"
-    spinnerTipsEnabled = "spinnerTipsEnabled"
-    spinnerTipsOverride = "spinnerTipsOverride"
-    terminalProgressBarEnabled = "terminalProgressBarEnabled"
-    showTurnDuration = "showTurnDuration"
-    skillOverrides = "skillOverrides"
-    prefersReducedMotion = "prefersReducedMotion"
-    prUrlTemplate = "prUrlTemplate"
-    alwaysThinkingEnabled = "alwaysThinkingEnabled"
-    companyAnnouncements = "companyAnnouncements"
-    teammateMode = "teammateMode"
-    worktree = "worktree"
-    parentSettingsBehavior = "parentSettingsBehavior"
-    pluginTrustMessage = "pluginTrustMessage"
-    pluginConfigs = "pluginConfigs"
-    allowManagedMcpServersOnly = "allowManagedMcpServersOnly"
-    blockedMarketplaces = "blockedMarketplaces"
-    agent = "agent"
-    autoMemoryDirectory = "autoMemoryDirectory"
-    autoMode = "autoMode"
-    channelsEnabled = "channelsEnabled"
-    defaultShell = "defaultShell"
-    disableDeepLinkRegistration = "disableDeepLinkRegistration"
-    disableSkillShellExecution = "disableSkillShellExecution"
-    forceRemoteSettingsRefresh = "forceRemoteSettingsRefresh"
-    minimumVersion = "minimumVersion"
-    showClearContextOnPlanAccept = "showClearContextOnPlanAccept"
-    showThinkingSummaries = "showThinkingSummaries"
-    skipDangerousModePermissionPrompt = "skipDangerousModePermissionPrompt"
-    strictPluginOnlyCustomization = "strictPluginOnlyCustomization"
-    tui = "tui"
-    viewMode = "viewMode"
-    useAutoModeDuringPlan = "useAutoModeDuringPlan"
-    voiceEnabled = "voiceEnabled"
-    wslInheritsWindowsSettings = "wslInheritsWindowsSettings"
-    subagentStatusLine = "subagentStatusLine"
-    advisorModel = "advisorModel"
-    autoCompactEnabled = "autoCompactEnabled"
-    disableAgentView = "disableAgentView"
-    editorMode = "editorMode"
-    enforceAvailableModels = "enforceAvailableModels"
-    fallbackModel = "fallbackModel"
-    fileCheckpointingEnabled = "fileCheckpointingEnabled"
-    gcpAuthRefresh = "gcpAuthRefresh"
-    managedMcpServers = "managedMcpServers"
-    skillListingMaxDescChars = "skillListingMaxDescChars"
-    preferredNotifChannel = "preferredNotifChannel"
-    pluginSuggestionMarketplaces = "pluginSuggestionMarketplaces"
-    requiredMaximumVersion = "requiredMaximumVersion"
-    requiredMinimumVersion = "requiredMinimumVersion"
-    respondToBashCommands = "respondToBashCommands"
-    skillListingBudgetFraction = "skillListingBudgetFraction"
-    sshConfigs = "sshConfigs"
-    sshHostAllowlist = "sshHostAllowlist"
-    theme = "theme"
-    voice = "voice"
-    wheelScrollAccelerationEnabled = "wheelScrollAccelerationEnabled"
-    disableBundledSkills = "disableBundledSkills"
-    awaySummaryEnabled = "awaySummaryEnabled"
-    autoScrollEnabled = "autoScrollEnabled"
-    allowAllClaudeAiMcps = "allowAllClaudeAiMcps"
-    agentPushNotifEnabled = "agentPushNotifEnabled"
-    axScreenReader = "axScreenReader"
-    claudeMd = "claudeMd"
-    disableArtifact = "disableArtifact"
-    disableAutoMode = "disableAutoMode"
-    disableClaudeAiConnectors = "disableClaudeAiConnectors"
-    disableRemoteControl = "disableRemoteControl"
-    disableWorkflows = "disableWorkflows"
-    footerLinksRegexes = "footerLinksRegexes"
-    inputNeededNotifEnabled = "inputNeededNotifEnabled"
-    policyHelper = "policyHelper"
-    remoteControlAtStartup = "remoteControlAtStartup"
-    syntaxHighlightingDisabled = "syntaxHighlightingDisabled"
-    verbose = "verbose"
-    workflowKeywordTriggerEnabled = "workflowKeywordTriggerEnabled"
-    askUserQuestionTimeout = "askUserQuestionTimeout"
-    teammateDefaultModel = "teammateDefaultModel"
-    workflowSizeGuideline = "workflowSizeGuideline"
-    enableArtifact = "enableArtifact"
-    permissionExplainerEnabled = "permissionExplainerEnabled"
-    diffTool = "diffTool"
-    externalEditorContext = "externalEditorContext"
-    autoConnectIde = "autoConnectIde"
-    autoInstallIdeExtension = "autoInstallIdeExtension"
-    emojiCompletionEnabled = "emojiCompletionEnabled"
-    vimInsertModeRemaps = "vimInsertModeRemaps"
-    processWrapper = "processWrapper"
-    forceLoginGatewayUrl = "forceLoginGatewayUrl"
-    disableSideloadFlags = "disableSideloadFlags"
-    browserExternalPageTools = "browserExternalPageTools"
-    disableBrowserExternalNavigation = "disableBrowserExternalNavigation"
-    disableMobileSimulatorTools = "disableMobileSimulatorTools"
-    requireCoworkFullVmSandbox = "requireCoworkFullVmSandbox"
+    @property
+    def info(self) -> SettingInfo:
+        assert self._info is not None
+        return self._info
+
+    schema = SettingInfo("$schema", type=JsonType.STRING, in_docs=False)
+    apiKeyHelper = SettingInfo("apiKeyHelper", type=JsonType.STRING, topic=Topic.AUTH)
+    autoMemoryEnabled = SettingInfo("autoMemoryEnabled", type=JsonType.BOOLEAN, default=True, topic=Topic.MEMORY)
+    autoUpdatesChannel = SettingInfo(
+        "autoUpdatesChannel", type=JsonType.STRING, default="latest", values=("stable", "latest"), topic=Topic.UPDATES)
+    awsCredentialExport = SettingInfo("awsCredentialExport", type=JsonType.STRING, topic=Topic.AUTH)
+    awsAuthRefresh = SettingInfo("awsAuthRefresh", type=JsonType.STRING, topic=Topic.AUTH)
+    claudeMdExcludes = SettingInfo("claudeMdExcludes", type=JsonType.ARRAY, topic=Topic.MEMORY)
+    cleanupPeriodDays = SettingInfo("cleanupPeriodDays", type=JsonType.INTEGER, default=30, topic=Topic.PRIVACY)
+    env = SettingInfo("env", type=JsonType.OBJECT, default={}, topic=Topic.MEMORY)
+    attribution = SettingInfo("attribution", type=JsonType.OBJECT, since=Version(2, 0, 62), topic=Topic.GIT)
+    includeGitInstructions = SettingInfo(
+        "includeGitInstructions", type=JsonType.BOOLEAN, default=True, since=Version(2, 1, 69), topic=Topic.GIT)
+    includeCoAuthoredBy = SettingInfo(
+        "includeCoAuthoredBy", type=JsonType.BOOLEAN, default=True, deprecated=True, deprecated_since=Version(2, 0, 62),
+        replaced_by=attribution, topic=Topic.GIT)
+    plansDirectory = SettingInfo(
+        "plansDirectory", type=JsonType.STRING, default="~/.claude/plans", since=Version(2, 1, 9), topic=Topic.MEMORY)
+    respectGitignore = SettingInfo("respectGitignore", type=JsonType.BOOLEAN, default=True, topic=Topic.INTERFACE)
+    permissions = SettingInfo("permissions", type=JsonType.OBJECT, topic=Topic.PERMISSIONS)
+    language = SettingInfo("language", type=JsonType.STRING, since=Version(2, 1, 0), topic=Topic.MODEL)
+    model = SettingInfo("model", type=JsonType.STRING, topic=Topic.MODEL)
+    availableModels = SettingInfo("availableModels", type=JsonType.ARRAY, topic=Topic.MODEL)
+    modelOverrides = SettingInfo("modelOverrides", type=JsonType.OBJECT, since=Version(2, 1, 73), topic=Topic.MODEL)
+    effortLevel = SettingInfo(
+        "effortLevel", type=JsonType.STRING, values=("low", "medium", "high", "xhigh"), topic=Topic.MODEL)
+    fastMode = SettingInfo("fastMode", type=JsonType.BOOLEAN, default=False, topic=Topic.MODEL)
+    fastModePerSessionOptIn = SettingInfo(
+        "fastModePerSessionOptIn", type=JsonType.BOOLEAN, default=False, topic=Topic.MODEL)
+    feedbackSurveyRate = SettingInfo("feedbackSurveyRate", type=JsonType.NUMBER, topic=Topic.PRIVACY)
+    enableAllProjectMcpServers = SettingInfo("enableAllProjectMcpServers", type=JsonType.BOOLEAN, topic=Topic.MCP)
+    enabledMcpjsonServers = SettingInfo("enabledMcpjsonServers", type=JsonType.ARRAY, topic=Topic.MCP)
+    disabledMcpjsonServers = SettingInfo("disabledMcpjsonServers", type=JsonType.ARRAY, topic=Topic.MCP)
+    allowedMcpServers = SettingInfo("allowedMcpServers", type=JsonType.ARRAY, topic=Topic.MCP)
+    deniedMcpServers = SettingInfo("deniedMcpServers", type=JsonType.ARRAY, topic=Topic.MCP)
+    httpHookAllowedEnvVars = SettingInfo("httpHookAllowedEnvVars", type=JsonType.ARRAY, topic=Topic.HOOKS)
+    hooks = SettingInfo("hooks", type=JsonType.OBJECT, topic=Topic.HOOKS)
+    disableAllHooks = SettingInfo("disableAllHooks", type=JsonType.BOOLEAN, since=Version(1, 0, 68), topic=Topic.HOOKS)
+    allowedChannelPlugins = SettingInfo(
+        "allowedChannelPlugins", scope=Scope.MANAGED, type=JsonType.ARRAY, since=Version(2, 1, 84), topic=Topic.PLUGINS)
+    allowedHttpHookUrls = SettingInfo("allowedHttpHookUrls", type=JsonType.ARRAY, topic=Topic.HOOKS)
+    allowManagedHooksOnly = SettingInfo(
+        "allowManagedHooksOnly", scope=Scope.MANAGED, type=JsonType.BOOLEAN, topic=Topic.HOOKS)
+    allowManagedPermissionRulesOnly = SettingInfo(
+        "allowManagedPermissionRulesOnly", scope=Scope.MANAGED, type=JsonType.BOOLEAN, topic=Topic.PERMISSIONS)
+    statusLine = SettingInfo("statusLine", type=JsonType.OBJECT, topic=Topic.INTERFACE)
+    fileSuggestion = SettingInfo("fileSuggestion", type=JsonType.OBJECT, since=Version(2, 0, 65), topic=Topic.INTERFACE)
+    enabledPlugins = SettingInfo("enabledPlugins", type=JsonType.OBJECT, topic=Topic.PLUGINS)
+    extraKnownMarketplaces = SettingInfo("extraKnownMarketplaces", type=JsonType.OBJECT, topic=Topic.PLUGINS)
+    strictKnownMarketplaces = SettingInfo(
+        "strictKnownMarketplaces", scope=Scope.MANAGED, type=JsonType.ARRAY, topic=Topic.PLUGINS)
+    skippedMarketplaces = SettingInfo("skippedMarketplaces", type=JsonType.ARRAY, in_docs=False)
+    skippedPlugins = SettingInfo("skippedPlugins", type=JsonType.ARRAY, in_docs=False)
+    forceLoginMethod = SettingInfo(
+        "forceLoginMethod", type=JsonType.STRING, values=("claudeai", "console", "gateway"), topic=Topic.AUTH)
+    forceLoginOrgUUID = SettingInfo("forceLoginOrgUUID", type=JsonType.STRING | JsonType.ARRAY, topic=Topic.AUTH)
+    otelHeadersHelper = SettingInfo("otelHeadersHelper", type=JsonType.STRING, topic=Topic.AUTH)
+    outputStyle = SettingInfo("outputStyle", type=JsonType.STRING, topic=Topic.MODEL)
+    skipWebFetchPreflight = SettingInfo("skipWebFetchPreflight", type=JsonType.BOOLEAN, topic=Topic.PRIVACY)
+    sandbox = SettingInfo("sandbox", type=JsonType.OBJECT, topic=Topic.SANDBOX)
+    spinnerVerbs = SettingInfo("spinnerVerbs", type=JsonType.OBJECT, topic=Topic.INTERFACE)
+    spinnerTipsEnabled = SettingInfo(
+        "spinnerTipsEnabled", type=JsonType.BOOLEAN, default=True, since=Version(1, 0, 112), topic=Topic.INTERFACE)
+    spinnerTipsOverride = SettingInfo(
+        "spinnerTipsOverride", type=JsonType.OBJECT, since=Version(2, 1, 45), topic=Topic.INTERFACE)
+    terminalProgressBarEnabled = SettingInfo(
+        "terminalProgressBarEnabled", type=JsonType.BOOLEAN, default=True, topic=Topic.INTERFACE)
+    showTurnDuration = SettingInfo(
+        "showTurnDuration", type=JsonType.BOOLEAN, default=True, since=Version(2, 1, 7), topic=Topic.INTERFACE)
+    skillOverrides = SettingInfo("skillOverrides", type=JsonType.OBJECT, topic=Topic.PLUGINS)
+    prefersReducedMotion = SettingInfo(
+        "prefersReducedMotion", type=JsonType.BOOLEAN, default=False, topic=Topic.INTERFACE)
+    prUrlTemplate = SettingInfo("prUrlTemplate", type=JsonType.STRING, since=Version(2, 1, 119), topic=Topic.GIT)
+    alwaysThinkingEnabled = SettingInfo("alwaysThinkingEnabled", type=JsonType.BOOLEAN, topic=Topic.MODEL)
+    companyAnnouncements = SettingInfo(
+        "companyAnnouncements", type=JsonType.ARRAY, since=Version(2, 0, 32), topic=Topic.INTERFACE)
+    teammateMode = SettingInfo(
+        "teammateMode", type=JsonType.STRING, default="in-process", values=("auto", "in-process", "tmux", "iterm2"),
+        topic=Topic.AGENTS)
+    worktree = SettingInfo("worktree", type=JsonType.OBJECT, topic=Topic.AGENTS)
+    parentSettingsBehavior = SettingInfo(
+        "parentSettingsBehavior", scope=Scope.MANAGED, type=JsonType.STRING, default="first-wins",
+        values=("first-wins", "merge"), topic=Topic.ENTERPRISE)
+    pluginTrustMessage = SettingInfo(
+        "pluginTrustMessage", scope=Scope.MANAGED, type=JsonType.STRING, since=Version(2, 1, 69), topic=Topic.PLUGINS)
+    pluginConfigs = SettingInfo(
+        "pluginConfigs", scope=Scope.USER | Scope.MANAGED, type=JsonType.OBJECT, topic=Topic.PLUGINS)
+    allowManagedMcpServersOnly = SettingInfo(
+        "allowManagedMcpServersOnly", scope=Scope.MANAGED, type=JsonType.BOOLEAN, default=False, topic=Topic.MCP)
+    blockedMarketplaces = SettingInfo(
+        "blockedMarketplaces", scope=Scope.MANAGED, type=JsonType.ARRAY, topic=Topic.PLUGINS)
+    agent = SettingInfo("agent", type=JsonType.STRING, since=Version(2, 0, 59), topic=Topic.AGENTS)
+    autoMemoryDirectory = SettingInfo(
+        "autoMemoryDirectory", type=JsonType.STRING, since=Version(2, 1, 74), topic=Topic.MEMORY)
+    autoMode = SettingInfo("autoMode", scope=Scope.USER | Scope.MANAGED, type=JsonType.OBJECT, topic=Topic.PERMISSIONS)
+    channelsEnabled = SettingInfo("channelsEnabled", scope=Scope.MANAGED, type=JsonType.BOOLEAN, topic=Topic.PLUGINS)
+    defaultShell = SettingInfo(
+        "defaultShell", type=JsonType.STRING, default="bash", values=("bash", "powershell"), topic=Topic.INTERFACE)
+    disableDeepLinkRegistration = SettingInfo(
+        "disableDeepLinkRegistration", type=JsonType.STRING, values=("disable",), since=Version(2, 1, 83),
+        topic=Topic.REMOTE)
+    disableSkillShellExecution = SettingInfo(
+        "disableSkillShellExecution", type=JsonType.BOOLEAN, since=Version(2, 1, 91), topic=Topic.PLUGINS)
+    forceRemoteSettingsRefresh = SettingInfo(
+        "forceRemoteSettingsRefresh", scope=Scope.MANAGED, type=JsonType.BOOLEAN, default=False,
+        since=Version(2, 1, 92), topic=Topic.ENTERPRISE)
+    minimumVersion = SettingInfo("minimumVersion", type=JsonType.STRING, topic=Topic.UPDATES)
+    showClearContextOnPlanAccept = SettingInfo(
+        "showClearContextOnPlanAccept", type=JsonType.BOOLEAN, default=False, topic=Topic.INTERFACE)
+    showThinkingSummaries = SettingInfo(
+        "showThinkingSummaries", type=JsonType.BOOLEAN, default=False, topic=Topic.MODEL)
+    skipDangerousModePermissionPrompt = SettingInfo(
+        "skipDangerousModePermissionPrompt", scope=Scope.USER | Scope.LOCAL | Scope.MANAGED, type=JsonType.BOOLEAN,
+        topic=Topic.PERMISSIONS)
+    strictPluginOnlyCustomization = SettingInfo(
+        "strictPluginOnlyCustomization", scope=Scope.MANAGED, type=JsonType.BOOLEAN | JsonType.ARRAY,
+        topic=Topic.PLUGINS)
+    tui = SettingInfo("tui", type=JsonType.STRING, values=("fullscreen", "default"), topic=Topic.INTERFACE)
+    viewMode = SettingInfo(
+        "viewMode", type=JsonType.STRING, values=("default", "verbose", "focus"), topic=Topic.INTERFACE)
+    useAutoModeDuringPlan = SettingInfo(
+        "useAutoModeDuringPlan", scope=Scope.USER | Scope.LOCAL | Scope.MANAGED, type=JsonType.BOOLEAN, default=True,
+        topic=Topic.PERMISSIONS)
+    wslInheritsWindowsSettings = SettingInfo(
+        "wslInheritsWindowsSettings", scope=Scope.MANAGED, type=JsonType.BOOLEAN, default=False, topic=Topic.ENTERPRISE)
+    subagentStatusLine = SettingInfo("subagentStatusLine", type=JsonType.OBJECT, topic=Topic.INTERFACE)
+    advisorModel = SettingInfo("advisorModel", type=JsonType.STRING, topic=Topic.MODEL)
+    autoCompactEnabled = SettingInfo("autoCompactEnabled", type=JsonType.BOOLEAN, default=True, topic=Topic.MEMORY)
+    disableAgentView = SettingInfo("disableAgentView", type=JsonType.BOOLEAN, topic=Topic.AGENTS)
+    editorMode = SettingInfo(
+        "editorMode", type=JsonType.STRING, default="normal", values=("normal", "vim"), topic=Topic.INTERFACE)
+    enforceAvailableModels = SettingInfo(
+        "enforceAvailableModels", type=JsonType.BOOLEAN, default=False, since=Version(2, 1, 175), topic=Topic.MODEL)
+    fallbackModel = SettingInfo("fallbackModel", type=JsonType.ARRAY, since=Version(2, 1, 166), topic=Topic.MODEL)
+    fileCheckpointingEnabled = SettingInfo(
+        "fileCheckpointingEnabled", type=JsonType.BOOLEAN, default=True, topic=Topic.MEMORY)
+    gcpAuthRefresh = SettingInfo("gcpAuthRefresh", type=JsonType.STRING, topic=Topic.AUTH)
+    managedMcpServers = SettingInfo(
+        "managedMcpServers", scope=Scope.MANAGED, type=JsonType.ARRAY, since=Version(2, 1, 259), topic=Topic.MCP)
+    skillListingMaxDescChars = SettingInfo(
+        "skillListingMaxDescChars", type=JsonType.INTEGER, default=1536, topic=Topic.MEMORY)
+    preferredNotifChannel = SettingInfo(
+        "preferredNotifChannel", type=JsonType.STRING, default="auto",
+        values=("auto", "terminal_bell", "iterm2", "iterm2_with_bell", "kitty", "ghostty", "notifications_disabled"),
+        topic=Topic.REMOTE)
+    pluginSuggestionMarketplaces = SettingInfo(
+        "pluginSuggestionMarketplaces", scope=Scope.MANAGED, type=JsonType.ARRAY, since=Version(2, 1, 152),
+        topic=Topic.PLUGINS)
+    requiredMaximumVersion = SettingInfo(
+        "requiredMaximumVersion", scope=Scope.MANAGED, type=JsonType.STRING, since=Version(2, 1, 163),
+        topic=Topic.UPDATES)
+    requiredMinimumVersion = SettingInfo(
+        "requiredMinimumVersion", scope=Scope.MANAGED, type=JsonType.STRING, since=Version(2, 1, 163),
+        topic=Topic.UPDATES)
+    respondToBashCommands = SettingInfo(
+        "respondToBashCommands", type=JsonType.BOOLEAN, default=True, topic=Topic.INTERFACE)
+    skillListingBudgetFraction = SettingInfo(
+        "skillListingBudgetFraction", type=JsonType.NUMBER, default=0.01, topic=Topic.MEMORY)
+    sshConfigs = SettingInfo("sshConfigs", scope=Scope.USER | Scope.MANAGED, type=JsonType.ARRAY, topic=Topic.REMOTE)
+    sshHostAllowlist = SettingInfo("sshHostAllowlist", scope=Scope.MANAGED, type=JsonType.ARRAY, topic=Topic.REMOTE)
+    theme = SettingInfo(
+        "theme", type=JsonType.STRING, default="dark",
+        values=("auto", "dark", "light", "dark-daltonized", "light-daltonized", "dark-ansi", "light-ansi"),
+        topic=Topic.INTERFACE)
+    voice = SettingInfo("voice", type=JsonType.OBJECT, topic=Topic.INTERFACE)
+    voiceEnabled = SettingInfo(
+        "voiceEnabled", type=JsonType.BOOLEAN, deprecated=True, deprecated_since=Version(2, 1, 92), replaced_by=voice,
+        topic=Topic.INTERFACE)
+    wheelScrollAccelerationEnabled = SettingInfo(
+        "wheelScrollAccelerationEnabled", type=JsonType.BOOLEAN, default=True, since=Version(2, 1, 174),
+        topic=Topic.INTERFACE)
+    disableBundledSkills = SettingInfo(
+        "disableBundledSkills", type=JsonType.BOOLEAN, since=Version(2, 1, 169), topic=Topic.PLUGINS)
+    awaySummaryEnabled = SettingInfo("awaySummaryEnabled", type=JsonType.BOOLEAN, default=True, topic=Topic.REMOTE)
+    autoScrollEnabled = SettingInfo("autoScrollEnabled", type=JsonType.BOOLEAN, default=True, topic=Topic.INTERFACE)
+    allowAllClaudeAiMcps = SettingInfo(
+        "allowAllClaudeAiMcps", scope=Scope.MANAGED, type=JsonType.BOOLEAN, default=False, topic=Topic.MCP)
+    agentPushNotifEnabled = SettingInfo(
+        "agentPushNotifEnabled", type=JsonType.BOOLEAN, default=False, topic=Topic.REMOTE)
+    axScreenReader = SettingInfo(
+        "axScreenReader", scope=Scope.USER | Scope.MANAGED, type=JsonType.BOOLEAN, topic=Topic.INTERFACE)
+    claudeMd = SettingInfo("claudeMd", scope=Scope.MANAGED, type=JsonType.STRING, topic=Topic.MEMORY)
+    disableAutoMode = SettingInfo("disableAutoMode", type=JsonType.STRING, values=("disable",), topic=Topic.PERMISSIONS)
+    disableClaudeAiConnectors = SettingInfo(
+        "disableClaudeAiConnectors", type=JsonType.BOOLEAN, default=False, topic=Topic.MCP)
+    disableRemoteControl = SettingInfo("disableRemoteControl", type=JsonType.BOOLEAN, default=False, topic=Topic.REMOTE)
+    disableWorkflows = SettingInfo("disableWorkflows", type=JsonType.BOOLEAN, default=False, topic=Topic.HOOKS)
+    footerLinksRegexes = SettingInfo(
+        "footerLinksRegexes", scope=Scope.USER | Scope.MANAGED, type=JsonType.ARRAY, since=Version(2, 1, 176),
+        topic=Topic.INTERFACE)
+    inputNeededNotifEnabled = SettingInfo(
+        "inputNeededNotifEnabled", type=JsonType.BOOLEAN, default=False, topic=Topic.REMOTE)
+    policyHelper = SettingInfo("policyHelper", scope=Scope.MANAGED, type=JsonType.OBJECT, topic=Topic.ENTERPRISE)
+    remoteControlAtStartup = SettingInfo("remoteControlAtStartup", type=JsonType.BOOLEAN, topic=Topic.REMOTE)
+    syntaxHighlightingDisabled = SettingInfo(
+        "syntaxHighlightingDisabled", type=JsonType.BOOLEAN, default=False, topic=Topic.INTERFACE)
+    verbose = SettingInfo("verbose", type=JsonType.BOOLEAN, default=False, topic=Topic.INTERFACE)
+    workflowKeywordTriggerEnabled = SettingInfo(
+        "workflowKeywordTriggerEnabled", type=JsonType.BOOLEAN, default=True, topic=Topic.HOOKS)
+    askUserQuestionTimeout = SettingInfo(
+        "askUserQuestionTimeout", scope=Scope.USER | Scope.MANAGED, type=JsonType.STRING, default="never",
+        values=("60s", "5m", "10m", "never"), topic=Topic.INTERFACE)
+    teammateDefaultModel = SettingInfo(
+        "teammateDefaultModel", scope=Scope.GLOBAL_CONFIG, type=JsonType.NULL | JsonType.STRING,
+        removed=Version(2, 1, 234), topic=Topic.GLOBAL_CONFIG)
+    workflowSizeGuideline = SettingInfo(
+        "workflowSizeGuideline", type=JsonType.STRING, default="medium",
+        values=("unrestricted", "small", "medium", "large"), since=Version(2, 1, 219), topic=Topic.HOOKS)
+    enableArtifact = SettingInfo("enableArtifact", type=JsonType.BOOLEAN, topic=Topic.REMOTE)
+    disableArtifact = SettingInfo(
+        "disableArtifact", type=JsonType.BOOLEAN, deprecated=True, replaced_by=enableArtifact, topic=Topic.REMOTE)
+    permissionExplainerEnabled = SettingInfo(
+        "permissionExplainerEnabled", scope=Scope.GLOBAL_CONFIG, type=JsonType.BOOLEAN, default=True,
+        removed=Version(2, 1, 257), topic=Topic.GLOBAL_CONFIG)
+    diffTool = SettingInfo(
+        "diffTool", scope=Scope.GLOBAL_CONFIG, type=JsonType.STRING, default="auto", values=("auto", "terminal"),
+        topic=Topic.GLOBAL_CONFIG)
+    externalEditorContext = SettingInfo(
+        "externalEditorContext", scope=Scope.GLOBAL_CONFIG, type=JsonType.BOOLEAN, default=False,
+        topic=Topic.GLOBAL_CONFIG)
+    autoConnectIde = SettingInfo(
+        "autoConnectIde", scope=Scope.GLOBAL_CONFIG, type=JsonType.BOOLEAN, default=False, topic=Topic.GLOBAL_CONFIG)
+    autoInstallIdeExtension = SettingInfo(
+        "autoInstallIdeExtension", scope=Scope.GLOBAL_CONFIG, type=JsonType.BOOLEAN, default=True,
+        topic=Topic.GLOBAL_CONFIG)
+    emojiCompletionEnabled = SettingInfo(
+        "emojiCompletionEnabled", type=JsonType.BOOLEAN, default=True, topic=Topic.INTERFACE)
+    vimInsertModeRemaps = SettingInfo(
+        "vimInsertModeRemaps", scope=Scope.USER | Scope.MANAGED, type=JsonType.OBJECT, since=Version(2, 1, 208),
+        topic=Topic.INTERFACE)
+    processWrapper = SettingInfo(
+        "processWrapper", scope=Scope.USER | Scope.MANAGED, type=JsonType.STRING, since=Version(2, 1, 210),
+        topic=Topic.AGENTS)
+    forceLoginGatewayUrl = SettingInfo(
+        "forceLoginGatewayUrl", scope=Scope.USER | Scope.MANAGED, type=JsonType.STRING, topic=Topic.AUTH)
+    disableSideloadFlags = SettingInfo(
+        "disableSideloadFlags", scope=Scope.MANAGED, type=JsonType.BOOLEAN, default=False, since=Version(2, 1, 193),
+        topic=Topic.ENTERPRISE)
+    browserExternalPageTools = SettingInfo(
+        "browserExternalPageTools", scope=Scope.MANAGED, type=JsonType.STRING, values=("disabled",), topic=Topic.TOOLS)
+    disableBrowserExternalNavigation = SettingInfo(
+        "disableBrowserExternalNavigation", scope=Scope.MANAGED, type=JsonType.BOOLEAN, topic=Topic.TOOLS)
+    disableMobileSimulatorTools = SettingInfo(
+        "disableMobileSimulatorTools", scope=Scope.MANAGED, type=JsonType.BOOLEAN, topic=Topic.TOOLS)
+    requireCoworkFullVmSandbox = SettingInfo(
+        "requireCoworkFullVmSandbox", scope=Scope.MANAGED, type=JsonType.BOOLEAN, in_docs=False)
+    allowClaudeInChromeWithManagedMcp = SettingInfo(
+        "allowClaudeInChromeWithManagedMcp", scope=Scope.MANAGED, type=JsonType.BOOLEAN, default=False,
+        since=Version(2, 1, 282), topic=Topic.MCP, in_schemastore=False)
+    allowedProviders = SettingInfo(
+        "allowedProviders", scope=Scope.MANAGED, type=JsonType.ARRAY,
+        values=("anthropic", "bedrock", "vertex", "foundry", "anthropicAws", "mantle", "customEndpoint", "gateway"),
+        since=Version(2, 1, 285), topic=Topic.AUTH, in_schemastore=False)
+    appendPlugins = SettingInfo(
+        "appendPlugins", scope=Scope.USER | Scope.MANAGED, type=JsonType.ARRAY, topic=Topic.PLUGINS,
+        in_schemastore=False)
+    autoCompactWindow = SettingInfo(
+        "autoCompactWindow", type=JsonType.INTEGER, topic=Topic.MEMORY, in_schemastore=False)
+    autoContinueAtUsageLimit = SettingInfo(
+        "autoContinueAtUsageLimit", scope=Scope.USER | Scope.MANAGED, type=JsonType.BOOLEAN, default=True,
+        since=Version(2, 1, 234), topic=Topic.INTERFACE, in_schemastore=False)
+    availableModelsMatch = SettingInfo(
+        "availableModelsMatch", scope=Scope.MANAGED, type=JsonType.STRING, default="prefix", values=("prefix", "exact"),
+        since=Version(2, 1, 283), topic=Topic.MODEL, in_schemastore=False)
+    bashEditDiffEnabled = SettingInfo(
+        "bashEditDiffEnabled", scope=Scope.USER | Scope.MANAGED, type=JsonType.BOOLEAN, since=Version(2, 1, 269),
+        topic=Topic.INTERFACE, in_schemastore=False)
+    bashOutputMaxChars = SettingInfo(
+        "bashOutputMaxChars", type=JsonType.INTEGER, since=Version(2, 1, 261), topic=Topic.MEMORY, in_schemastore=False)
+    crossSessionInbound = SettingInfo(
+        "crossSessionInbound", type=JsonType.STRING, values=("accept", "hold", "refuse"), since=Version(2, 1, 224),
+        topic=Topic.AGENTS, in_schemastore=False)
+    deniedModels = SettingInfo(
+        "deniedModels", scope=Scope.MANAGED, type=JsonType.ARRAY, since=Version(2, 1, 283), topic=Topic.MODEL,
+        in_schemastore=False)
+    desktopSessionCleanupPeriodDays = SettingInfo(
+        "desktopSessionCleanupPeriodDays", scope=Scope.USER | Scope.MANAGED, type=JsonType.INTEGER, default=0,
+        since=Version(2, 1, 248), topic=Topic.PRIVACY, in_schemastore=False)
+    dialogExpiry = SettingInfo(
+        "dialogExpiry", scope=Scope.USER | Scope.MANAGED, type=JsonType.STRING, default="5m",
+        values=("60s", "5m", "10m", "never"), since=Version(2, 1, 224), topic=Topic.INTERFACE, in_schemastore=False)
+    disableCommandPluginSources = SettingInfo(
+        "disableCommandPluginSources", scope=Scope.MANAGED, type=JsonType.BOOLEAN, since=Version(2, 1, 229),
+        topic=Topic.PLUGINS, in_schemastore=False)
+    disableDesktopLocalSessions = SettingInfo(
+        "disableDesktopLocalSessions", scope=Scope.MANAGED, type=JsonType.BOOLEAN, topic=Topic.REMOTE,
+        in_schemastore=False)
+    enableWorkflows = SettingInfo("enableWorkflows", type=JsonType.BOOLEAN, topic=Topic.HOOKS, in_schemastore=False)
+    feedbackDrafts = SettingInfo(
+        "feedbackDrafts", scope=Scope.USER | Scope.MANAGED, type=JsonType.STRING, default="notify",
+        values=("notify", "quiet", "off"), topic=Topic.PRIVACY, in_schemastore=False)
+    gatewayInternalNetworks = SettingInfo(
+        "gatewayInternalNetworks", scope=Scope.MANAGED, type=JsonType.ARRAY, since=Version(2, 1, 268), topic=Topic.AUTH,
+        in_schemastore=False)
+    idleCompaction = SettingInfo(
+        "idleCompaction", type=JsonType.BOOLEAN, default=True, topic=Topic.MEMORY, in_schemastore=False)
+    isolatePeerMachines = SettingInfo(
+        "isolatePeerMachines", type=JsonType.BOOLEAN, topic=Topic.AGENTS, in_schemastore=False)
+    keybindingFlavor = SettingInfo(
+        "keybindingFlavor", type=JsonType.STRING, values=("classic", "readline"), since=Version(2, 1, 238),
+        deprecated=True, deprecated_since=Version(2, 1, 261), topic=Topic.INTERFACE, in_schemastore=False)
+    managedSourcesBehavior = SettingInfo(
+        "managedSourcesBehavior", scope=Scope.MANAGED, type=JsonType.STRING, default="first-wins",
+        values=("first-wins", "merge"), since=Version(2, 1, 242), topic=Topic.ENTERPRISE, in_schemastore=False)
+    maxEffortLevel = SettingInfo(
+        "maxEffortLevel", type=JsonType.STRING, values=("low", "medium", "high", "xhigh", "max"),
+        since=Version(2, 1, 267), topic=Topic.MODEL, in_schemastore=False)
+    maxProseWidth = SettingInfo(
+        "maxProseWidth", type=JsonType.INTEGER, since=Version(2, 1, 282), topic=Topic.INTERFACE, in_schemastore=False)
+    modelPicker = SettingInfo(
+        "modelPicker", scope=Scope.USER | Scope.MANAGED, type=JsonType.OBJECT, since=Version(2, 1, 242),
+        topic=Topic.MODEL, in_schemastore=False)
+    modelPricing = SettingInfo(
+        "modelPricing", scope=Scope.MANAGED, type=JsonType.OBJECT, since=Version(2, 1, 242), topic=Topic.MODEL,
+        in_schemastore=False)
+    modelSettings = SettingInfo(
+        "modelSettings", type=JsonType.OBJECT, since=Version(2, 1, 251), topic=Topic.MODEL, in_schemastore=False)
+    prependPlugins = SettingInfo(
+        "prependPlugins", scope=Scope.USER | Scope.MANAGED, type=JsonType.ARRAY, topic=Topic.PLUGINS,
+        in_schemastore=False)
+    promptCacheTtl = SettingInfo(
+        "promptCacheTtl", type=JsonType.STRING, values=("5m", "1h"), since=Version(2, 1, 242), topic=Topic.MODEL,
+        in_schemastore=False)
+    promptSuggestionEnabled = SettingInfo(
+        "promptSuggestionEnabled", type=JsonType.BOOLEAN, default=True, topic=Topic.INTERFACE, in_schemastore=False)
+    remote = SettingInfo("remote", type=JsonType.OBJECT, in_docs=False, in_schemastore=False)
+    skipAutoPermissionPrompt = SettingInfo(
+        "skipAutoPermissionPrompt", scope=Scope.USER | Scope.MANAGED, type=JsonType.BOOLEAN, topic=Topic.PERMISSIONS,
+        in_schemastore=False)
+    spellcheck = SettingInfo(
+        "spellcheck", scope=Scope.USER | Scope.MANAGED, type=JsonType.OBJECT, since=Version(2, 1, 235),
+        topic=Topic.INTERFACE, in_schemastore=False)
+    sshHostCommands = SettingInfo(
+        "sshHostCommands", scope=Scope.USER | Scope.MANAGED, type=JsonType.ARRAY, topic=Topic.REMOTE,
+        in_schemastore=False)
+    subagentPromptCacheTtl = SettingInfo(
+        "subagentPromptCacheTtl", type=JsonType.STRING, values=("5m", "1h"), since=Version(2, 1, 242),
+        topic=Topic.MODEL, in_schemastore=False)
+    switchModelsOnFlag = SettingInfo(
+        "switchModelsOnFlag", type=JsonType.BOOLEAN, topic=Topic.MODEL, in_schemastore=False)
+    syncClaudeAiPlugins = SettingInfo(
+        "syncClaudeAiPlugins", scope=Scope.USER | Scope.LOCAL | Scope.MANAGED, type=JsonType.BOOLEAN,
+        since=Version(2, 1, 273), topic=Topic.PLUGINS, in_schemastore=False)
+    syncClaudeAiSkills = SettingInfo(
+        "syncClaudeAiSkills", scope=Scope.USER | Scope.LOCAL | Scope.MANAGED, type=JsonType.BOOLEAN,
+        topic=Topic.PLUGINS, in_schemastore=False)
+    taskOutputMaxChars = SettingInfo(
+        "taskOutputMaxChars", type=JsonType.INTEGER, since=Version(2, 1, 261), removed=Version(2, 1, 277),
+        topic=Topic.MEMORY, in_schemastore=False)
+    terminalTitleFromRename = SettingInfo(
+        "terminalTitleFromRename", type=JsonType.BOOLEAN, default=True, topic=Topic.INTERFACE, in_schemastore=False)
+    timeFormat = SettingInfo(
+        "timeFormat", type=JsonType.STRING, default="auto", values=("auto", "12-hour", "24-hour", "24-hour-utc"),
+        since=Version(2, 1, 257), topic=Topic.INTERFACE, in_schemastore=False)
+    timeZone = SettingInfo(
+        "timeZone", type=JsonType.STRING, since=Version(2, 1, 257), topic=Topic.INTERFACE, in_schemastore=False)
+    ultracode = SettingInfo("ultracode", type=JsonType.BOOLEAN, topic=Topic.MODEL, in_schemastore=False)
 
 
-class EnvVar(KeyEnum):
-    """settings.json env 블록의 환경변수 이름(스키마 + 문서)."""
-
-    ANTHROPIC_API_KEY = "ANTHROPIC_API_KEY"
-    ANTHROPIC_AUTH_TOKEN = "ANTHROPIC_AUTH_TOKEN"
-    ANTHROPIC_AWS_API_KEY = "ANTHROPIC_AWS_API_KEY"
-    ANTHROPIC_AWS_BASE_URL = "ANTHROPIC_AWS_BASE_URL"
-    ANTHROPIC_AWS_WORKSPACE_ID = "ANTHROPIC_AWS_WORKSPACE_ID"
-    ANTHROPIC_BASE_URL = "ANTHROPIC_BASE_URL"
-    ANTHROPIC_BEDROCK_BASE_URL = "ANTHROPIC_BEDROCK_BASE_URL"
-    ANTHROPIC_BEDROCK_MANTLE_BASE_URL = "ANTHROPIC_BEDROCK_MANTLE_BASE_URL"
-    ANTHROPIC_BEDROCK_REGION_PREFIX = "ANTHROPIC_BEDROCK_REGION_PREFIX"
-    ANTHROPIC_BEDROCK_SERVICE_TIER = "ANTHROPIC_BEDROCK_SERVICE_TIER"
-    ANTHROPIC_BETAS = "ANTHROPIC_BETAS"
-    ANTHROPIC_CUSTOM_HEADERS = "ANTHROPIC_CUSTOM_HEADERS"
-    ANTHROPIC_CUSTOM_MODEL_OPTION = "ANTHROPIC_CUSTOM_MODEL_OPTION"
-    ANTHROPIC_CUSTOM_MODEL_OPTION_DESCRIPTION = "ANTHROPIC_CUSTOM_MODEL_OPTION_DESCRIPTION"
-    ANTHROPIC_CUSTOM_MODEL_OPTION_NAME = "ANTHROPIC_CUSTOM_MODEL_OPTION_NAME"
-    ANTHROPIC_CUSTOM_MODEL_OPTION_SUPPORTED_CAPABILITIES = "ANTHROPIC_CUSTOM_MODEL_OPTION_SUPPORTED_CAPABILITIES"
-    ANTHROPIC_DEFAULT_FABLE_MODEL = "ANTHROPIC_DEFAULT_FABLE_MODEL"
-    ANTHROPIC_DEFAULT_FABLE_MODEL_DESCRIPTION = "ANTHROPIC_DEFAULT_FABLE_MODEL_DESCRIPTION"
-    ANTHROPIC_DEFAULT_FABLE_MODEL_NAME = "ANTHROPIC_DEFAULT_FABLE_MODEL_NAME"
-    ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES = "ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES"
-    ANTHROPIC_DEFAULT_HAIKU_MODEL = "ANTHROPIC_DEFAULT_HAIKU_MODEL"
-    ANTHROPIC_DEFAULT_HAIKU_MODEL_DESCRIPTION = "ANTHROPIC_DEFAULT_HAIKU_MODEL_DESCRIPTION"
-    ANTHROPIC_DEFAULT_HAIKU_MODEL_NAME = "ANTHROPIC_DEFAULT_HAIKU_MODEL_NAME"
-    ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES = "ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES"
-    ANTHROPIC_DEFAULT_MODEL = "ANTHROPIC_DEFAULT_MODEL"
-    ANTHROPIC_DEFAULT_OPUS_MODEL = "ANTHROPIC_DEFAULT_OPUS_MODEL"
-    ANTHROPIC_DEFAULT_OPUS_MODEL_DESCRIPTION = "ANTHROPIC_DEFAULT_OPUS_MODEL_DESCRIPTION"
-    ANTHROPIC_DEFAULT_OPUS_MODEL_NAME = "ANTHROPIC_DEFAULT_OPUS_MODEL_NAME"
-    ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES = "ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES"
-    ANTHROPIC_DEFAULT_SONNET_MODEL = "ANTHROPIC_DEFAULT_SONNET_MODEL"
-    ANTHROPIC_DEFAULT_SONNET_MODEL_DESCRIPTION = "ANTHROPIC_DEFAULT_SONNET_MODEL_DESCRIPTION"
-    ANTHROPIC_DEFAULT_SONNET_MODEL_NAME = "ANTHROPIC_DEFAULT_SONNET_MODEL_NAME"
-    ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES = "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES"
-    ANTHROPIC_FEDERATION_RULE_ID = "ANTHROPIC_FEDERATION_RULE_ID"
-    ANTHROPIC_FOUNDRY_API_KEY = "ANTHROPIC_FOUNDRY_API_KEY"
-    ANTHROPIC_FOUNDRY_AUTH_TOKEN = "ANTHROPIC_FOUNDRY_AUTH_TOKEN"
-    ANTHROPIC_FOUNDRY_BASE_URL = "ANTHROPIC_FOUNDRY_BASE_URL"
-    ANTHROPIC_FOUNDRY_RESOURCE = "ANTHROPIC_FOUNDRY_RESOURCE"
-    ANTHROPIC_MODEL = "ANTHROPIC_MODEL"
-    ANTHROPIC_ORGANIZATION_ID = "ANTHROPIC_ORGANIZATION_ID"
-    ANTHROPIC_PROFILE = "ANTHROPIC_PROFILE"
-    ANTHROPIC_SMALL_FAST_MODEL = "ANTHROPIC_SMALL_FAST_MODEL"
-    ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION = "ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION"
-    ANTHROPIC_VERTEX_BASE_URL = "ANTHROPIC_VERTEX_BASE_URL"
-    ANTHROPIC_VERTEX_PROJECT_ID = "ANTHROPIC_VERTEX_PROJECT_ID"
-    ANTHROPIC_WORKSPACE_ID = "ANTHROPIC_WORKSPACE_ID"
-    API_FORCE_IDLE_TIMEOUT = "API_FORCE_IDLE_TIMEOUT"
-    API_TIMEOUT_MS = "API_TIMEOUT_MS"
-    AWS_BEARER_TOKEN_BEDROCK = "AWS_BEARER_TOKEN_BEDROCK"
-    AWS_REGION = "AWS_REGION"
-    BASH_DEFAULT_TIMEOUT_MS = "BASH_DEFAULT_TIMEOUT_MS"
-    BASH_MAX_OUTPUT_LENGTH = "BASH_MAX_OUTPUT_LENGTH"
-    BASH_MAX_TIMEOUT_MS = "BASH_MAX_TIMEOUT_MS"
-    BETA_TRACING_ENDPOINT = "BETA_TRACING_ENDPOINT"
-    CCR_FORCE_BUNDLE = "CCR_FORCE_BUNDLE"
-    CLAUDECODE = "CLAUDECODE"
-    CLAUDE_AFK_COUNTDOWN_MS = "CLAUDE_AFK_COUNTDOWN_MS"
-    CLAUDE_AFK_TIMEOUT_MS = "CLAUDE_AFK_TIMEOUT_MS"
-    CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS = "CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS"
-    CLAUDE_AGENT_SDK_MCP_NO_PREFIX = "CLAUDE_AGENT_SDK_MCP_NO_PREFIX"
-    CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS = "CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS"
-    CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE"
-    CLAUDE_AUTO_BACKGROUND_TASKS = "CLAUDE_AUTO_BACKGROUND_TASKS"
-    CLAUDE_AX_PREPARK_MS = "CLAUDE_AX_PREPARK_MS"
-    CLAUDE_AX_SCREEN_READER = "CLAUDE_AX_SCREEN_READER"
-    CLAUDE_AX_STARTUP_QUIET_MS = "CLAUDE_AX_STARTUP_QUIET_MS"
-    CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR = "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR"
-    CLAUDE_BYTE_STREAM_IDLE_TIMEOUT_MS = "CLAUDE_BYTE_STREAM_IDLE_TIMEOUT_MS"
-    CLAUDE_CLIENT_PRESENCE_FILE = "CLAUDE_CLIENT_PRESENCE_FILE"
-    CLAUDE_CODE_ACCESSIBILITY = "CLAUDE_CODE_ACCESSIBILITY"
-    CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD = "CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD"
-    CLAUDE_CODE_ALT_SCREEN_FULL_REPAINT = "CLAUDE_CODE_ALT_SCREEN_FULL_REPAINT"
-    CLAUDE_CODE_ALWAYS_ENABLE_EFFORT = "CLAUDE_CODE_ALWAYS_ENABLE_EFFORT"
-    CLAUDE_CODE_API_KEY_HELPER_TTL_MS = "CLAUDE_CODE_API_KEY_HELPER_TTL_MS"
-    CLAUDE_CODE_ARTIFACT_AUTO_OPEN = "CLAUDE_CODE_ARTIFACT_AUTO_OPEN"
-    CLAUDE_CODE_ARTIFACT_COMMENTS = "CLAUDE_CODE_ARTIFACT_COMMENTS"
-    CLAUDE_CODE_ARTIFACT_COMMENTS_AUTOREACT = "CLAUDE_CODE_ARTIFACT_COMMENTS_AUTOREACT"
-    CLAUDE_CODE_ATTRIBUTION_HEADER = "CLAUDE_CODE_ATTRIBUTION_HEADER"
-    CLAUDE_CODE_AUTO_BACKGROUND_WORKER_CHECKIN_SECONDS = "CLAUDE_CODE_AUTO_BACKGROUND_WORKER_CHECKIN_SECONDS"
-    CLAUDE_CODE_AUTO_COMPACT_WINDOW = "CLAUDE_CODE_AUTO_COMPACT_WINDOW"
-    CLAUDE_CODE_AUTO_CONNECT_IDE = "CLAUDE_CODE_AUTO_CONNECT_IDE"
-    CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS = "CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS"
-    CLAUDE_CODE_BRIDGE_SESSION_ID = "CLAUDE_CODE_BRIDGE_SESSION_ID"
-    CLAUDE_CODE_BS_AS_CTRL_BACKSPACE = "CLAUDE_CODE_BS_AS_CTRL_BACKSPACE"
-    CLAUDE_CODE_CERT_STORE = "CLAUDE_CODE_CERT_STORE"
-    CLAUDE_CODE_CHILD_SESSION = "CLAUDE_CODE_CHILD_SESSION"
-    CLAUDE_CODE_CLIENT_CERT = "CLAUDE_CODE_CLIENT_CERT"
-    CLAUDE_CODE_CLIENT_KEY = "CLAUDE_CODE_CLIENT_KEY"
-    CLAUDE_CODE_CLIENT_KEY_PASSPHRASE = "CLAUDE_CODE_CLIENT_KEY_PASSPHRASE"
-    CLAUDE_CODE_CONNECT_TIMEOUT_MS = "CLAUDE_CODE_CONNECT_TIMEOUT_MS"
-    CLAUDE_CODE_DEBUG_LOGS_DIR = "CLAUDE_CODE_DEBUG_LOGS_DIR"
-    CLAUDE_CODE_DEBUG_LOG_LEVEL = "CLAUDE_CODE_DEBUG_LOG_LEVEL"
-    CLAUDE_CODE_DISABLE_1M_CONTEXT = "CLAUDE_CODE_DISABLE_1M_CONTEXT"
-    CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING = "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING"
-    CLAUDE_CODE_DISABLE_ADMIN_ENV_UNION = "CLAUDE_CODE_DISABLE_ADMIN_ENV_UNION"
-    CLAUDE_CODE_DISABLE_ADVISOR_TOOL = "CLAUDE_CODE_DISABLE_ADVISOR_TOOL"
-    CLAUDE_CODE_DISABLE_AGENT_VIEW = "CLAUDE_CODE_DISABLE_AGENT_VIEW"
-    CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN = "CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN"
-    CLAUDE_CODE_DISABLE_ARTIFACT = "CLAUDE_CODE_DISABLE_ARTIFACT"
-    CLAUDE_CODE_DISABLE_ATTACHMENTS = "CLAUDE_CODE_DISABLE_ATTACHMENTS"
-    CLAUDE_CODE_DISABLE_AUTO_MEMORY = "CLAUDE_CODE_DISABLE_AUTO_MEMORY"
-    CLAUDE_CODE_DISABLE_BACKGROUND_TASKS = "CLAUDE_CODE_DISABLE_BACKGROUND_TASKS"
-    CLAUDE_CODE_DISABLE_BEDROCK_CONTENT_TYPE_DEFAULT = "CLAUDE_CODE_DISABLE_BEDROCK_CONTENT_TYPE_DEFAULT"
-    CLAUDE_CODE_DISABLE_BEDROCK_CONTENT_TYPE_GUARD = "CLAUDE_CODE_DISABLE_BEDROCK_CONTENT_TYPE_GUARD"
-    CLAUDE_CODE_DISABLE_BG_EXIT_HANDOFF = "CLAUDE_CODE_DISABLE_BG_EXIT_HANDOFF"
-    CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP = "CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP"
-    CLAUDE_CODE_DISABLE_BUNDLED_SKILLS = "CLAUDE_CODE_DISABLE_BUNDLED_SKILLS"
-    CLAUDE_CODE_DISABLE_CFC_PROMPT = "CLAUDE_CODE_DISABLE_CFC_PROMPT"
-    CLAUDE_CODE_DISABLE_CLAUDE_MDS = "CLAUDE_CODE_DISABLE_CLAUDE_MDS"
-    CLAUDE_CODE_DISABLE_CRON = "CLAUDE_CODE_DISABLE_CRON"
-    CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS = "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS"
-    CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS = "CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS"
-    CLAUDE_CODE_DISABLE_FAST_MODE = "CLAUDE_CODE_DISABLE_FAST_MODE"
-    CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY = "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY"
-    CLAUDE_CODE_DISABLE_FILE_CHECKPOINTING = "CLAUDE_CODE_DISABLE_FILE_CHECKPOINTING"
-    CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS = "CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS"
-    CLAUDE_CODE_DISABLE_LEGACY_MODEL_REMAP = "CLAUDE_CODE_DISABLE_LEGACY_MODEL_REMAP"
-    CLAUDE_CODE_DISABLE_MOUSE = "CLAUDE_CODE_DISABLE_MOUSE"
-    CLAUDE_CODE_DISABLE_MOUSE_CLICKS = "CLAUDE_CODE_DISABLE_MOUSE_CLICKS"
-    CLAUDE_CODE_DISABLE_MTLS_RELOAD_ON_STALE_CONNECTION = "CLAUDE_CODE_DISABLE_MTLS_RELOAD_ON_STALE_CONNECTION"
-    CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"
-    CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK = "CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK"
-    CLAUDE_CODE_DISABLE_NOTIFICATION_PRESENCE_CHECK = "CLAUDE_CODE_DISABLE_NOTIFICATION_PRESENCE_CHECK"
-    CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL = "CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL"
-    CLAUDE_CODE_DISABLE_PERMISSION_PROMPT_NOTIFY_HOOKS = "CLAUDE_CODE_DISABLE_PERMISSION_PROMPT_NOTIFY_HOOKS"
-    CLAUDE_CODE_DISABLE_POLICY_SKILLS = "CLAUDE_CODE_DISABLE_POLICY_SKILLS"
-    CLAUDE_CODE_DISABLE_TERMINAL_TITLE = "CLAUDE_CODE_DISABLE_TERMINAL_TITLE"
-    CLAUDE_CODE_DISABLE_THINKING = "CLAUDE_CODE_DISABLE_THINKING"
-    CLAUDE_CODE_DISABLE_UNKNOWN_MODEL_WINDOW_ENFORCEMENT = "CLAUDE_CODE_DISABLE_UNKNOWN_MODEL_WINDOW_ENFORCEMENT"
-    CLAUDE_CODE_DISABLE_VIRTUAL_SCROLL = "CLAUDE_CODE_DISABLE_VIRTUAL_SCROLL"
-    CLAUDE_CODE_DISABLE_WORKFLOWS = "CLAUDE_CODE_DISABLE_WORKFLOWS"
-    CLAUDE_CODE_EFFORT_LEVEL = "CLAUDE_CODE_EFFORT_LEVEL"
-    CLAUDE_CODE_ENABLE_APPEND_SUBAGENT_PROMPT = "CLAUDE_CODE_ENABLE_APPEND_SUBAGENT_PROMPT"
-    CLAUDE_CODE_ENABLE_AUTO_MODE = "CLAUDE_CODE_ENABLE_AUTO_MODE"
-    CLAUDE_CODE_ENABLE_AWAY_SUMMARY = "CLAUDE_CODE_ENABLE_AWAY_SUMMARY"
-    CLAUDE_CODE_ENABLE_BACKGROUND_PLUGIN_REFRESH = "CLAUDE_CODE_ENABLE_BACKGROUND_PLUGIN_REFRESH"
-    CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL = "CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL"
-    CLAUDE_CODE_ENABLE_FINE_GRAINED_TOOL_STREAMING = "CLAUDE_CODE_ENABLE_FINE_GRAINED_TOOL_STREAMING"
-    CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY = "CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY"
-    CLAUDE_CODE_ENABLE_OPUS_4_7_FAST_MODE = "CLAUDE_CODE_ENABLE_OPUS_4_7_FAST_MODE"
-    CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION = "CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION"
-    CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING = "CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING"
-    CLAUDE_CODE_ENABLE_TASKS = "CLAUDE_CODE_ENABLE_TASKS"
-    CLAUDE_CODE_ENABLE_TELEMETRY = "CLAUDE_CODE_ENABLE_TELEMETRY"
-    CLAUDE_CODE_ENABLE_TODO_TOOLS = "CLAUDE_CODE_ENABLE_TODO_TOOLS"
-    CLAUDE_CODE_ENHANCED_TELEMETRY_BETA = "CLAUDE_CODE_ENHANCED_TELEMETRY_BETA"
-    CLAUDE_CODE_EXIT_AFTER_STOP_DELAY = "CLAUDE_CODE_EXIT_AFTER_STOP_DELAY"
-    CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS = "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS"
-    CLAUDE_CODE_EXTRA_BODY = "CLAUDE_CODE_EXTRA_BODY"
-    CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS = "CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS"
-    CLAUDE_CODE_FORCE_SESSION_PERSISTENCE = "CLAUDE_CODE_FORCE_SESSION_PERSISTENCE"
-    CLAUDE_CODE_FORCE_STRIKETHROUGH = "CLAUDE_CODE_FORCE_STRIKETHROUGH"
-    CLAUDE_CODE_FORCE_SYNC_OUTPUT = "CLAUDE_CODE_FORCE_SYNC_OUTPUT"
-    CLAUDE_CODE_FORK_SUBAGENT = "CLAUDE_CODE_FORK_SUBAGENT"
-    CLAUDE_CODE_FORWARD_SUBAGENT_TEXT = "CLAUDE_CODE_FORWARD_SUBAGENT_TEXT"
-    CLAUDE_CODE_GIT_BASH_PATH = "CLAUDE_CODE_GIT_BASH_PATH"
-    CLAUDE_CODE_GLOB_HIDDEN = "CLAUDE_CODE_GLOB_HIDDEN"
-    CLAUDE_CODE_GLOB_NO_IGNORE = "CLAUDE_CODE_GLOB_NO_IGNORE"
-    CLAUDE_CODE_GLOB_TIMEOUT_SECONDS = "CLAUDE_CODE_GLOB_TIMEOUT_SECONDS"
-    CLAUDE_CODE_GOAL_CHECKIN_MINUTES = "CLAUDE_CODE_GOAL_CHECKIN_MINUTES"
-    CLAUDE_CODE_HIDE_CWD = "CLAUDE_CODE_HIDE_CWD"
-    CLAUDE_CODE_IDE_HOST_OVERRIDE = "CLAUDE_CODE_IDE_HOST_OVERRIDE"
-    CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL = "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL"
-    CLAUDE_CODE_IDE_SKIP_VALID_CHECK = "CLAUDE_CODE_IDE_SKIP_VALID_CHECK"
-    CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS = "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS"
-    CLAUDE_CODE_MAX_CONTEXT_TOKENS = "CLAUDE_CODE_MAX_CONTEXT_TOKENS"
-    CLAUDE_CODE_MAX_OUTPUT_TOKENS = "CLAUDE_CODE_MAX_OUTPUT_TOKENS"
-    CLAUDE_CODE_MAX_RETRIES = "CLAUDE_CODE_MAX_RETRIES"
-    CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION = "CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION"
-    CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH = "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH"
-    CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY = "CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY"
-    CLAUDE_CODE_MAX_TURNS = "CLAUDE_CODE_MAX_TURNS"
-    CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION = "CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION"
-    CLAUDE_CODE_MCP_ALLOWLIST_ENV = "CLAUDE_CODE_MCP_ALLOWLIST_ENV"
-    CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS = "CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS"
-    CLAUDE_CODE_MCP_TOOL_IDLE_TIMEOUT = "CLAUDE_CODE_MCP_TOOL_IDLE_TIMEOUT"
-    CLAUDE_CODE_MESSAGING_SOCKET = "CLAUDE_CODE_MESSAGING_SOCKET"
-    CLAUDE_CODE_MESSAGING_TOKEN = "CLAUDE_CODE_MESSAGING_TOKEN"
-    CLAUDE_CODE_NATIVE_CURSOR = "CLAUDE_CODE_NATIVE_CURSOR"
-    CLAUDE_CODE_NEW_INIT = "CLAUDE_CODE_NEW_INIT"
-    CLAUDE_CODE_NO_FLICKER = "CLAUDE_CODE_NO_FLICKER"
-    CLAUDE_CODE_OAUTH_REFRESH_TOKEN = "CLAUDE_CODE_OAUTH_REFRESH_TOKEN"
-    CLAUDE_CODE_OAUTH_SCOPES = "CLAUDE_CODE_OAUTH_SCOPES"
-    CLAUDE_CODE_OAUTH_TOKEN = "CLAUDE_CODE_OAUTH_TOKEN"
-    CLAUDE_CODE_OPUS_4_6_FAST_MODE_OVERRIDE = "CLAUDE_CODE_OPUS_4_6_FAST_MODE_OVERRIDE"
-    CLAUDE_CODE_OTEL_CONTENT_MAX_LENGTH = "CLAUDE_CODE_OTEL_CONTENT_MAX_LENGTH"
-    CLAUDE_CODE_OTEL_DIAG_STDERR = "CLAUDE_CODE_OTEL_DIAG_STDERR"
-    CLAUDE_CODE_OTEL_FLUSH_TIMEOUT_MS = "CLAUDE_CODE_OTEL_FLUSH_TIMEOUT_MS"
-    CLAUDE_CODE_OTEL_HEADERS_HELPER_DEBOUNCE_MS = "CLAUDE_CODE_OTEL_HEADERS_HELPER_DEBOUNCE_MS"
-    CLAUDE_CODE_OTEL_SHUTDOWN_TIMEOUT_MS = "CLAUDE_CODE_OTEL_SHUTDOWN_TIMEOUT_MS"
-    CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE = "CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE"
-    CLAUDE_CODE_PERFORCE_MODE = "CLAUDE_CODE_PERFORCE_MODE"
-    CLAUDE_CODE_PLUGIN_CACHE_DIR = "CLAUDE_CODE_PLUGIN_CACHE_DIR"
-    CLAUDE_CODE_PLUGIN_GIT_TIMEOUT_MS = "CLAUDE_CODE_PLUGIN_GIT_TIMEOUT_MS"
-    CLAUDE_CODE_PLUGIN_KEEP_MARKETPLACE_ON_FAILURE = "CLAUDE_CODE_PLUGIN_KEEP_MARKETPLACE_ON_FAILURE"
-    CLAUDE_CODE_PLUGIN_PREFER_HTTPS = "CLAUDE_CODE_PLUGIN_PREFER_HTTPS"
-    CLAUDE_CODE_PLUGIN_SEED_DIR = "CLAUDE_CODE_PLUGIN_SEED_DIR"
-    CLAUDE_CODE_POWERSHELL_RESPECT_EXECUTION_POLICY = "CLAUDE_CODE_POWERSHELL_RESPECT_EXECUTION_POLICY"
-    CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS = "CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS"
-    CLAUDE_CODE_PROCESS_WRAPPER = "CLAUDE_CODE_PROCESS_WRAPPER"
-    CLAUDE_CODE_PROJECT_DIR_NAME = "CLAUDE_CODE_PROJECT_DIR_NAME"
-    CLAUDE_CODE_PROMPT_CACHE_TTL = "CLAUDE_CODE_PROMPT_CACHE_TTL"
-    CLAUDE_CODE_PROPAGATE_TRACEPARENT = "CLAUDE_CODE_PROPAGATE_TRACEPARENT"
-    CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST = "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST"
-    CLAUDE_CODE_PROXY_RESOLVES_HOSTS = "CLAUDE_CODE_PROXY_RESOLVES_HOSTS"
-    CLAUDE_CODE_REMOTE = "CLAUDE_CODE_REMOTE"
-    CLAUDE_CODE_REMOTE_SESSION_ID = "CLAUDE_CODE_REMOTE_SESSION_ID"
-    CLAUDE_CODE_RESTRICTED = "CLAUDE_CODE_RESTRICTED"
-    CLAUDE_CODE_RESUME_INTERRUPTED_TURN = "CLAUDE_CODE_RESUME_INTERRUPTED_TURN"
-    CLAUDE_CODE_RESUME_INTERRUPTED_TURN_MAX_AGE_MS = "CLAUDE_CODE_RESUME_INTERRUPTED_TURN_MAX_AGE_MS"
-    CLAUDE_CODE_RESUME_PROMPT = "CLAUDE_CODE_RESUME_PROMPT"
-    CLAUDE_CODE_RETRY_WATCHDOG = "CLAUDE_CODE_RETRY_WATCHDOG"
-    CLAUDE_CODE_SAFE_MODE = "CLAUDE_CODE_SAFE_MODE"
-    CLAUDE_CODE_SCRIPT_CAPS = "CLAUDE_CODE_SCRIPT_CAPS"
-    CLAUDE_CODE_SCROLL_SPEED = "CLAUDE_CODE_SCROLL_SPEED"
-    CLAUDE_CODE_SEND_FEEDBACK = "CLAUDE_CODE_SEND_FEEDBACK"
-    CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS = "CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS"
-    CLAUDE_CODE_SESSION_ID = "CLAUDE_CODE_SESSION_ID"
-    CLAUDE_CODE_SHELL = "CLAUDE_CODE_SHELL"
-    CLAUDE_CODE_SHELL_PREFIX = "CLAUDE_CODE_SHELL_PREFIX"
-    CLAUDE_CODE_SIMPLE = "CLAUDE_CODE_SIMPLE"
-    CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT = "CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT"
-    CLAUDE_CODE_SKIP_ANTHROPIC_AWS_AUTH = "CLAUDE_CODE_SKIP_ANTHROPIC_AWS_AUTH"
-    CLAUDE_CODE_SKIP_AWS_CRED_CACHE = "CLAUDE_CODE_SKIP_AWS_CRED_CACHE"
-    CLAUDE_CODE_SKIP_BEDROCK_AUTH = "CLAUDE_CODE_SKIP_BEDROCK_AUTH"
-    CLAUDE_CODE_SKIP_FAST_MODE_NETWORK_ERRORS = "CLAUDE_CODE_SKIP_FAST_MODE_NETWORK_ERRORS"
-    CLAUDE_CODE_SKIP_FAST_MODE_ORG_CHECK = "CLAUDE_CODE_SKIP_FAST_MODE_ORG_CHECK"
-    CLAUDE_CODE_SKIP_FOUNDRY_AUTH = "CLAUDE_CODE_SKIP_FOUNDRY_AUTH"
-    CLAUDE_CODE_SKIP_MANTLE_AUTH = "CLAUDE_CODE_SKIP_MANTLE_AUTH"
-    CLAUDE_CODE_SKIP_PROMPT_HISTORY = "CLAUDE_CODE_SKIP_PROMPT_HISTORY"
-    CLAUDE_CODE_SKIP_VERTEX_AUTH = "CLAUDE_CODE_SKIP_VERTEX_AUTH"
-    CLAUDE_CODE_STOP_HOOK_BLOCK_CAP = "CLAUDE_CODE_STOP_HOOK_BLOCK_CAP"
-    CLAUDE_CODE_SUBAGENT_MODEL = "CLAUDE_CODE_SUBAGENT_MODEL"
-    CLAUDE_CODE_SUBAGENT_MODEL_FORCE = "CLAUDE_CODE_SUBAGENT_MODEL_FORCE"
-    CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL = "CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL"
-    CLAUDE_CODE_SUBPROCESS_ENV_SCRUB = "CLAUDE_CODE_SUBPROCESS_ENV_SCRUB"
-    CLAUDE_CODE_SYNC_PLUGIN_INSTALL = "CLAUDE_CODE_SYNC_PLUGIN_INSTALL"
-    CLAUDE_CODE_SYNC_PLUGIN_INSTALL_TIMEOUT_MS = "CLAUDE_CODE_SYNC_PLUGIN_INSTALL_TIMEOUT_MS"
-    CLAUDE_CODE_SYNC_SKILLS = "CLAUDE_CODE_SYNC_SKILLS"
-    CLAUDE_CODE_SYNC_SKILLS_INSTALL_TIMEOUT_MS = "CLAUDE_CODE_SYNC_SKILLS_INSTALL_TIMEOUT_MS"
-    CLAUDE_CODE_SYNC_SKILLS_WAIT_TIMEOUT_MS = "CLAUDE_CODE_SYNC_SKILLS_WAIT_TIMEOUT_MS"
-    CLAUDE_CODE_SYNTAX_HIGHLIGHT = "CLAUDE_CODE_SYNTAX_HIGHLIGHT"
-    CLAUDE_CODE_TASK_LIST_ID = "CLAUDE_CODE_TASK_LIST_ID"
-    CLAUDE_CODE_TEAM_NAME = "CLAUDE_CODE_TEAM_NAME"
-    CLAUDE_CODE_TEAM_TEARDOWN_PARK_TIMEOUT_MS = "CLAUDE_CODE_TEAM_TEARDOWN_PARK_TIMEOUT_MS"
-    CLAUDE_CODE_TMPDIR = "CLAUDE_CODE_TMPDIR"
-    CLAUDE_CODE_TMUX_TRUECOLOR = "CLAUDE_CODE_TMUX_TRUECOLOR"
-    CLAUDE_CODE_TOOL_MEMORY_CGROUP_EXCLUDE = "CLAUDE_CODE_TOOL_MEMORY_CGROUP_EXCLUDE"
-    CLAUDE_CODE_TOOL_MEMORY_LIMIT = "CLAUDE_CODE_TOOL_MEMORY_LIMIT"
-    CLAUDE_CODE_USER_DIALOG_TIMEOUT_MS = "CLAUDE_CODE_USER_DIALOG_TIMEOUT_MS"
-    CLAUDE_CODE_USE_ANTHROPIC_AWS = "CLAUDE_CODE_USE_ANTHROPIC_AWS"
-    CLAUDE_CODE_USE_BEDROCK = "CLAUDE_CODE_USE_BEDROCK"
-    CLAUDE_CODE_USE_FOUNDRY = "CLAUDE_CODE_USE_FOUNDRY"
-    CLAUDE_CODE_USE_MANTLE = "CLAUDE_CODE_USE_MANTLE"
-    CLAUDE_CODE_USE_NATIVE_FILE_SEARCH = "CLAUDE_CODE_USE_NATIVE_FILE_SEARCH"
-    CLAUDE_CODE_USE_POWERSHELL_TOOL = "CLAUDE_CODE_USE_POWERSHELL_TOOL"
-    CLAUDE_CODE_USE_VERTEX = "CLAUDE_CODE_USE_VERTEX"
-    CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS = "CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS"
-    CLAUDE_CODE_WORKFLOW_PREFIX_STAGGER_MS = "CLAUDE_CODE_WORKFLOW_PREFIX_STAGGER_MS"
-    CLAUDE_CONFIG_DIR = "CLAUDE_CONFIG_DIR"
-    CLAUDE_DISABLE_ADOPT = "CLAUDE_DISABLE_ADOPT"
-    CLAUDE_EFFORT = "CLAUDE_EFFORT"
-    CLAUDE_ENABLE_BYTE_WATCHDOG = "CLAUDE_ENABLE_BYTE_WATCHDOG"
-    CLAUDE_ENABLE_BYTE_WATCHDOG_BEDROCK = "CLAUDE_ENABLE_BYTE_WATCHDOG_BEDROCK"
-    CLAUDE_ENABLE_STREAM_WATCHDOG = "CLAUDE_ENABLE_STREAM_WATCHDOG"
-    CLAUDE_ENV_FILE = "CLAUDE_ENV_FILE"
-    CLAUDE_PID = "CLAUDE_PID"
-    CLAUDE_PROJECT_DIR = "CLAUDE_PROJECT_DIR"
-    CLAUDE_REMOTE_CONTROL_SESSION_NAME_PREFIX = "CLAUDE_REMOTE_CONTROL_SESSION_NAME_PREFIX"
-    CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS = "CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS"
-    CLAUDE_STREAM_IDLE_TIMEOUT_MS = "CLAUDE_STREAM_IDLE_TIMEOUT_MS"
-    CLAUDE_SUBAGENT_BG_SHELL_MAX_MS = "CLAUDE_SUBAGENT_BG_SHELL_MAX_MS"
-    CLOUD_ML_REGION = "CLOUD_ML_REGION"
-    DEBUG = "DEBUG"
-    DISABLE_AUTOUPDATER = "DISABLE_AUTOUPDATER"
-    DISABLE_AUTO_COMPACT = "DISABLE_AUTO_COMPACT"
-    DISABLE_COMPACT = "DISABLE_COMPACT"
-    DISABLE_COST_WARNINGS = "DISABLE_COST_WARNINGS"
-    DISABLE_DOCTOR_COMMAND = "DISABLE_DOCTOR_COMMAND"
-    DISABLE_ERROR_REPORTING = "DISABLE_ERROR_REPORTING"
-    DISABLE_EXTRA_USAGE_COMMAND = "DISABLE_EXTRA_USAGE_COMMAND"
-    DISABLE_FEEDBACK_COMMAND = "DISABLE_FEEDBACK_COMMAND"
-    DISABLE_GROWTHBOOK = "DISABLE_GROWTHBOOK"
-    DISABLE_INSTALLATION_CHECKS = "DISABLE_INSTALLATION_CHECKS"
-    DISABLE_INSTALL_GITHUB_APP_COMMAND = "DISABLE_INSTALL_GITHUB_APP_COMMAND"
-    DISABLE_INTERLEAVED_THINKING = "DISABLE_INTERLEAVED_THINKING"
-    DISABLE_LOGIN_COMMAND = "DISABLE_LOGIN_COMMAND"
-    DISABLE_LOGOUT_COMMAND = "DISABLE_LOGOUT_COMMAND"
-    DISABLE_PROMPT_CACHING = "DISABLE_PROMPT_CACHING"
-    DISABLE_PROMPT_CACHING_FABLE = "DISABLE_PROMPT_CACHING_FABLE"
-    DISABLE_PROMPT_CACHING_HAIKU = "DISABLE_PROMPT_CACHING_HAIKU"
-    DISABLE_PROMPT_CACHING_OPUS = "DISABLE_PROMPT_CACHING_OPUS"
-    DISABLE_PROMPT_CACHING_SONNET = "DISABLE_PROMPT_CACHING_SONNET"
-    DISABLE_TELEMETRY = "DISABLE_TELEMETRY"
-    DISABLE_UPDATES = "DISABLE_UPDATES"
-    DISABLE_UPGRADE_COMMAND = "DISABLE_UPGRADE_COMMAND"
-    DO_NOT_TRACK = "DO_NOT_TRACK"
-    ENABLE_BETA_TRACING_DETAILED = "ENABLE_BETA_TRACING_DETAILED"
-    ENABLE_CLAUDEAI_MCP_SERVERS = "ENABLE_CLAUDEAI_MCP_SERVERS"
-    ENABLE_PROMPT_CACHING_1H = "ENABLE_PROMPT_CACHING_1H"
-    ENABLE_PROMPT_CACHING_1H_BEDROCK = "ENABLE_PROMPT_CACHING_1H_BEDROCK"
-    ENABLE_TOOL_SEARCH = "ENABLE_TOOL_SEARCH"
-    FALLBACK_FOR_ALL_PRIMARY_MODELS = "FALLBACK_FOR_ALL_PRIMARY_MODELS"
-    FORCE_AUTOUPDATE_PLUGINS = "FORCE_AUTOUPDATE_PLUGINS"
-    FORCE_HYPERLINK = "FORCE_HYPERLINK"
-    FORCE_PROMPT_CACHING_5M = "FORCE_PROMPT_CACHING_5M"
-    GOOGLE_APPLICATION_CREDENTIALS = "GOOGLE_APPLICATION_CREDENTIALS"
-    HTTPS_PROXY = "HTTPS_PROXY"
-    HTTP_PROXY = "HTTP_PROXY"
-    IS_DEMO = "IS_DEMO"
-    MAX_MCP_OUTPUT_TOKENS = "MAX_MCP_OUTPUT_TOKENS"
-    MAX_STRUCTURED_OUTPUT_RETRIES = "MAX_STRUCTURED_OUTPUT_RETRIES"
-    MAX_THINKING_TOKENS = "MAX_THINKING_TOKENS"
-    MCP_CLIENT_SECRET = "MCP_CLIENT_SECRET"
-    MCP_CONNECTION_NONBLOCKING = "MCP_CONNECTION_NONBLOCKING"
-    MCP_CONNECT_TIMEOUT_MS = "MCP_CONNECT_TIMEOUT_MS"
-    MCP_DISCOVERY_CACHE = "MCP_DISCOVERY_CACHE"
-    MCP_DISCOVERY_CACHE_MAX_STALE_S = "MCP_DISCOVERY_CACHE_MAX_STALE_S"
-    MCP_DISCOVERY_CACHE_STRIKES = "MCP_DISCOVERY_CACHE_STRIKES"
-    MCP_DISCOVERY_CACHE_TTL_S = "MCP_DISCOVERY_CACHE_TTL_S"
-    MCP_OAUTH_CALLBACK_PORT = "MCP_OAUTH_CALLBACK_PORT"
-    MCP_PROTOCOL_NEGOTIATION = "MCP_PROTOCOL_NEGOTIATION"
-    MCP_REMOTE_SERVER_CONNECTION_BATCH_SIZE = "MCP_REMOTE_SERVER_CONNECTION_BATCH_SIZE"
-    MCP_SDK_GENERATION = "MCP_SDK_GENERATION"
-    MCP_SERVER_CONNECTION_BATCH_SIZE = "MCP_SERVER_CONNECTION_BATCH_SIZE"
-    MCP_TIMEOUT = "MCP_TIMEOUT"
-    MCP_TOOL_TIMEOUT = "MCP_TOOL_TIMEOUT"
-    NODE_EXTRA_CA_CERTS = "NODE_EXTRA_CA_CERTS"
-    NO_PROXY = "NO_PROXY"
-    OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT = "OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT"
-    OTEL_EXPORTER_OTLP_CERTIFICATE = "OTEL_EXPORTER_OTLP_CERTIFICATE"
-    OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE = "OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE"
-    OTEL_EXPORTER_OTLP_CLIENT_KEY = "OTEL_EXPORTER_OTLP_CLIENT_KEY"
-    OTEL_EXPORTER_OTLP_ENDPOINT = "OTEL_EXPORTER_OTLP_ENDPOINT"
-    OTEL_EXPORTER_OTLP_HEADERS = "OTEL_EXPORTER_OTLP_HEADERS"
-    OTEL_EXPORTER_OTLP_LOGS_CLIENT_CERTIFICATE = "OTEL_EXPORTER_OTLP_LOGS_CLIENT_CERTIFICATE"
-    OTEL_EXPORTER_OTLP_LOGS_CLIENT_KEY = "OTEL_EXPORTER_OTLP_LOGS_CLIENT_KEY"
-    OTEL_EXPORTER_OTLP_LOGS_ENDPOINT = "OTEL_EXPORTER_OTLP_LOGS_ENDPOINT"
-    OTEL_EXPORTER_OTLP_LOGS_PROTOCOL = "OTEL_EXPORTER_OTLP_LOGS_PROTOCOL"
-    OTEL_EXPORTER_OTLP_METRICS_CLIENT_CERTIFICATE = "OTEL_EXPORTER_OTLP_METRICS_CLIENT_CERTIFICATE"
-    OTEL_EXPORTER_OTLP_METRICS_CLIENT_KEY = "OTEL_EXPORTER_OTLP_METRICS_CLIENT_KEY"
-    OTEL_EXPORTER_OTLP_METRICS_ENDPOINT = "OTEL_EXPORTER_OTLP_METRICS_ENDPOINT"
-    OTEL_EXPORTER_OTLP_METRICS_PROTOCOL = "OTEL_EXPORTER_OTLP_METRICS_PROTOCOL"
-    OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE = "OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE"
-    OTEL_EXPORTER_OTLP_PROTOCOL = "OTEL_EXPORTER_OTLP_PROTOCOL"
-    OTEL_EXPORTER_OTLP_TRACES_CLIENT_CERTIFICATE = "OTEL_EXPORTER_OTLP_TRACES_CLIENT_CERTIFICATE"
-    OTEL_EXPORTER_OTLP_TRACES_CLIENT_KEY = "OTEL_EXPORTER_OTLP_TRACES_CLIENT_KEY"
-    OTEL_EXPORTER_OTLP_TRACES_ENDPOINT = "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT"
-    OTEL_EXPORTER_OTLP_TRACES_PROTOCOL = "OTEL_EXPORTER_OTLP_TRACES_PROTOCOL"
-    OTEL_LOGS_EXPORTER = "OTEL_LOGS_EXPORTER"
-    OTEL_LOGS_EXPORT_INTERVAL = "OTEL_LOGS_EXPORT_INTERVAL"
-    OTEL_LOG_ASSISTANT_RESPONSES = "OTEL_LOG_ASSISTANT_RESPONSES"
-    OTEL_LOG_RAW_API_BODIES = "OTEL_LOG_RAW_API_BODIES"
-    OTEL_LOG_TOOL_CONTENT = "OTEL_LOG_TOOL_CONTENT"
-    OTEL_LOG_TOOL_DETAILS = "OTEL_LOG_TOOL_DETAILS"
-    OTEL_LOG_USER_PROMPTS = "OTEL_LOG_USER_PROMPTS"
-    OTEL_METRICS_EXPORTER = "OTEL_METRICS_EXPORTER"
-    OTEL_METRICS_INCLUDE_ACCOUNT_UUID = "OTEL_METRICS_INCLUDE_ACCOUNT_UUID"
-    OTEL_METRICS_INCLUDE_ENTRYPOINT = "OTEL_METRICS_INCLUDE_ENTRYPOINT"
-    OTEL_METRICS_INCLUDE_RESOURCE_ATTRIBUTES = "OTEL_METRICS_INCLUDE_RESOURCE_ATTRIBUTES"
-    OTEL_METRICS_INCLUDE_SESSION_ID = "OTEL_METRICS_INCLUDE_SESSION_ID"
-    OTEL_METRICS_INCLUDE_VERSION = "OTEL_METRICS_INCLUDE_VERSION"
-    OTEL_METRIC_EXPORT_INTERVAL = "OTEL_METRIC_EXPORT_INTERVAL"
-    OTEL_RESOURCE_ATTRIBUTES = "OTEL_RESOURCE_ATTRIBUTES"
-    OTEL_TRACES_EXPORTER = "OTEL_TRACES_EXPORTER"
-    OTEL_TRACES_EXPORT_INTERVAL = "OTEL_TRACES_EXPORT_INTERVAL"
-    SLASH_COMMAND_TOOL_CHAR_BUDGET = "SLASH_COMMAND_TOOL_CHAR_BUDGET"
-    TASK_MAX_OUTPUT_LENGTH = "TASK_MAX_OUTPUT_LENGTH"
-    USE_BUILTIN_RIPGREP = "USE_BUILTIN_RIPGREP"
-    VERTEX_REGION_CLAUDE_3_5_HAIKU = "VERTEX_REGION_CLAUDE_3_5_HAIKU"
-    VERTEX_REGION_CLAUDE_3_5_SONNET = "VERTEX_REGION_CLAUDE_3_5_SONNET"
-    VERTEX_REGION_CLAUDE_3_7_SONNET = "VERTEX_REGION_CLAUDE_3_7_SONNET"
-    VERTEX_REGION_CLAUDE_4_0_OPUS = "VERTEX_REGION_CLAUDE_4_0_OPUS"
-    VERTEX_REGION_CLAUDE_4_0_SONNET = "VERTEX_REGION_CLAUDE_4_0_SONNET"
-    VERTEX_REGION_CLAUDE_4_1_OPUS = "VERTEX_REGION_CLAUDE_4_1_OPUS"
-    VERTEX_REGION_CLAUDE_4_5_OPUS = "VERTEX_REGION_CLAUDE_4_5_OPUS"
-    VERTEX_REGION_CLAUDE_4_5_SONNET = "VERTEX_REGION_CLAUDE_4_5_SONNET"
-    VERTEX_REGION_CLAUDE_4_6_OPUS = "VERTEX_REGION_CLAUDE_4_6_OPUS"
-    VERTEX_REGION_CLAUDE_4_6_SONNET = "VERTEX_REGION_CLAUDE_4_6_SONNET"
-    VERTEX_REGION_CLAUDE_4_7_OPUS = "VERTEX_REGION_CLAUDE_4_7_OPUS"
-    VERTEX_REGION_CLAUDE_4_8_OPUS = "VERTEX_REGION_CLAUDE_4_8_OPUS"
-    VERTEX_REGION_CLAUDE_5_OPUS = "VERTEX_REGION_CLAUDE_5_OPUS"
-    VERTEX_REGION_CLAUDE_5_SONNET = "VERTEX_REGION_CLAUDE_5_SONNET"
-    VERTEX_REGION_CLAUDE_FABLE_5 = "VERTEX_REGION_CLAUDE_FABLE_5"
-    VERTEX_REGION_CLAUDE_FABLE_5_1 = "VERTEX_REGION_CLAUDE_FABLE_5_1"
-    VERTEX_REGION_CLAUDE_HAIKU_4_5 = "VERTEX_REGION_CLAUDE_HAIKU_4_5"
+NESTED_SETTINGS: dict[str, SettingInfo] = {info.key: info for info in (
+    SettingInfo("attribution.commit", type=JsonType.STRING, topic=Topic.GIT),
+    SettingInfo("attribution.pr", type=JsonType.STRING, topic=Topic.GIT),
+    SettingInfo(
+        "attribution.sessionUrl", type=JsonType.BOOLEAN, default=True, since=Version(2, 1, 183), topic=Topic.GIT),
+    SettingInfo(
+        "autoMode.classifyAllShell", scope=Scope.USER | Scope.MANAGED, type=JsonType.BOOLEAN, default=False,
+        since=Version(2, 1, 193), topic=Topic.PERMISSIONS),
+    SettingInfo("permissions.additionalDirectories", type=JsonType.ARRAY, topic=Topic.PERMISSIONS),
+    SettingInfo("permissions.allow", type=JsonType.ARRAY, topic=Topic.PERMISSIONS),
+    SettingInfo("permissions.ask", type=JsonType.ARRAY, topic=Topic.PERMISSIONS),
+    SettingInfo(
+        "permissions.blockReadsOutsideWorkingDirectories", type=JsonType.BOOLEAN, since=Version(2, 1, 257),
+        topic=Topic.PERMISSIONS, in_schemastore=False),
+    SettingInfo(
+        "permissions.defaultMode", type=JsonType.STRING,
+        values=("acceptEdits", "bypassPermissions", "default", "delegate", "dontAsk", "plan", "auto", "manual"),
+        topic=Topic.PERMISSIONS),
+    SettingInfo("permissions.deny", type=JsonType.ARRAY, topic=Topic.PERMISSIONS),
+    SettingInfo(
+        "permissions.disableBypassPermissionsMode", type=JsonType.STRING, values=("disable",), topic=Topic.PERMISSIONS),
+    SettingInfo("policyHelper.path", scope=Scope.MANAGED, type=JsonType.STRING, topic=Topic.ENTERPRISE),
+    SettingInfo("policyHelper.refreshIntervalMs", scope=Scope.MANAGED, type=JsonType.INTEGER, topic=Topic.ENTERPRISE),
+    SettingInfo(
+        "policyHelper.timeoutMs", scope=Scope.MANAGED, type=JsonType.INTEGER, default=10000, topic=Topic.ENTERPRISE),
+    SettingInfo("remote.defaultEnvironmentId", type=JsonType.STRING, topic=Topic.REMOTE, in_schemastore=False),
+    SettingInfo(
+        "sandbox.allowAppleEvents", scope=Scope.USER | Scope.MANAGED, type=JsonType.BOOLEAN, default=False,
+        topic=Topic.SANDBOX),
+    SettingInfo(
+        "sandbox.allowNestedUserNamespaces", scope=Scope.USER | Scope.MANAGED, type=JsonType.BOOLEAN, default=False,
+        since=Version(2, 1, 305), topic=Topic.SANDBOX, in_schemastore=False),
+    SettingInfo("sandbox.allowUnsandboxedCommands", type=JsonType.BOOLEAN, default=True, topic=Topic.SANDBOX),
+    SettingInfo("sandbox.autoAllowBashIfSandboxed", type=JsonType.BOOLEAN, default=True, topic=Topic.SANDBOX),
+    SettingInfo(
+        "sandbox.bwrapPath", scope=Scope.MANAGED, type=JsonType.STRING, since=Version(2, 1, 133), topic=Topic.SANDBOX),
+    SettingInfo("sandbox.credentials", type=JsonType.OBJECT, since=Version(2, 1, 187), topic=Topic.SANDBOX),
+    SettingInfo(
+        "sandbox.credentials.allowPlaintextInject", scope=Scope.USER | Scope.MANAGED, type=JsonType.BOOLEAN,
+        default=False, topic=Topic.SANDBOX),
+    SettingInfo(
+        "sandbox.credentials.awsPairs", scope=Scope.USER | Scope.MANAGED, type=JsonType.ARRAY, since=Version(2, 1, 224),
+        topic=Topic.SANDBOX, in_schemastore=False),
+    SettingInfo("sandbox.credentials.envVars", type=JsonType.ARRAY, topic=Topic.SANDBOX),
+    SettingInfo("sandbox.credentials.files", type=JsonType.ARRAY, topic=Topic.SANDBOX),
+    SettingInfo(
+        "sandbox.credentials.sigv4", scope=Scope.USER | Scope.MANAGED, type=JsonType.OBJECT, since=Version(2, 1, 224),
+        topic=Topic.SANDBOX, in_schemastore=False),
+    SettingInfo("sandbox.enabled", type=JsonType.BOOLEAN, default=False, topic=Topic.SANDBOX),
+    SettingInfo("sandbox.enableWeakerNestedSandbox", type=JsonType.BOOLEAN, default=False, topic=Topic.SANDBOX),
+    SettingInfo(
+        "sandbox.enableWeakerNetworkIsolation", type=JsonType.BOOLEAN, default=False, since=Version(2, 1, 69),
+        topic=Topic.SANDBOX),
+    SettingInfo("sandbox.excludedCommands", type=JsonType.ARRAY, topic=Topic.SANDBOX),
+    SettingInfo(
+        "sandbox.failIfUnavailable", type=JsonType.BOOLEAN, default=False, since=Version(2, 1, 83),
+        topic=Topic.SANDBOX),
+    SettingInfo("sandbox.filesystem", type=JsonType.OBJECT, topic=Topic.SANDBOX),
+    SettingInfo(
+        "sandbox.filesystem.allowManagedReadPathsOnly", scope=Scope.MANAGED, type=JsonType.BOOLEAN, default=False,
+        topic=Topic.SANDBOX),
+    SettingInfo("sandbox.filesystem.allowRead", type=JsonType.ARRAY, topic=Topic.SANDBOX),
+    SettingInfo("sandbox.filesystem.allowWrite", type=JsonType.ARRAY, topic=Topic.SANDBOX),
+    SettingInfo("sandbox.filesystem.denyRead", type=JsonType.ARRAY, topic=Topic.SANDBOX),
+    SettingInfo("sandbox.filesystem.denyWrite", type=JsonType.ARRAY, topic=Topic.SANDBOX),
+    SettingInfo(
+        "sandbox.filesystem.disabled", scope=Scope.USER | Scope.MANAGED, type=JsonType.BOOLEAN, default=False,
+        since=Version(2, 1, 216), topic=Topic.SANDBOX),
+    SettingInfo("sandbox.ignoreViolations", type=JsonType.OBJECT, topic=Topic.SANDBOX),
+    SettingInfo("sandbox.network", type=JsonType.OBJECT, topic=Topic.SANDBOX),
+    SettingInfo("sandbox.network.allowAllUnixSockets", type=JsonType.BOOLEAN, default=False, topic=Topic.SANDBOX),
+    SettingInfo("sandbox.network.allowedDomains", type=JsonType.ARRAY, topic=Topic.SANDBOX),
+    SettingInfo("sandbox.network.allowLocalBinding", type=JsonType.BOOLEAN, default=False, topic=Topic.SANDBOX),
+    SettingInfo("sandbox.network.allowMachLookup", type=JsonType.ARRAY, topic=Topic.SANDBOX),
+    SettingInfo(
+        "sandbox.network.allowManagedDomainsOnly", scope=Scope.MANAGED, type=JsonType.BOOLEAN, default=False,
+        topic=Topic.SANDBOX),
+    SettingInfo("sandbox.network.allowUnixSockets", type=JsonType.ARRAY, topic=Topic.SANDBOX),
+    SettingInfo("sandbox.network.deniedDomains", type=JsonType.ARRAY, since=Version(2, 1, 113), topic=Topic.SANDBOX),
+    SettingInfo("sandbox.network.httpProxyPort", type=JsonType.INTEGER, topic=Topic.SANDBOX),
+    SettingInfo("sandbox.network.socksProxyPort", type=JsonType.INTEGER, topic=Topic.SANDBOX),
+    SettingInfo(
+        "sandbox.network.strictAllowlist", scope=Scope.USER | Scope.MANAGED, type=JsonType.BOOLEAN, default=False,
+        since=Version(2, 1, 219), topic=Topic.SANDBOX),
+    SettingInfo(
+        "sandbox.network.tlsTerminate", scope=Scope.USER | Scope.MANAGED, type=JsonType.OBJECT, topic=Topic.SANDBOX),
+    SettingInfo("sandbox.ripgrep", scope=Scope.USER | Scope.MANAGED, type=JsonType.OBJECT, topic=Topic.SANDBOX),
+    SettingInfo(
+        "sandbox.socatPath", scope=Scope.MANAGED, type=JsonType.STRING, since=Version(2, 1, 133), topic=Topic.SANDBOX),
+    SettingInfo("strictPluginOnlyCustomization.agents", scope=Scope.MANAGED, topic=Topic.PLUGINS, in_schemastore=False),
+    SettingInfo("strictPluginOnlyCustomization.hooks", scope=Scope.MANAGED, topic=Topic.PLUGINS, in_schemastore=False),
+    SettingInfo("strictPluginOnlyCustomization.mcp", scope=Scope.MANAGED, topic=Topic.PLUGINS, in_schemastore=False),
+    SettingInfo("strictPluginOnlyCustomization.skills", scope=Scope.MANAGED, topic=Topic.PLUGINS, in_schemastore=False),
+    SettingInfo(
+        "worktree.baseRef", type=JsonType.STRING, default="fresh", values=("fresh", "head"), since=Version(2, 1, 133),
+        topic=Topic.AGENTS),
+    SettingInfo(
+        "worktree.bgIsolation", type=JsonType.STRING, default="worktree", values=("worktree", "none"),
+        topic=Topic.AGENTS),
+    SettingInfo("worktree.location", scope=Scope.USER, type=JsonType.STRING, topic=Topic.AGENTS, in_schemastore=False),
+    SettingInfo("worktree.sparsePaths", type=JsonType.ARRAY, since=Version(2, 1, 76), topic=Topic.AGENTS),
+    SettingInfo("worktree.symlinkDirectories", type=JsonType.ARRAY, topic=Topic.AGENTS),
+    SettingInfo(
+        "sandbox.enabledPlatforms", scope=Scope.MANAGED, type=JsonType.ARRAY,
+        values=("macos", "linux", "wsl", "windows"), in_docs=False),
+)}
 
 
-__all__ = ["KeyEnum", "SettingKey", "EnvVar"]
+def setting_info(path: str) -> SettingInfo | None:
+    """최상위 키 또는 중첩 경로("sandbox.bwrapPath")의 SettingInfo. 모르는 경로는 None."""
+    member = SettingKey._value2member_map_.get(path)
+    return member.info if isinstance(member, SettingKey) else NESTED_SETTINGS.get(path)
+
+
+__all__ = ["KeyEnum", "SettingInfo", "SettingKey", "EnvVar", "NESTED_SETTINGS", "setting_info"]

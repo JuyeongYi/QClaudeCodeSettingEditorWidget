@@ -8,7 +8,8 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from ..i18n import tr
 from ..schema import JsonSchema
-from .base import INVALID_STYLE, BaseEditor
+from ..constants import INVALID_STYLE
+from .base import BaseEditor
 
 INT32_MIN, INT32_MAX = -2_147_483_648, 2_147_483_647
 

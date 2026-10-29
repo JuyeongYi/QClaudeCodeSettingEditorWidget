@@ -1,7 +1,7 @@
 """노출되지 않은 키의 API 우회 차단 테스트."""
 import pytest
 
-from qclaudecodesettingeditorwidget import Category, EnvVar, HiddenKeyError, QClaudeCodeSettingEditorWidget, SettingKey
+from qclaudecodesettingeditorwidget import Category, EnvVar, HiddenKeyError, QClaudeCodeSettingEditorWidget, Scope, SettingKey
 
 
 @pytest.fixture
@@ -73,8 +73,8 @@ def test_json_page_apply_cannot_change_hidden_keys(qtbot, tmp_path):
     assert w._json_error.text() == "" and w.settings()["model"] == "haiku"
 
 
-def test_managed_only_hidden_keys_and_nested_paths_are_rejected(qtbot):
-    w = QClaudeCodeSettingEditorWidget(language="en")  # showManagedOnly=False
+def test_out_of_scope_keys_and_nested_paths_are_rejected(qtbot):
+    w = QClaudeCodeSettingEditorWidget(language="en")  # targetScope=USER
     qtbot.addWidget(w)
     assert not w.isKeyExposed(SettingKey.claudeMd)
     with pytest.raises(HiddenKeyError):
@@ -87,14 +87,14 @@ def test_managed_only_hidden_keys_and_nested_paths_are_rejected(qtbot):
     assert w.settings() == {}
     w.setSettingValue(SettingKey.sandbox, {"enabled": True})  # 비관리형 경로만이면 허용
     assert w.settings() == {"sandbox": {"enabled": True}}
-    w.setShowManagedOnly(True)
+    w.setTargetScope(Scope.ANY_FILE)
     w.setSettingValue(SettingKey.claudeMd, "x")
     w.setSettingValue(SettingKey.sandbox, {"enabledPlatforms": ["linux"]})
     assert w.settings() == {"sandbox": {"enabledPlatforms": ["linux"]}, "claudeMd": "x"}
 
 
 def test_full_widget_allows_everything(qtbot):
-    w = QClaudeCodeSettingEditorWidget(language="en", showManagedOnly=True)
+    w = QClaudeCodeSettingEditorWidget(language="en", targetScope=Scope.ANY_FILE)
     qtbot.addWidget(w)
     w.UpdateSetting({"claudeMd": "x", "permissions": {"deny": ["Bash"]}, "env": {"A": "1"}, "futureKey": [1]})
     assert w.settings() == {"permissions": {"deny": ["Bash"]}, "env": {"A": "1"}, "claudeMd": "x", "futureKey": [1]}

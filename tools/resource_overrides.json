@@ -1,0 +1,131 @@
+{
+ "_comment": [
+  "refresh_resources.py 가 생성 결과 위에 마지막으로 덮어쓰는 손 보정 (갱신해도 유지된다).",
+  "settings.<경로>: SettingInfo 필드(scope 는 'user|managed' 문자열, since/removed/deprecated_since 는 버전 문자열) + schema(그 경로의 JSON 스키마 — 주입 또는 교체).",
+  "env.<NAME>: env-vars.json 항목 필드(description, values, inSchema, inDocs …). 공식 스키마·문서에 아직 없는 변수를 여기 둔다."
+ ],
+ "settings": {
+  "taskOutputMaxChars": {
+   "_note": "v2.1.277 에서 제거되어 문서에 Type 이 없다. CHANGELOG: TaskOutput 도구 출력 글자 수 상한.",
+   "schema": {"type": "integer", "minimum": 1}
+  },
+  "modelPicker": {
+   "schema": {
+    "type": "object",
+    "properties": {
+     "options": {
+      "type": "array",
+      "description": "The rows the picker shows, in this order.",
+      "items": {
+       "type": "object",
+       "required": ["model"],
+       "properties": {
+        "model": {"type": "string", "description": "Model alias or ID the row selects."},
+        "label": {"type": "string", "description": "Row title. Defaults to the built-in name or the model ID."},
+        "description": {"type": "string", "description": "Second line shown under the label."},
+        "behavesAs": {"type": "string", "description": "Built-in model whose capabilities this row's model follows."}
+       }
+      }
+     },
+     "replaceBuiltInOptions": {"type": "boolean", "default": false, "description": "Show only these rows (plus Default and the current model) instead of adding them after the built-in lineup."}
+    }
+   }
+  },
+  "modelPricing": {
+   "schema": {
+    "type": "object",
+    "properties": {
+     "multiplier": {"type": "number", "minimum": 0, "maximum": 10, "description": "Scales every cost Claude Code computes. Below 1 is a discount, above 1 a markup."},
+     "overrides": {
+      "type": "object",
+      "description": "USD-per-million-token rates per model ID; all four rates required.",
+      "additionalProperties": {
+       "type": "object",
+       "required": ["input", "output", "cacheRead", "cacheWrite"],
+       "properties": {
+        "input": {"type": "number", "minimum": 0, "maximum": 10000},
+        "output": {"type": "number", "minimum": 0, "maximum": 10000},
+        "cacheRead": {"type": "number", "minimum": 0, "maximum": 10000},
+        "cacheWrite": {"type": "number", "minimum": 0, "maximum": 10000}
+       }
+      }
+     }
+    }
+   }
+  },
+  "modelSettings": {
+   "schema": {
+    "type": "object",
+    "additionalProperties": {
+     "type": "object",
+     "properties": {
+      "effortLevel": {"type": "string", "enum": ["low", "medium", "high", "xhigh"]},
+      "maxEffortLevel": {"type": "string", "enum": ["low", "medium", "high", "xhigh", "max"], "description": "The highest effort level the model may run at."},
+      "autoCompactWindow": {
+       "description": "Tokens from 100000 to 1000000, or \"auto\" for the window tuned for the model.",
+       "anyOf": [{"type": "integer", "minimum": 100000, "maximum": 1000000}, {"const": "auto"}]
+      }
+     }
+    }
+   }
+  },
+  "spellcheck": {
+   "schema": {
+    "type": "object",
+    "properties": {
+     "enabled": {"type": "boolean"},
+     "checker": {"type": "string", "enum": ["auto", "aspell", "hunspell", "ispell"], "default": "auto"},
+     "language": {"type": "string", "description": "Dictionary name passed to the checker."},
+     "color": {"type": "string", "description": "Terminal color name, #rrggbb, rgb(r,g,b), ansi256(n), or ansi:<name>."}
+    }
+   }
+  },
+  "sshHostCommands": {
+   "schema": {
+    "type": "array",
+    "items": {
+     "type": "object",
+     "required": ["id", "name", "command"],
+     "properties": {
+      "id": {"type": "string"},
+      "name": {"type": "string"},
+      "command": {"type": "string", "description": "Program and plain arguments; Desktop starts it without a shell."},
+      "sshIdentityFile": {"type": "string"},
+      "startDirectory": {"type": "string"}
+     }
+    }
+   }
+  },
+  "sandbox.credentials.awsPairs": {
+   "schema": {
+    "type": "array",
+    "items": {
+     "type": "object",
+     "required": ["accessKeyIdVar", "secretAccessKeyVar"],
+     "properties": {
+      "accessKeyIdVar": {"type": "string"},
+      "secretAccessKeyVar": {"type": "string"},
+      "sessionTokenVar": {"type": "string"}
+     }
+    }
+   }
+  },
+  "sandbox.credentials.sigv4": {
+   "schema": {
+    "type": "object",
+    "properties": {
+     "streaming": {"type": "string", "enum": ["deny", "passthrough"]},
+     "presigned": {"type": "string", "enum": ["deny", "passthrough"]},
+     "sigv4a": {"type": "string", "enum": ["deny", "passthrough"]}
+    }
+   }
+  }
+ },
+ "env": {
+  "CLAUDE_CODE_ENABLE_FUNCTION_HOOKS": {
+   "_note": "Claude Mods(Function hook) 활성화 플래그. 공식 스키마·문서에는 아직 미등재.",
+   "description": "Enable Claude Mods (function hooks)",
+   "values": ["0", "1"]
+  }
+ }
+}

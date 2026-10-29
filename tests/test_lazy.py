@@ -1,14 +1,14 @@
 """페이지·env 지연 구축: 생성 비용과 settings()/setSettings() 의미 불변."""
 import time
 
-from qclaudecodesettingeditorwidget import Category, QClaudeCodeSettingEditorWidget, load_schema
+from qclaudecodesettingeditorwidget import Category, QClaudeCodeSettingEditorWidget, Scope, load_schema
 
 SAMPLE = {"model": "opus", "permissions": {"deny": ["Bash"]}, "sandbox": {"enabled": True},
           "claudeMd": "org", "env": {"API_TIMEOUT_MS": "1"}, "futureKey": [1]}
 
 
 def test_only_first_page_is_built_at_construction(qtbot):
-    w = QClaudeCodeSettingEditorWidget(language="en", showManagedOnly=True)
+    w = QClaudeCodeSettingEditorWidget(language="en", targetScope=Scope.ANY_FILE)
     qtbot.addWidget(w)
     assert [p.built for p in w._pages] == [True] + [False] * (len(w._pages) - 1)
     assert set(w._rows) == set(w._pages[0].keys)
@@ -26,7 +26,7 @@ def test_construction_is_fast(qtbot):
 
 
 def test_settings_roundtrip_without_building_pages(qtbot):
-    w = QClaudeCodeSettingEditorWidget(language="en", showManagedOnly=True)
+    w = QClaudeCodeSettingEditorWidget(language="en", targetScope=Scope.ANY_FILE)
     qtbot.addWidget(w)
     w.setSettings(SAMPLE)
     assert not w._pages[2].built and w._env is None
@@ -42,7 +42,7 @@ def test_settings_roundtrip_without_building_pages(qtbot):
 
 
 def test_building_a_page_moves_pending_into_rows(qtbot):
-    w = QClaudeCodeSettingEditorWidget(language="en", showManagedOnly=True)
+    w = QClaudeCodeSettingEditorWidget(language="en", targetScope=Scope.ANY_FILE)
     qtbot.addWidget(w)
     w.setSettings(SAMPLE)
     row = w.rowFor("permissions")                          # 페이지 구축 유발
@@ -61,9 +61,9 @@ def test_building_a_page_moves_pending_into_rows(qtbot):
 
 
 def test_hidden_managed_and_filters_work_on_unbuilt_pages(qtbot):
-    w = QClaudeCodeSettingEditorWidget(language="en")        # 관리형 숨김
+    w = QClaudeCodeSettingEditorWidget(language="en")        # 대상 USER: 관리형 전용 키 숨김
     qtbot.addWidget(w)
-    assert "claudeMd" in w.managedOnlyKeys() and not w.isKeyExposed("claudeMd")
+    assert "claudeMd" in w.inapplicableKeys() and not w.isKeyExposed("claudeMd")
     w.setSettings(SAMPLE, trusted=True)
     assert w.settings() == SAMPLE
     idx = w.categoryIds().index("context")
@@ -71,7 +71,7 @@ def test_hidden_managed_and_filters_work_on_unbuilt_pages(qtbot):
     w._search.setText("sandbox")
     assert w._nav.item(w.categoryIds().index("sandbox")).text().endswith("(1)")
     w._search.setText("")
-    w.setCurrentCategory("context")                         # 이제 구축: 관리형 행은 숨겨진 채로
+    w.setCurrentCategory("context")                         # 이제 구축: 대상 밖 행은 숨겨진 채로
     assert w.rowFor("claudeMd").isHidden() and w.rowFor("claudeMd").included()
 
 

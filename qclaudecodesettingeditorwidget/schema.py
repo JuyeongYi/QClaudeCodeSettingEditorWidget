@@ -10,18 +10,16 @@ import re
 from dataclasses import dataclass, field
 from importlib import resources
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
-SCHEMA_RESOURCE = "claude-code-settings.schema.json"
-ENV_RESOURCE = "env-vars.json"
-OVERLAPS_RESOURCE = "overlaps.json"
+from .constants import ENV_KEY, ENV_RESOURCE, OVERLAPS_RESOURCE, RESOURCE_DIR, SCHEMA_RESOURCE, Precedence
 
 JsonSchema = dict[str, Any]
 
 
 # --------------------------------------------------------------------------- 로딩
 def _read_resource(name: str) -> str:
-    return resources.files(__package__).joinpath("resources", name).read_text("utf-8")
+    return resources.files(__package__).joinpath(RESOURCE_DIR, name).read_text("utf-8")
 
 
 def load_schema(path: str | Path | None = None) -> JsonSchema:
@@ -55,7 +53,7 @@ def load_env_registry(path: str | Path | None = None, schema: JsonSchema | None 
             in_docs=bool(e.get("inDocs", False)),
         )
     if schema is not None:  # 스키마가 레지스트리보다 새로울 때를 대비해 병합
-        for name, prop in schema.get("properties", {}).get("env", {}).get("properties", {}).items():
+        for name, prop in schema.get("properties", {}).get(ENV_KEY, {}).get("properties", {}).items():
             info = out.setdefault(name, EnvVarInfo(name=name))
             info.in_schema = True
             if not info.description:
@@ -84,7 +82,7 @@ def overlaps_by_env(overlaps: dict[str, list[dict[str, str]]]) -> dict[str, list
     out: dict[str, list[tuple[str, str]]] = {}
     for key, entries in overlaps.items():
         for e in entries:
-            out.setdefault(e["env"], []).append((key, e.get("precedence", "related")))
+            out.setdefault(e["env"], []).append((key, e.get("precedence", Precedence.RELATED)))
     return out
 
 
@@ -117,44 +115,36 @@ def resolve_ref(node: Any, root: JsonSchema) -> JsonSchema:
 
 
 # --------------------------------------------------------------------------- 유틸
-_MANAGED_ONLY = re.compile(
-    r"^\([^)]*\bmanaged settings?\b[^)]*\)"          # "(Managed settings only)", "(Admin/managed settings only)" ...
-    r"|only honored from managed \(policy\) settings"
-    r"|honored only at the managed policy tier",
-    re.I,
-)
+def find_inapplicable_paths(schema: JsonSchema, value: Any, root: JsonSchema, applicable: Callable[[str], bool],
+                            path: str, norm: str | None = None) -> list[str]:
+    """value 안에서 applicable(경로) 가 False 인 중첩 키의 경로들(예: sandbox.enabledPlatforms).
 
-
-def is_managed_only(schema: JsonSchema) -> bool:
-    """관리형(managed/policy) 설정에서만 유효한 키인지 — 스키마 description 문구로 판별."""
-    return bool(_MANAGED_ONLY.search((schema.get("description") or "").strip()))
-
-
-def find_managed_only_paths(schema: JsonSchema, value: Any, root: JsonSchema, path: str = "") -> list[str]:
-    """value 안에서 관리형 전용 스키마 노드에 해당하는 경로들(예: sandbox.enabledPlatforms). 최상위 키 자체는 검사하지 않는다."""
+    path 는 보고용 경로(배열 원소는 [i]), norm 은 applicable 에 넘기는 편집기 경로 표기
+    (객체 'a.b', dict 값 'a.*', 배열 원소 'a[]'). 최상위 키 자체는 검사하지 않는다.
+    """
     schema = resolve_ref(schema, root)
+    norm = path if norm is None else norm
     out: list[str] = []
     if "anyOf" in schema or "oneOf" in schema:
         for v in variants_of(schema, root):
             if value_matches(v, value, root):
-                return find_managed_only_paths(v, value, root, path)
+                return find_inapplicable_paths(v, value, root, applicable, path, norm)
         return out
     if isinstance(value, dict):
         props = schema.get("properties", {})
         addl = schema.get("additionalProperties")
         for k, v in value.items():
-            child = f"{path}.{k}" if path else str(k)
+            child = f"{path}.{k}"
             if k in props:
-                ps = resolve_ref(props[k], root)
-                if is_managed_only(ps):
+                if not applicable(f"{norm}.{k}"):
                     out.append(child)
                 else:
-                    out += find_managed_only_paths(ps, v, root, child)
+                    out += find_inapplicable_paths(props[k], v, root, applicable, child, f"{norm}.{k}")
             elif isinstance(addl, dict):
-                out += find_managed_only_paths(addl, v, root, child)
+                out += find_inapplicable_paths(addl, v, root, applicable, child, f"{norm}.*")
     elif isinstance(value, list) and isinstance(schema.get("items"), dict):
         for i, v in enumerate(value):
-            out += find_managed_only_paths(schema["items"], v, root, f"{path}[{i}]")
+            out += find_inapplicable_paths(schema["items"], v, root, applicable, f"{path}[{i}]", f"{norm}[]")
     return out
 
 

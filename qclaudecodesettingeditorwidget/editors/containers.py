@@ -6,25 +6,27 @@ from typing import Any
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
+from ..constants import INVALID_STYLE, MUTED, MUTED_COLOR, Precedence
 from ..i18n import describe, join_path, tr
+from ..keys import setting_info
 from ..schema import (
     JsonSchema,
     default_for,
     first_sentence,
-    is_managed_only,
     resolve_ref,
     schema_types,
     value_matches,
     variant_label,
 )
-from .base import INVALID_STYLE, BaseEditor
+from .badges import info_badges
+from .base import BaseEditor
 
 FRAME_STYLE = "QFrame#nested { border-left: 2px solid palette(mid); }"
-MUTED = "color: #8a8a8a;"
 
 
 def precedence_label(precedence: str) -> str:
-    return {"env": tr("env wins"), "setting": tr("setting wins")}.get(precedence, tr("related"))
+    labels: dict[str, str] = {Precedence.ENV: tr("env wins"), Precedence.SETTING: tr("setting wins")}
+    return labels.get(precedence, tr("related"))
 
 
 def _type_badge(schema: JsonSchema) -> str:
@@ -60,7 +62,7 @@ class PropertyRow(QtWidgets.QWidget):
         self.required = required
         self.path = path or key
         self.related: list[dict[str, str]] = list(related or [])  # [{"env", "precedence", "note"}]
-        self.managed_only = is_managed_only(schema)
+        self.info = setting_info(self.path)  # 스코프·버전 메타데이터(keys.py). 모르는 경로면 None
         self._loading = 0
         self.description = describe(self.path, schema.get("description", ""))
 
@@ -80,12 +82,6 @@ class PropertyRow(QtWidgets.QWidget):
 
         badge = QtWidgets.QLabel(_type_badge(schema))
         badge.setStyleSheet(MUTED + " font-size: 90%;")
-        managed_badge = None
-        if self.managed_only:
-            managed_badge = QtWidgets.QLabel(tr("managed"))
-            managed_badge.setToolTip(tr("Only honored in managed (policy) settings"))
-            managed_badge.setStyleSheet("color: #d08a00; font-size: 85%; border: 1px solid #d08a00; "
-                                        "border-radius: 3px; padding: 0 3px;")
 
         self.editor: BaseEditor = create_editor(schema, root, depth + 1, key=key, path=self.path)
         self.editor.changed.connect(self._on_editor_changed)
@@ -95,8 +91,8 @@ class PropertyRow(QtWidgets.QWidget):
         head.addWidget(self.check)
         head.addWidget(self.name_label)
         head.addWidget(badge)
-        if managed_badge is not None:
-            head.addWidget(managed_badge)
+        for info_badge in info_badges(self.info):
+            head.addWidget(info_badge)
         head.addSpacing(8)
         if self.editor.compact:
             head.addWidget(self.editor, 1)
@@ -159,9 +155,9 @@ class PropertyRow(QtWidgets.QWidget):
 
     def _related_html(self) -> str:
         links = ", ".join(
-            f'<a href="{r["env"]}">{r["env"]}</a> <span style="color:#8a8a8a">({precedence_label(r.get("precedence", "related"))})</span>'
+            f'<a href="{r["env"]}">{r["env"]}</a> <span style="color:{MUTED_COLOR}">({precedence_label(r.get("precedence", Precedence.RELATED))})</span>'
             for r in self.related)
-        return f'<span style="color:#8a8a8a">{tr("Related env:")}</span> {links}'
+        return f'<span style="color:{MUTED_COLOR}">{tr("Related env:")}</span> {links}'
 
     # ---- internals
     def _sync_enabled(self) -> None:

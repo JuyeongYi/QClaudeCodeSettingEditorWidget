@@ -27,15 +27,20 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parent.parent
 PKG = ROOT / "qclaudecodesettingeditorwidget"
-LOCALES = PKG / "locales"
-FILE_PREFIX = "qccse_"
-CTX_UI = "qccse"
-CTX_SCHEMA = "schema"
 
 sys.path.insert(0, str(ROOT))
 from qclaudecodesettingeditorwidget import categories  # noqa: E402
+from qclaudecodesettingeditorwidget.constants import (  # noqa: E402
+    CONTEXT_SCHEMA,
+    CONTEXT_UI,
+    ENV_KEY,
+    LOCALE_DIR,
+    LOCALE_FILE_PREFIX,
+    SOURCE_LANG,
+)
 from qclaudecodesettingeditorwidget.schema import load_env_registry, load_schema, resolve_ref  # noqa: E402
 
+LOCALES = PKG / LOCALE_DIR
 _TR_CALL = re.compile(r'\btr\(\s*"((?:[^"\\]|\\.)*)"')
 
 
@@ -71,7 +76,7 @@ def collect_schema_paths(schema: dict[str, Any]) -> dict[str, str]:
             walk(variant, path, depth + 1)
 
     for key, prop in schema.get("properties", {}).items():
-        if key == categories.ENV_KEY:
+        if key == ENV_KEY:
             continue
         walk(prop, key)
     for name, info in load_env_registry(schema=schema).items():
@@ -126,7 +131,7 @@ def write_ts(path: Path, lang: str, contexts: dict[str, list[tuple[str, str, str
 
 def update_language(lang: str, ui_sources: list[str], schema_paths: dict[str, str],
                     imports: dict[str, dict[str, str]] | None = None, keep_vanished: bool = False) -> Path:
-    path = LOCALES / f"{FILE_PREFIX}{lang}.ts"
+    path = LOCALES / f"{LOCALE_FILE_PREFIX}{lang}.ts"
     existing = read_ts(path)
     imports = imports or {}
     contexts: dict[str, list[tuple[str, str, str, bool]]] = {}
@@ -143,8 +148,8 @@ def update_language(lang: str, ui_sources: list[str], schema_paths: dict[str, st
                     rows.append((src, val, "", True))
         contexts[ctx] = rows
 
-    build(CTX_UI, ui_sources, {})
-    build(CTX_SCHEMA, list(schema_paths), schema_paths)
+    build(CONTEXT_UI, ui_sources, {})
+    build(CONTEXT_SCHEMA, list(schema_paths), schema_paths)
     write_ts(path, lang, contexts)
     return path
 
@@ -168,7 +173,7 @@ def compile_qm(ts_path: Path) -> bool:
 
 
 def existing_languages() -> list[str]:
-    return sorted(p.stem[len(FILE_PREFIX):] for p in LOCALES.glob(f"{FILE_PREFIX}*.ts"))
+    return sorted(p.stem[len(LOCALE_FILE_PREFIX):] for p in LOCALES.glob(f"{LOCALE_FILE_PREFIX}*.ts"))
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -197,12 +202,12 @@ def main(argv: list[str] | None = None) -> int:
 
     langs = args.lang or existing_languages()
     for lang in langs:
-        if lang == "en":
+        if lang == SOURCE_LANG:
             continue
         path = update_language(lang, ui_sources, schema_paths, imports.get(lang), args.keep_vanished)
         data = read_ts(path)
-        done_ui = sum(1 for v in data.get(CTX_UI, {}).values() if v)
-        done_schema = sum(1 for v in data.get(CTX_SCHEMA, {}).values() if v)
+        done_ui = sum(1 for v in data.get(CONTEXT_UI, {}).values() if v)
+        done_schema = sum(1 for v in data.get(CONTEXT_SCHEMA, {}).values() if v)
         print(f"{path.name}: ui {done_ui}/{len(ui_sources)}, schema {done_schema}/{len(schema_paths)}")
         if args.compile:
             compile_qm(path)

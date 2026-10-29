@@ -8,12 +8,8 @@ from __future__ import annotations
 
 from enum import IntFlag, auto
 
+from .constants import ENV_ID, ENV_KEY, JSON_ID, OTHER_ID
 from .keys import SettingKey
-
-ENV_KEY = SettingKey.env
-ENV_ID = "env"
-OTHER_ID = "other"
-JSON_ID = "json"
 
 
 class Category(IntFlag):
@@ -34,7 +30,7 @@ class Category(IntFlag):
     AGENTS = auto()
     IDE = auto()
     ADMIN = auto()
-    OTHER = auto()   # 스키마에 새로 생겨 분류되지 않은 키
+    OTHER = auto()   # 스키마·문서 갱신으로 새로 생겨 분류되지 않은 키
     ENV = auto()     # 환경 변수 페이지
     JSON = auto()    # JSON 페이지
     SETTINGS = (AUTH | MODEL | PERMISSIONS | HOOKS | MCP | PLUGINS | SANDBOX | CONTEXT | GIT | UI
@@ -84,16 +80,19 @@ CATEGORIES: list[tuple[str, list[SettingKey]]] = [
     ("auth", [
         SettingKey.apiKeyHelper, SettingKey.awsCredentialExport, SettingKey.awsAuthRefresh, SettingKey.gcpAuthRefresh,
         SettingKey.forceLoginMethod, SettingKey.forceLoginOrgUUID, SettingKey.forceLoginGatewayUrl,
-        SettingKey.otelHeadersHelper, SettingKey.policyHelper,
+        SettingKey.otelHeadersHelper, SettingKey.policyHelper, SettingKey.allowedProviders, SettingKey.gatewayInternalNetworks,
     ]),
     ("model", [
         SettingKey.model, SettingKey.availableModels, SettingKey.enforceAvailableModels, SettingKey.modelOverrides, SettingKey.fallbackModel,
         SettingKey.effortLevel, SettingKey.fastMode, SettingKey.fastModePerSessionOptIn, SettingKey.alwaysThinkingEnabled,
         SettingKey.advisorModel, SettingKey.teammateDefaultModel, SettingKey.autoCompactEnabled,
+        SettingKey.availableModelsMatch, SettingKey.deniedModels, SettingKey.maxEffortLevel, SettingKey.modelPicker,
+        SettingKey.modelPricing, SettingKey.modelSettings, SettingKey.promptCacheTtl, SettingKey.subagentPromptCacheTtl,
+        SettingKey.switchModelsOnFlag, SettingKey.ultracode,
     ]),
     ("permissions", [
         SettingKey.permissions, SettingKey.autoMode, SettingKey.useAutoModeDuringPlan, SettingKey.disableAutoMode,
-        SettingKey.skipDangerousModePermissionPrompt, SettingKey.permissionExplainerEnabled,
+        SettingKey.skipDangerousModePermissionPrompt, SettingKey.skipAutoPermissionPrompt, SettingKey.permissionExplainerEnabled,
         SettingKey.allowManagedPermissionRulesOnly,
     ]),
     ("hooks", [
@@ -103,13 +102,14 @@ CATEGORIES: list[tuple[str, list[SettingKey]]] = [
     ("mcp", [
         SettingKey.enableAllProjectMcpServers, SettingKey.enabledMcpjsonServers, SettingKey.disabledMcpjsonServers,
         SettingKey.allowedMcpServers, SettingKey.deniedMcpServers, SettingKey.allowManagedMcpServersOnly, SettingKey.managedMcpServers,
-        SettingKey.allowAllClaudeAiMcps, SettingKey.disableClaudeAiConnectors,
+        SettingKey.allowAllClaudeAiMcps, SettingKey.disableClaudeAiConnectors, SettingKey.allowClaudeInChromeWithManagedMcp,
     ]),
     ("plugins", [
         SettingKey.enabledPlugins, SettingKey.pluginConfigs, SettingKey.extraKnownMarketplaces, SettingKey.strictKnownMarketplaces,
         SettingKey.blockedMarketplaces, SettingKey.skippedMarketplaces, SettingKey.skippedPlugins, SettingKey.pluginTrustMessage,
         SettingKey.pluginSuggestionMarketplaces, SettingKey.strictPluginOnlyCustomization,
-        SettingKey.channelsEnabled, SettingKey.allowedChannelPlugins,
+        SettingKey.channelsEnabled, SettingKey.allowedChannelPlugins, SettingKey.prependPlugins, SettingKey.appendPlugins,
+        SettingKey.disableCommandPluginSources, SettingKey.syncClaudeAiPlugins, SettingKey.syncClaudeAiSkills,
     ]),
     ("sandbox", [SettingKey.sandbox]),
     ("context", [
@@ -117,6 +117,8 @@ CATEGORIES: list[tuple[str, list[SettingKey]]] = [
         SettingKey.skillOverrides, SettingKey.disableBundledSkills, SettingKey.disableSkillShellExecution,
         SettingKey.skillListingMaxDescChars, SettingKey.skillListingBudgetFraction, SettingKey.plansDirectory, SettingKey.respectGitignore,
         SettingKey.agent, SettingKey.outputStyle, SettingKey.language, SettingKey.fileCheckpointingEnabled, SettingKey.cleanupPeriodDays,
+        SettingKey.desktopSessionCleanupPeriodDays, SettingKey.autoCompactWindow, SettingKey.idleCompaction,
+        SettingKey.bashOutputMaxChars, SettingKey.taskOutputMaxChars,
     ]),
     ("git", [SettingKey.attribution, SettingKey.includeCoAuthoredBy, SettingKey.prUrlTemplate, SettingKey.worktree]),
     ("ui", [
@@ -126,25 +128,30 @@ CATEGORIES: list[tuple[str, list[SettingKey]]] = [
         SettingKey.showClearContextOnPlanAccept, SettingKey.syntaxHighlightingDisabled, SettingKey.verbose, SettingKey.diffTool,
         SettingKey.wheelScrollAccelerationEnabled, SettingKey.autoScrollEnabled, SettingKey.emojiCompletionEnabled, SettingKey.footerLinksRegexes,
         SettingKey.axScreenReader, SettingKey.disableAgentView, SettingKey.externalEditorContext, SettingKey.respondToBashCommands,
-        SettingKey.askUserQuestionTimeout, SettingKey.voice, SettingKey.voiceEnabled,
+        SettingKey.askUserQuestionTimeout, SettingKey.voice, SettingKey.voiceEnabled, SettingKey.maxProseWidth, SettingKey.timeFormat,
+        SettingKey.timeZone, SettingKey.spellcheck, SettingKey.keybindingFlavor, SettingKey.promptSuggestionEnabled,
+        SettingKey.terminalTitleFromRename, SettingKey.autoContinueAtUsageLimit, SettingKey.bashEditDiffEnabled,
+        SettingKey.dialogExpiry,
     ]),
     ("notifications", [
         SettingKey.preferredNotifChannel, SettingKey.agentPushNotifEnabled, SettingKey.inputNeededNotifEnabled, SettingKey.awaySummaryEnabled,
-        SettingKey.feedbackSurveyRate, SettingKey.companyAnnouncements,
+        SettingKey.feedbackSurveyRate, SettingKey.feedbackDrafts, SettingKey.companyAnnouncements,
     ]),
     ("agents", [
         SettingKey.teammateMode, SettingKey.disableWorkflows, SettingKey.workflowKeywordTriggerEnabled, SettingKey.workflowSizeGuideline,
         SettingKey.remoteControlAtStartup, SettingKey.disableRemoteControl, SettingKey.enableArtifact, SettingKey.disableArtifact,
+        SettingKey.enableWorkflows, SettingKey.crossSessionInbound, SettingKey.isolatePeerMachines, SettingKey.remote,
     ]),
     ("ide", [
         SettingKey.autoConnectIde, SettingKey.autoInstallIdeExtension, SettingKey.defaultShell, SettingKey.processWrapper,
         SettingKey.wslInheritsWindowsSettings, SettingKey.skipWebFetchPreflight, SettingKey.browserExternalPageTools,
-        SettingKey.disableBrowserExternalNavigation, SettingKey.disableMobileSimulatorTools,
+        SettingKey.disableBrowserExternalNavigation, SettingKey.disableMobileSimulatorTools, SettingKey.disableDesktopLocalSessions,
     ]),
     ("admin", [
         SettingKey.schema, SettingKey.autoUpdatesChannel, SettingKey.minimumVersion, SettingKey.requiredMinimumVersion, SettingKey.requiredMaximumVersion,
         SettingKey.parentSettingsBehavior, SettingKey.forceRemoteSettingsRefresh, SettingKey.disableDeepLinkRegistration,
         SettingKey.disableSideloadFlags, SettingKey.requireCoworkFullVmSandbox, SettingKey.sshConfigs, SettingKey.sshHostAllowlist,
+        SettingKey.sshHostCommands, SettingKey.managedSourcesBehavior,
     ]),
 ]
 

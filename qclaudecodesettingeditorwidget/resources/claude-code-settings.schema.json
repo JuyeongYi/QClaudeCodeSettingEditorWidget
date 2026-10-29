@@ -2402,7 +2402,7 @@
         }
       },
       "propertyNames": {
-        "pattern": "^[A-Z_][A-Z0-9_]*$"
+        "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
       },
       "additionalProperties": {
         "type": "string",
@@ -2521,6 +2521,10 @@
             ]
           ],
           "uniqueItems": true
+        },
+        "blockReadsOutsideWorkingDirectories": {
+          "type": "boolean",
+          "description": "Make Claude's file tools refuse reads outside your working directories in every permission mode, including bypassPermissions. Claude Code denies Read, Grep, Glob, and LSP calls on those paths and tells Claude to ask you to add the directory with /add-dir. Files Claude Code itself needs stay readable, such as your skills, plugins, rules, agents, commands, and the CLAUDE.md memory file under ~/.claude/. Requires Claude Code v2.1.257 or later."
         }
       },
       "additionalProperties": false,
@@ -3658,6 +3662,21 @@
               "pathPattern"
             ],
             "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "source": {
+                "type": "string",
+                "description": "Identifies the marketplace source type",
+                "const": "skills-dir"
+              }
+            },
+            "required": [
+              "source"
+            ],
+            "additionalProperties": false,
+            "description": "Keeps skills-directory plugins (folders under ~/.claude/skills/ or a project's .claude/skills/ that carry a .claude-plugin/plugin.json) loading while an allowlist is set. Matches no marketplace. See https://code.claude.com/docs/en/plugins/org#keep-skills-directory-plugins-loading"
           }
         ]
       },
@@ -4027,12 +4046,66 @@
               "type": "boolean",
               "description": "Allow mask substitution on plain HTTP requests as well as TLS-terminated HTTPS. On plain HTTP the upstream identity is unverified and the credential travels in cleartext, so leave this off outside trusted test networks. Only honored from user, managed, or CLI --settings settings, not from .claude/settings.json or .claude/settings.local.json (default: false). Requires Claude Code v2.1.199 or later. See https://code.claude.com/docs/en/sandboxing#protect-credentials",
               "default": false
+            },
+            "awsPairs": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "accessKeyIdVar",
+                  "secretAccessKeyVar"
+                ],
+                "properties": {
+                  "accessKeyIdVar": {
+                    "type": "string"
+                  },
+                  "secretAccessKeyVar": {
+                    "type": "string"
+                  },
+                  "sessionTokenVar": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Group masked environment variables that form one AWS credential for SigV4 re-signing when your credential lives in variables with non-standard names. Claude Code links the conventional AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_SESSION_TOKEN trio automatically when you mask their whole values, so you need this key only for other names. Requires Claude Code v2.1.224 or later."
+            },
+            "sigv4": {
+              "type": "object",
+              "properties": {
+                "streaming": {
+                  "type": "string",
+                  "enum": [
+                    "deny",
+                    "passthrough"
+                  ]
+                },
+                "presigned": {
+                  "type": "string",
+                  "enum": [
+                    "deny",
+                    "passthrough"
+                  ]
+                },
+                "sigv4a": {
+                  "type": "string",
+                  "enum": [
+                    "deny",
+                    "passthrough"
+                  ]
+                }
+              },
+              "description": "Choose what the sandbox proxy does with AWS request forms it can't re-sign: streaming for aws-chunked streaming uploads, presigned for presigned URLs, and sigv4a for SigV4A asymmetric signatures. This applies only to requests signed with a masked pair's placeholder access key ID. Requires Claude Code v2.1.224 or later."
             }
           }
         },
         "allowAppleEvents": {
           "type": "boolean",
           "description": "Allow sandboxed commands to send Apple Events on macOS (v2.1.181+). Honored only from user, managed, or CLI settings; project settings cannot enable it. See https://code.claude.com/docs/en/sandboxing#limitations"
+        },
+        "allowNestedUserNamespaces": {
+          "type": "boolean",
+          "description": "Let sandboxed commands on Linux and WSL2 create user namespaces, which Chromium's and Electron's own sandbox, a nested bubblewrap, and unshare need. If you set this key to true, you turn off a security boundary: code from a sandboxed command can end up running outside the sandbox. For rootless Podman or Buildah, use excludedCommands instead, because the sandbox stops them in other ways too. Requires Claude Code v2.1.305 or later.",
+          "default": false
         }
       },
       "additionalProperties": false
@@ -4206,6 +4279,10 @@
               ".cache"
             ]
           ]
+        },
+        "location": {
+          "type": "string",
+          "description": "Choose the folder on a remote machine where Desktop SSH sessions create their worktrees, instead of <project-root>/.claude/worktrees/. Only the desktop app reads this key: --worktree, the EnterWorktree tool, isolated subagents, and background sessions ignore it. Requires Claude Desktop v1.44121.0 or later."
         }
       }
     },
@@ -4466,6 +4543,21 @@
             "required": [
               "source",
               "pathPattern"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Stops skills-directory plugins (folders under ~/.claude/skills/ or a project's .claude/skills/ that carry a .claude-plugin/plugin.json) from loading. Matches no marketplace. See https://code.claude.com/docs/en/plugins/org#blocklist-with-blockedmarketplaces",
+            "properties": {
+              "source": {
+                "type": "string",
+                "const": "skills-dir",
+                "description": "Block skills-directory plugins"
+              }
+            },
+            "required": [
+              "source"
             ]
           }
         ]
@@ -5101,6 +5193,442 @@
     "requireCoworkFullVmSandbox": {
       "type": "boolean",
       "description": "(Managed settings only) Run Claude's tools inside an isolated virtual machine instead of on your Mac. Disables the desktop app's iOS Simulator pane and Claude's simulator tools entirely, so the pane cannot attach a device while it is set. See https://code.claude.com/docs/en/desktop-ios-simulator#turn-off-simulator-access"
+    },
+    "allowClaudeInChromeWithManagedMcp": {
+      "type": "boolean",
+      "description": "Let the built-in Claude in Chrome server run alongside a deployed managed-mcp.json. Without this key, a deployed managed-mcp.json blocks Claude in Chrome in terminal sessions. Requires Claude Code v2.1.282 or later.",
+      "default": false
+    },
+    "allowedProviders": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "anthropic",
+          "bedrock",
+          "vertex",
+          "foundry",
+          "anthropicAws",
+          "mantle",
+          "customEndpoint",
+          "gateway"
+        ]
+      },
+      "description": "List the services a machine may reach Claude through, such as the Anthropic API, Amazon Bedrock, or an LLM gateway. A session on a provider that isn't listed is refused at startup, at login, and when it next contacts the API, so switching to an unlisted provider mid-session is refused too. The refusal message names what selected the provider and the steps to continue. Requires Claude Code v2.1.285 or later."
+    },
+    "appendPlugins": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List the managed plugins whose mods run after every mod a user installs, in the listed order. An id listed in both prependPlugins and appendPlugins is prepended. In managed settings, Claude Code skips an id whose plugin doesn't count as your organization's."
+    },
+    "autoCompactWindow": {
+      "type": "integer",
+      "minimum": 100000,
+      "maximum": 1000000,
+      "description": "Set how full the context window gets before Claude Code compacts automatically."
+    },
+    "autoContinueAtUsageLimit": {
+      "type": "boolean",
+      "description": "After a claude.ai usage limit stops your session, wait in the open session and continue the task automatically after the reset. See Turn automatic continue off. Requires Claude Code v2.1.234 or later.",
+      "default": true
+    },
+    "availableModelsMatch": {
+      "type": "string",
+      "enum": [
+        "prefix",
+        "exact"
+      ],
+      "description": "Choose how availableModels entries match model IDs. By default a model ID entry also permits later versions that extend it, so \"claude-opus-5\" permits Opus 5.5. With \"exact\", each model ID entry permits only the version it names, so a newer version of that model stays blocked until you list it. Requires Claude Code v2.1.283 or later.",
+      "default": "prefix"
+    },
+    "bashEditDiffEnabled": {
+      "type": "boolean",
+      "description": "Choose whether Claude Code records which files changed in a Git repository while a Bash command runs. When it records them, you see their diff in the terminal after the command, and your PostToolUse Bash hooks receive the changed-file list."
+    },
+    "bashOutputMaxChars": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Set how many characters of a successful Bash or PowerShell command's output Claude receives inline. When output passes the limit, Claude Code saves it to a file and Claude receives a short preview plus the file's path. Raise the limit when command output, such as a verbose build or a full test-suite log, routinely overflows the default and you want Claude to read it without opening the file. Requires Claude Code v2.1.261 or later."
+    },
+    "crossSessionInbound": {
+      "type": "string",
+      "enum": [
+        "accept",
+        "hold",
+        "refuse"
+      ],
+      "description": "Choose what this session does with messages arriving from your other Claude Code sessions. When no value applies, Claude Code decides per message from the two sessions' permission-mode classes. Requires Claude Code v2.1.224 or later."
+    },
+    "deniedModels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Block specific models, with or without an availableModels allowlist and even when that list permits them. Claude Code hides a blocked model from the /model picker, and the model can't be selected anywhere availableModels is enforced. A session on the Default option doesn't run a blocked model either, as Block specific models or versions describes. Requires Claude Code v2.1.283 or later."
+    },
+    "desktopSessionCleanupPeriodDays": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Set an age limit in days for the transcripts of sessions you started or most recently continued in Claude Desktop or Cowork. Without this key, Claude Code keeps those transcripts at any age. Claude Code deletes each one once it's older than both this limit and cleanupPeriodDays, so with cleanupPeriodDays at its default of 30, a value of 7 still keeps them 30 days. Cleaned up automatically lists the cases where cleanupPeriodDays applies instead and Claude Code ignores this key. Requires Claude Code v2.1.248 or later.",
+      "default": 0
+    },
+    "dialogExpiry": {
+      "type": "string",
+      "enum": [
+        "60s",
+        "5m",
+        "10m",
+        "never"
+      ],
+      "description": "Set the deadline for dialogs Claude Code forwards to a remote client, such as a Remote Control or SDK host, and for the approval dialog for a held cross-session message. On Claude Code v2.1.236 or later, the same deadline bounds the mid-session Fable usage-credits consent prompt in a session that may have nobody at the terminal. When no answer arrives before the deadline, Claude Code cancels the dialog and continues with its no-action default. Requires Claude Code v2.1.224 or later.",
+      "default": "5m"
+    },
+    "disableCommandPluginSources": {
+      "type": "boolean",
+      "description": "Block the command plugin source, which installs a plugin by running a marketplace-declared command on the user's machine. When you set it to true, Claude Code never runs the command, doesn't install or update command-sourced plugins, and stops loading the ones already installed. Set it to false to allow them explicitly. Whenever it blocks command sources, whether you set it to true or leave it unset under allowManagedHooksOnly, it also blocks marketplace headersHelper commands, except for a marketplace that managed settings themselves declare. Requires Claude Code v2.1.229 or later, and the headersHelper block requires v2.1.238 or later."
+    },
+    "disableDesktopLocalSessions": {
+      "type": "boolean",
+      "description": "Turn off Code sessions that run on the device in the desktop app, for deployments where developers should work on remote machines over SSH."
+    },
+    "enableWorkflows": {
+      "type": "boolean",
+      "description": "Turn dynamic workflows on or off for yourself when your plan's default isn't what you want. Appears in /config as Dynamic workflows, which writes this key to your user settings and removes it again when you toggle back to your plan's default. To turn workflows off for everyone from managed settings, use disableWorkflows instead."
+    },
+    "feedbackDrafts": {
+      "type": "string",
+      "enum": [
+        "notify",
+        "quiet",
+        "off"
+      ],
+      "description": "Control Claude-drafted feedback: whether Claude can queue feedback drafts for you to review, and whether Claude Code shows a card when Claude queues one.",
+      "default": "notify"
+    },
+    "gatewayInternalNetworks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Declare the public IPv4 blocks that your organization numbers its internal network from, so /login accepts a cloud gateway there. Requires Claude Code v2.1.268 or later."
+    },
+    "idleCompaction": {
+      "type": "boolean",
+      "description": "Idle compaction compacts a long conversation that you've stepped away from. Your next message then sends a summary instead of the whole conversation.",
+      "default": true
+    },
+    "isolatePeerMachines": {
+      "type": "boolean",
+      "description": "Require your explicit approval before Claude's SendMessage reaches one of your sessions beyond this machine; see Require approval for cross-machine messages. The approval prompt appears even in bypassPermissions mode."
+    },
+    "keybindingFlavor": {
+      "type": "string",
+      "enum": [
+        "classic",
+        "readline"
+      ],
+      "description": "In v2.1.238 through v2.1.260, setting it to \"readline\" made Ctrl+W delete back to the previous whitespace instead of only the previous word."
+    },
+    "managedSourcesBehavior": {
+      "type": "string",
+      "enum": [
+        "first-wins",
+        "merge"
+      ],
+      "description": "Choose whether Claude Code applies only the highest-priority managed source your organization delivers, or combines every admin source it delivers. By default Claude Code takes the highest-priority source that carries a policy key and ignores the rest. A policy key is any settings key other than this one and wslInheritsWindowsSettings. Under that default, once server-managed settings or an MDM policy deliver a policy key, a managed-settings.json file contributes only the keys Claude Code reads from every admin source. With \"merge\", every admin source you deliver contributes its keys to one combined policy. Requires Claude Code v2.1.242 or later.",
+      "default": "first-wins"
+    },
+    "maxEffortLevel": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "description": "Cap the effort level a session can use, leaving lower levels available. Any higher level runs at the cap instead, including one from /effort, the /model picker, --effort, CLAUDE_CODE_EFFORT_LEVEL, a skill's or subagent's effort frontmatter, or the model's own default. Claude Code applies the cap itself before each request, so it holds on every provider, including Amazon Bedrock, Google Cloud's Agent Platform, and Microsoft Foundry. Requires Claude Code v2.1.267 or later."
+    },
+    "maxProseWidth": {
+      "type": "integer",
+      "minimum": 40,
+      "description": "Cap the width of the prose in Claude's responses so lines stay readable in a wide terminal. Paragraphs, headings, lists, and blockquotes wrap within this many columns, while tables and code blocks keep the full terminal width. Requires Claude Code v2.1.282 or later."
+    },
+    "modelPicker": {
+      "type": "object",
+      "properties": {
+        "options": {
+          "type": "array",
+          "description": "The rows the picker shows, in this order.",
+          "items": {
+            "type": "object",
+            "required": [
+              "model"
+            ],
+            "properties": {
+              "model": {
+                "type": "string",
+                "description": "Model alias or ID the row selects."
+              },
+              "label": {
+                "type": "string",
+                "description": "Row title. Defaults to the built-in name or the model ID."
+              },
+              "description": {
+                "type": "string",
+                "description": "Second line shown under the label."
+              },
+              "behavesAs": {
+                "type": "string",
+                "description": "Built-in model whose capabilities this row's model follows."
+              }
+            }
+          }
+        },
+        "replaceBuiltInOptions": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show only these rows (plus Default and the current model) instead of adding them after the built-in lineup."
+        }
+      },
+      "description": "List the models the /model picker offers, in the order you write them and under labels you choose, so the picker lists the models your organization runs, after the built-in lineup or instead of it. Each row's model is taken verbatim, so it accepts anything --model accepts: an alias such as opus, an Anthropic model ID, or a provider-format ID for Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry, or an LLM gateway. Requires Claude Code v2.1.242 or later."
+    },
+    "modelPricing": {
+      "type": "object",
+      "properties": {
+        "multiplier": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10,
+          "description": "Scales every cost Claude Code computes. Below 1 is a discount, above 1 a markup."
+        },
+        "overrides": {
+          "type": "object",
+          "description": "USD-per-million-token rates per model ID; all four rates required.",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "input",
+              "output",
+              "cacheRead",
+              "cacheWrite"
+            ],
+            "properties": {
+              "input": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "output": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "cacheRead": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "cacheWrite": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 10000
+              }
+            }
+          }
+        }
+      },
+      "description": "Report spend at the rates your organization pays instead of list price. Set it when your organization has contracted rates, so the dollar figures developers see match your bill. Claude Code applies the rates in /usage, the status line, the Agent SDK's total_cost_usd, the --max-budget-usd limit, and the OpenTelemetry cost metric and events. You supply the rates: Claude Code doesn't read them from your contract or the Claude Console. Requires Claude Code v2.1.242 or later."
+    },
+    "modelSettings": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "effortLevel": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          },
+          "maxEffortLevel": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ],
+            "description": "The highest effort level the model may run at."
+          },
+          "autoCompactWindow": {
+            "description": "Tokens from 100000 to 1000000, or \"auto\" for the window tuned for the model.",
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 100000,
+                "maximum": 1000000
+              },
+              {
+                "const": "auto"
+              }
+            ]
+          }
+        }
+      },
+      "description": "Save an effort level for each model you use. Requires Claude Code v2.1.251 or later."
+    },
+    "prependPlugins": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List the managed plugins whose mods run before every mod a user installs, in the listed order. When you set this key in managed settings, name sec-default@builtin in the list to keep the built-in guard. In managed settings, Claude Code skips an id whose plugin doesn't count as your organization's. See Install your organization's mods and set the order for those conditions and for how the two ordering keys work together."
+    },
+    "promptCacheTtl": {
+      "type": "string",
+      "enum": [
+        "5m",
+        "1h"
+      ],
+      "description": "Choose how long the prompt cache holds the main conversation. This key applies to your interactive, -p, and Agent SDK turns, together with the helpers Claude Code runs inline with them. The one-hour lifetime keeps the cache warm across longer breaks, and the API bills each cache write at a higher rate than at the five-minute lifetime. Requires Claude Code v2.1.242 or later."
+    },
+    "promptSuggestionEnabled": {
+      "type": "boolean",
+      "description": "Show or hide prompt suggestions, the grayed-out predictions that appear in your prompt input. Set it to false, or turn off Prompt suggestions in /config, to hide them.",
+      "default": true
+    },
+    "remote": {
+      "type": "object",
+      "properties": {
+        "defaultEnvironmentId": {
+          "type": "string",
+          "description": "Pick the default cloud environment for cloud sessions you create from the CLI, such as with claude --cloud. Claude Code writes this key to your user settings when you pick an environment with /remote-env."
+        }
+      }
+    },
+    "skipAutoPermissionPrompt": {
+      "type": "boolean",
+      "description": "Skip the one-time notice describing auto mode that Claude Code shows when you first enter auto mode yourself, for example through your own settings or the mode selector, rather than when the built-in default starts a session in it. Claude Code shows that notice once and then records that it was shown, so this key only matters where the notice hasn't appeared yet."
+    },
+    "spellcheck": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "checker": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "aspell",
+            "hunspell",
+            "ispell"
+          ],
+          "default": "auto"
+        },
+        "language": {
+          "type": "string",
+          "description": "Dictionary name passed to the checker."
+        },
+        "color": {
+          "type": "string",
+          "description": "Terminal color name, #rrggbb, rgb(r,g,b), ansi256(n), or ansi:<name>."
+        }
+      },
+      "description": "Underline misspelled words in the prompt input as you type, using a spell checker you install. Claude Code checks only the text in the input box. Check spelling as you type covers installing aspell, hunspell, or ispell and what the checker covers. Requires Claude Code v2.1.235 or later."
+    },
+    "sshHostCommands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "command"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string",
+            "description": "Program and plain arguments; Desktop starts it without a shell."
+          },
+          "sshIdentityFile": {
+            "type": "string"
+          },
+          "startDirectory": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Add SSH connections whose host comes from a command to the Desktop environment selector. When you create a connection or replace its host, Desktop runs the entry's command on your computer and connects to the host that the command prints. Requires Claude Desktop v3.6556.0 or later on macOS or Linux, signed in with a Claude account."
+    },
+    "subagentPromptCacheTtl": {
+      "type": "string",
+      "enum": [
+        "5m",
+        "1h"
+      ],
+      "description": "Choose how long the prompt cache holds the requests Claude Code makes outside the main conversation. This key applies to subagents, workflows, and Claude Code's own background and helper requests, such as compaction and session titles. The one-hour lifetime keeps the cache warm across longer breaks, and the API bills each cache write at a higher rate than at the five-minute lifetime. Requires Claude Code v2.1.242 or later."
+    },
+    "switchModelsOnFlag": {
+      "type": "boolean",
+      "description": "Choose what happens when a safety classifier flags a request: switch to the fallback model and continue, or pause so you can choose between switching and editing the prompt."
+    },
+    "syncClaudeAiPlugins": {
+      "type": "boolean",
+      "description": "Turn off the download of the plugins enabled for your claude.ai account. Claude Code downloads them into ~/.claude/plugins/synced/ at the start of terminal sessions where you sign in with your claude.ai account and in Cowork sessions, and loads each one as <name>@synced. Set false to stop that download and stop loading the plugins it already synced. Claude Code honors only false: true is the same as unset and doesn't turn syncing on where it's otherwise off. Requires Claude Code v2.1.273 or later."
+    },
+    "syncClaudeAiSkills": {
+      "type": "boolean",
+      "description": "Turn off the download of the skills enabled for your claude.ai account. Claude Code downloads them into ~/.claude/skills/synced/ in terminal sessions where you sign in with your claude.ai account, interactive or non-interactive, and in Cowork and cloud sessions. Set false to stop that download and stop loading the skills it already synced. Claude Code honors only false: true is the same as unset and doesn't turn syncing on where it's otherwise off."
+    },
+    "taskOutputMaxChars": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Through v2.1.276, you set this key to the number of characters of a background task's output that Claude received inline when it read the task with the TaskOutput tool."
+    },
+    "terminalTitleFromRename": {
+      "type": "boolean",
+      "description": "Claude Code sets your terminal tab's title. By default it uses a title it generates from the conversation, and once you give the session a name with /rename or --name, the tab shows that name instead. Set this key to false to keep the generated title on the tab even after you name the session. The name itself still applies, so /resume <name> and the session picker find it.",
+      "default": true
+    },
+    "timeFormat": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "auto",
+            "12-hour",
+            "24-hour",
+            "24-hour-utc"
+          ]
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "description": "Choose how Claude Code writes the times it shows in the interface, such as the done 6:05 PM at the end of each turn duration message and the timestamps in the transcript viewer. To pick a preset, run /config and set Time format. Requires Claude Code v2.1.257 or later.",
+      "default": "auto"
+    },
+    "timeZone": {
+      "type": "string",
+      "description": "Show the times in the interface in a time zone other than your system's. Set it to an IANA time zone name, such as \"UTC\" or \"Europe/Dublin\". The times that timeFormat controls then show in this zone. If timeFormat is \"24-hour-utc\", times stay in UTC and Claude Code ignores this key. /config has no row for this key, so set it in a settings file. Requires Claude Code v2.1.257 or later."
+    },
+    "ultracode": {
+      "type": "boolean",
+      "description": "Start sessions with ultracode on. With it on, Claude plans a workflow for each substantive task instead of waiting for you to ask. Claude plans workflows only when dynamic workflows are enabled for you and your model supports xhigh effort. The key doesn't change the session's effort level: ultracode runs at whichever level the session uses. Claude Code reads this key but never writes it: /effort ultracode turns ultracode on for the current session only."
     }
   },
   "title": "Claude Code Settings"

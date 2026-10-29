@@ -5,13 +5,13 @@ from typing import Any
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
+from .constants import ENV_KEY, MUTED
 from .editors.base import BaseEditor
 from .i18n import describe, tr
 from .keys import EnvVar
 from .schema import EnvVarInfo, JsonSchema, first_sentence
 
 COL_SET, COL_NAME, COL_VALUE, COL_DESC = range(4)
-MUTED = "color: #8a8a8a;"
 
 
 class _ValueCell(QtWidgets.QWidget):
@@ -58,7 +58,7 @@ class EnvEditor(BaseEditor):
 
     def __init__(self, schema: JsonSchema, root: JsonSchema, registry: dict[str, EnvVarInfo], parent=None,
                  related: dict[str, list[tuple[str, str]]] | None = None):
-        super().__init__(schema, root, 0, parent, path="env")
+        super().__init__(schema, root, 0, parent, path=ENV_KEY)
         self._registry = registry
         self._related = related or {}  # env 이름 → [(settingKey, precedence)]
         self._rows: dict[str, int] = {}

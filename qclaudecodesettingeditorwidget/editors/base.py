@@ -8,8 +8,6 @@ from PySide6 import QtCore, QtWidgets
 
 from ..schema import JsonSchema, default_for
 
-INVALID_STYLE = "border: 1px solid #d33; background: #fff4f4;"
-
 
 class BaseEditor(QtWidgets.QWidget):
     """스키마 노드 하나를 편집하는 위젯.

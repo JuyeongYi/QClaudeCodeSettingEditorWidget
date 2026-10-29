@@ -1,6 +1,6 @@
 [project]
 name = "qclaudecodesettingeditorwidget"
-version = "0.1.0"
+dynamic = ["version"]  # = 번들 메타데이터를 생성한 Claude Code 버전 (_version.py)
 description = "PySide6 widget that edits every key of Claude Code settings.json (schema-driven, incl. env variables)"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -19,8 +19,14 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 include = ["qclaudecodesettingeditorwidget*"]
 
+[tool.setuptools.dynamic]
+version = {attr = "qclaudecodesettingeditorwidget._version.__version__"}
+
 [tool.setuptools.package-data]
 qclaudecodesettingeditorwidget = ["resources/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.pyright]
+extraPaths = ["tools"]

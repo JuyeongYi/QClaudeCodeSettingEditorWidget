@@ -20,13 +20,9 @@ from typing import Any
 
 from PySide6 import QtCore
 
-CONTEXT_UI = "qccse"
-CONTEXT_SCHEMA = "schema"
-FILE_PREFIX = "qccse_"
-SOURCE_LANG = "en"
-PACKAGE_LOCALE_DIR = Path(__file__).resolve().parent / "locales"
-ENV_LOCALE_DIR = "QCCSE_LOCALE_DIR"
-ENV_LANG = "QCCSE_LANG"
+from .constants import CONTEXT_SCHEMA, CONTEXT_UI, ENV_LANG, ENV_LOCALE_DIR, LOCALE_DIR, LOCALE_FILE_PREFIX, SOURCE_LANG
+
+PACKAGE_LOCALE_DIR = Path(__file__).resolve().parent / LOCALE_DIR
 
 _extra_dirs: list[Path] = []
 _current: str | None = None
@@ -93,8 +89,8 @@ def language_files(lang: str) -> list[Path]:
     """lang 의 번역 파일들(디렉터리 우선순위 순). 같은 디렉터리에 .qm 과 .ts 가 있으면 .qm."""
     out: list[Path] = []
     for d in locale_dirs():
-        qm = d / f"{FILE_PREFIX}{lang}.qm"
-        ts = d / f"{FILE_PREFIX}{lang}.ts"
+        qm = d / f"{LOCALE_FILE_PREFIX}{lang}.qm"
+        ts = d / f"{LOCALE_FILE_PREFIX}{lang}.ts"
         if qm.is_file():
             out.append(qm)
         elif ts.is_file():
@@ -106,8 +102,8 @@ def available_languages() -> list[str]:
     langs = {SOURCE_LANG}
     for d in locale_dirs():
         if d.is_dir():
-            for f in list(d.glob(f"{FILE_PREFIX}*.qm")) + list(d.glob(f"{FILE_PREFIX}*.ts")):
-                langs.add(f.stem[len(FILE_PREFIX):])
+            for f in list(d.glob(f"{LOCALE_FILE_PREFIX}*.qm")) + list(d.glob(f"{LOCALE_FILE_PREFIX}*.ts")):
+                langs.add(f.stem[len(LOCALE_FILE_PREFIX):])
     return sorted(langs)
 
 

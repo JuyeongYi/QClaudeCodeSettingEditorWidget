@@ -3,7 +3,19 @@
   {
    "env": "CLAUDE_CODE_DISABLE_ADVISOR_TOOL",
    "precedence": "related",
-   "note": "CLAUDE_CODE_DISABLE_ADVISOR_TOOL turns the advisor off, and this key can't turn it back on json settings.json { \"advisorModel\": \"opus\" } The key has no effect on Amazon Bedrock, Google Cloud's Agent Platform, or Microsoft Foundry."
+   "note": "CLAUDE_CODE_DISABLE_ADVISOR_TOOL turns the advisor off, and this key can't turn it back on json settings.json { \"advisorModel\": \"opus\" } The key has no effect on providers where the advisor isn't available, such as Amazon Bedrock and Claude Platform on AWS."
+  }
+ ],
+ "allowedProviders": [
+  {
+   "env": "ANTHROPIC_BASE_URL",
+   "precedence": "related",
+   "note": "A session that runs Mantle alongside the Invoke API uses both providers, so list \"bedrock\" and \"mantle\" together for it \"customEndpoint\": the Anthropic API or a cloud provider's API sent to another host, such as an LLM gateway named by ANTHROPIC_BASE_URL or by a provider's endpoint variable such as ANTHROPIC_BEDROCK_BASE_URL."
+  },
+  {
+   "env": "ANTHROPIC_BEDROCK_BASE_URL",
+   "precedence": "related",
+   "note": "A session that runs Mantle alongside the Invoke API uses both providers, so list \"bedrock\" and \"mantle\" together for it \"customEndpoint\": the Anthropic API or a cloud provider's API sent to another host, such as an LLM gateway named by ANTHROPIC_BASE_URL or by a provider's endpoint variable such as ANTHROPIC_BEDROCK_BASE_URL."
   }
  ],
  "alwaysThinkingEnabled": [
@@ -25,18 +37,18 @@
    "note": "Scope : Any file Type : string, a shell command line Default : unset, so Claude Code doesn't run a helper json settings.json { \"apiKeyHelper\": \"/bin/generate_temp_api_key.sh\" } Claude Code caches the value and reruns the command in these cases: After the cache lifetime, five minutes by default or the interval you set with CLAUDE_CODE_API_KEY_HELPER_TTL_MS."
   }
  ],
- "askUserQuestionTimeout": [
-  {
-   "env": "CLAUDE_AFK_TIMEOUT_MS",
-   "precedence": "related",
-   "note": "Scope : User or managed Type : string, one of \"60s\", \"5m\", \"10m\", or \"never\" Default : \"never\" Per-session overrides : CLAUDE_AFK_TIMEOUT_MS takes precedence over this key for one session json settings.json { \"askUserQuestionTimeout\": \"5m\" } Appears in /config as Question auto-continue timeout , which writes this key to user settings; Claude Code hides the row while managed settings or the --setti"
-  }
- ],
  "autoCompactEnabled": [
   {
    "env": "DISABLE_AUTO_COMPACT",
    "precedence": "env",
    "note": "Scope : Any file Type : Boolean true: Claude Code compacts the conversation automatically when context approaches the limit false: Claude Code doesn't compact automatically Default : true Per-session overrides : DISABLE_AUTO_COMPACT turns auto-compact off for one session; whichever of the two turns it off, the other can't turn it back on json settings.json { \"autoCompactEnabled\": false } The manua"
+  }
+ ],
+ "autoCompactWindow": [
+  {
+   "env": "CLAUDE_CODE_AUTO_COMPACT_WINDOW",
+   "precedence": "related",
+   "note": "Claude Code caps the value at your model's context window; the models overview lists each model's window Default : unset, so Claude Code picks a window tuned for your model Per-session overrides : --autocompact takes precedence over this key for one session, and CLAUDE_CODE_AUTO_COMPACT_WINDOW takes precedence over both unless Claude Code ignores the variable's value json settings.json { \"autoComp"
   }
  ],
  "autoConnectIde": [
@@ -79,11 +91,32 @@
    "note": "Scope : Any file Type : Boolean true: you see a one-line session recap when you return after a few minutes away false: Claude Code shows no recap Default : unset, so the recap is on Per-session overrides : CLAUDE_CODE_ENABLE_AWAY_SUMMARY takes precedence over this key for one session, in either direction json settings.json { \"awaySummaryEnabled\": false } Claude Code never shows the recap in non-in"
   }
  ],
+ "awsAuthRefresh": [
+  {
+   "env": "CLAUDE_CODE_DISABLE_AUTH_REFRESH_LOCK",
+   "precedence": "related",
+   "note": "To turn this off, set CLAUDE_CODE_DISABLE_AUTH_REFRESH_LOCK to 1."
+  }
+ ],
  "axScreenReader": [
   {
    "env": "CLAUDE_AX_SCREEN_READER",
    "precedence": "related",
-   "note": "Scope : Any file Type : Boolean true: Claude Code renders flat text without decorative borders or animations, using the classic renderer false: Claude Code renders normally Default : unset, so screen-reader mode is off Per-session overrides : --ax-screen-reader takes precedence over CLAUDE_AX_SCREEN_READER, and both take precedence over this key for one session json settings.json { \"axScreenReader"
+   "note": "Type : Boolean true: Claude Code renders flat text without decorative borders or animations, using the classic renderer false: Claude Code renders normally Default : unset, so screen-reader mode is off Per-session overrides : --ax-screen-reader takes precedence over CLAUDE_AX_SCREEN_READER, and both take precedence over this key for one session json settings.json { \"axScreenReader\": true }"
+  }
+ ],
+ "bashEditDiffEnabled": [
+  {
+   "env": "CLAUDE_CODE_BASH_EDIT_DIFF",
+   "precedence": "env",
+   "note": "Type : Boolean Default : unset, so Claude Code records changes in auto mode and bypassPermissions mode when it directs Claude to edit files through Bash Per-session overrides : CLAUDE_CODE_BASH_EDIT_DIFF takes precedence over this key for one session json settings.json { \"bashEditDiffEnabled\": true }"
+  }
+ ],
+ "bashOutputMaxChars": [
+  {
+   "env": "BASH_MAX_OUTPUT_LENGTH",
+   "precedence": "related",
+   "note": "Claude Code clamps the value into the range 4000 to 128000 Default : unset, so Claude receives up to 30,000 characters inline json settings.json { \"bashOutputMaxChars\": 100000 } When you set this key, Claude Code ignores the BASH_MAX_OUTPUT_LENGTH environment variable."
   }
  ],
  "defaultShell": [
@@ -91,6 +124,13 @@
    "env": "CLAUDE_CODE_USE_POWERSHELL_TOOL",
    "precedence": "related",
    "note": "In Amazon Bedrock, Google Cloud's Agent Platform, and Microsoft Foundry sessions, and on macOS, Linux, and WSL, set CLAUDE_CODE_USE_POWERSHELL_TOOL=1 to turn the tool on."
+  }
+ ],
+ "dialogExpiry": [
+  {
+   "env": "CLAUDE_CODE_USER_DIALOG_TIMEOUT_MS",
+   "precedence": "env",
+   "note": "Scope : User or managed Type : string, one of \"60s\", \"5m\", \"10m\", or \"never\", which disables the deadline Default : \"5m\" Per-session overrides : CLAUDE_CODE_USER_DIALOG_TIMEOUT_MS takes precedence over this key for one session json settings.json { \"dialogExpiry\": \"10m\" } Permission prompts and AskUserQuestion questions use their own flows and aren't governed by this deadline."
   }
  ],
  "disableAgentView": [
@@ -104,7 +144,7 @@
   {
    "env": "CLAUDE_CODE_DISABLE_ARTIFACT",
    "precedence": "related",
-   "note": "Before v2.1.242, a higher-precedence file could override a lower file's true rather than the key acting as a lock false: ignored; to leave the tool on, remove the key Default : unset, so the tool follows your account's availability Per-session overrides : CLAUDE_CODE_DISABLE_ARTIFACT set to 1 turns the tool off for one session json settings.json { \"disableArtifact\": true } Disable artifacts lists "
+   "note": "Scope : Any file Type : Boolean true: Claude Code turns the Artifact tool off for every session the file applies to, and no other file turns it back on false: ignored; to leave the tool on, remove the key Default : unset, so the tool follows your account's availability Per-session overrides : CLAUDE_CODE_DISABLE_ARTIFACT set to 1 turns the tool off for one session json settings.json { \"disableArti"
   }
  ],
  "disableBundledSkills": [
@@ -124,6 +164,13 @@
    "env": "ENABLE_CLAUDEAI_MCP_SERVERS",
    "precedence": "related",
    "note": "Scope : Any file Type : Boolean true: Claude Code neither fetches nor connects those connectors false: the same as unset; Claude Code fetches your connectors unless another settings file or ENABLE_CLAUDEAI_MCP_SERVERS turns them off Default : false, so Claude Code fetches your connectors Per-session overrides : ENABLE_CLAUDEAI_MCP_SERVERS set to false turns connectors off for one session; whicheve"
+  }
+ ],
+ "disableSideloadFlags": [
+  {
+   "env": "CLAUDE_CODE_PLUGIN_DIRS",
+   "precedence": "related",
+   "note": "disableSideloadFlags also rejects plugin folders from these sources: The CLAUDE_CODE_PLUGIN_DIRS environment variable : when the variable names a plugin folder, Claude Code exits at startup with an error that names the variable and says to unset it."
   }
  ],
  "disableWorkflows": [
@@ -147,11 +194,25 @@
    "note": "Type : Boolean false: Claude Code turns the Artifact tool off for every session the file applies to true: the same as leaving the key unset, because it never overrides a false from another file, from CLAUDE_CODE_DISABLE_ARTIFACT, or from your organization's admin setting Default : unset, so the tool follows your account's availability json settings.json { \"enableArtifact\": false } While a source o"
   }
  ],
+ "enableWorkflows": [
+  {
+   "env": "CLAUDE_CODE_DISABLE_WORKFLOWS",
+   "precedence": "related",
+   "note": "Scope : Any file Type : Boolean true: Claude Code turns dynamic workflows on for you false: Claude Code turns dynamic workflows off for you Default : unset, so workflows are on unless you're on the Pro plan, where they're off Per-session overrides : CLAUDE_CODE_DISABLE_WORKFLOWS turns workflows off for one session, and true here can't turn them back on while it's set json settings.json { \"enableWo"
+  }
+ ],
  "fastMode": [
   {
    "env": "CLAUDE_CODE_DISABLE_FAST_MODE",
    "precedence": "related",
    "note": "Scope : Any file Type : Boolean true: Claude Code turns fast mode on for sessions where it's available false: fast mode stays off Default : unset, so fast mode is off Per-session overrides : CLAUDE_CODE_DISABLE_FAST_MODE turns fast mode off for one session, and this key can't turn it back on json settings.json { \"fastMode\": true }"
+  }
+ ],
+ "feedbackDrafts": [
+  {
+   "env": "CLAUDE_CODE_SEND_FEEDBACK",
+   "precedence": "related",
+   "note": "You see the count of queued drafts in the prompt footer and review them in /feedback \"off\": Claude Code removes the SendFeedback tool, so Claude can't queue drafts Default : \"notify\" Per-session overrides : CLAUDE_CODE_SEND_FEEDBACK set to 0 turns the feature off for one session json settings.json { \"feedbackDrafts\": \"quiet\" } Appears in /config as Claude-drafted feedback , which writes this key t"
   }
  ],
  "feedbackSurveyRate": [
@@ -173,11 +234,39 @@
    "note": "The SDK turns checkpointing on with its enableFileCheckpointing option, and a bare -p run needs CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING=true."
   }
  ],
+ "forceLoginMethod": [
+  {
+   "env": "CLAUDE_CODE_USE_BEDROCK",
+   "precedence": "related",
+   "note": "If you select a cloud provider through CLAUDE_CODE_USE_BEDROCK or a similar environment variable, the session doesn't need the gateway sign-in."
+  }
+ ],
+ "gcpAuthRefresh": [
+  {
+   "env": "CLAUDE_CODE_DISABLE_AUTH_REFRESH_LOCK",
+   "precedence": "related",
+   "note": "To turn this off, set CLAUDE_CODE_DISABLE_AUTH_REFRESH_LOCK to 1."
+  }
+ ],
+ "idleCompaction": [
+  {
+   "env": "DISABLE_AUTO_COMPACT",
+   "precedence": "related",
+   "note": "Scope : Any file Type : Boolean true: Claude Code compacts idle conversations that meet the conditions false: Claude Code doesn't compact while your session is idle Default : true Per-session overrides : DISABLE_AUTO_COMPACT turns idle compaction off along with auto-compaction json settings.json { \"idleCompaction\": false } To turn idle compaction off or on from inside a terminal session, run /conf"
+  }
+ ],
  "includeGitInstructions": [
   {
    "env": "CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS",
    "precedence": "env",
-   "note": "Cloud sessions never include the snapshot false: Claude Code leaves both out Default : true Per-session overrides : CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS takes precedence over this key for one session json settings.json { \"includeGitInstructions\": false }"
+   "note": "Cloud sessions never include the snapshot false: Claude Code leaves both out Default : true Per-session overrides : CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS takes precedence over this key for one session json settings.json { \"includeGitInstructions\": false } If you replace the system prompt in non-interactive mode or the Agent SDK, the session starts without the snapshot even when this key is true: -p"
+  }
+ ],
+ "maxEffortLevel": [
+  {
+   "env": "CLAUDE_CODE_EFFORT_LEVEL",
+   "precedence": "related",
+   "note": "Any higher level runs at the cap instead, including one from /effort, the /model picker, --effort, CLAUDE_CODE_EFFORT_LEVEL, a skill's or subagent's effort frontmatter, or the model's own default."
   }
  ],
  "model": [
@@ -212,6 +301,13 @@
    "note": "For finer control, use environment variables: ANTHROPIC_MODEL (runtime override), ANTHROPIC_DEFAULT_OPUS_MODEL, ANTHROPIC_DEFAULT_SONNET_MODEL, ANTHROPIC_DEFAULT_HAIKU_MODEL (per-class pinning), CLAUDE_CODE_SUBAGENT_MODEL (subagent model)."
   }
  ],
+ "modelPricing": [
+  {
+   "env": "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST",
+   "precedence": "related",
+   "note": "A host application that embeds Claude Code and sets CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST can supply a table of its own through the SDK managedSettings option, which Claude Code uses only when no managed source sets the key and only in Claude Code v2.1.246 or later."
+  }
+ ],
  "otelHeadersHelper": [
   {
    "env": "CLAUDE_CODE_ENABLE_TELEMETRY",
@@ -231,6 +327,35 @@
    "note": "Scope : User or managed Type : string, the launcher command as an argv prefix, such as an absolute path with optional arguments Default : unset, so background processes start unwrapped Per-session overrides : CLAUDE_CODE_PROCESS_WRAPPER takes precedence over this key for one session json settings.json { \"processWrapper\": \"/opt/corp/launcher --profile claude\" } Claude Code ignores the launcher on W"
   }
  ],
+ "promptCacheTtl": [
+  {
+   "env": "CLAUDE_CODE_PROMPT_CACHE_TTL",
+   "precedence": "env",
+   "note": "Scope : Any file Type : string, one of: \"5m\": the cache holds for five minutes \"1h\": the cache holds for an hour Default : unset, so each main-conversation request gets its default lifetime Per-session overrides : FORCE_PROMPT_CACHING_5M takes precedence over everything else, then CLAUDE_CODE_PROMPT_CACHE_TTL, then this key, and last ENABLE_PROMPT_CACHING_1H This example keeps the main conversatio"
+  },
+  {
+   "env": "ENABLE_PROMPT_CACHING_1H",
+   "precedence": "related",
+   "note": "Scope : Any file Type : string, one of: \"5m\": the cache holds for five minutes \"1h\": the cache holds for an hour Default : unset, so each main-conversation request gets its default lifetime Per-session overrides : FORCE_PROMPT_CACHING_5M takes precedence over everything else, then CLAUDE_CODE_PROMPT_CACHE_TTL, then this key, and last ENABLE_PROMPT_CACHING_1H This example keeps the main conversatio"
+  },
+  {
+   "env": "FORCE_PROMPT_CACHING_5M",
+   "precedence": "related",
+   "note": "Scope : Any file Type : string, one of: \"5m\": the cache holds for five minutes \"1h\": the cache holds for an hour Default : unset, so each main-conversation request gets its default lifetime Per-session overrides : FORCE_PROMPT_CACHING_5M takes precedence over everything else, then CLAUDE_CODE_PROMPT_CACHE_TTL, then this key, and last ENABLE_PROMPT_CACHING_1H This example keeps the main conversatio"
+  }
+ ],
+ "promptSuggestionEnabled": [
+  {
+   "env": "CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION",
+   "precedence": "env",
+   "note": "Scope : Any file Type : Boolean true: you see prompt suggestions in your prompt input false: Claude Code hides prompt suggestions Default : true Per-session overrides : CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION takes precedence over this key for one session json settings.json { \"promptSuggestionEnabled\": false } Prompt suggestions need a claude.ai or Console account with telemetry on. On Amazon Bedrock"
+  },
+  {
+   "env": "DISABLE_TELEMETRY",
+   "precedence": "related",
+   "note": "On Amazon Bedrock, Google Cloud's Agent Platform, and Microsoft Foundry, or with telemetry turned off, such as by DISABLE_TELEMETRY, this key has no effect and only CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION=1 turns them on."
+  }
+ ],
  "skillListingBudgetFraction": [
   {
    "env": "SLASH_COMMAND_TOOL_CHAR_BUDGET",
@@ -238,11 +363,35 @@
    "note": "Also configurable via the SLASH_COMMAND_TOOL_CHAR_BUDGET environment variable (fixed character count)."
   }
  ],
+ "subagentPromptCacheTtl": [
+  {
+   "env": "CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL",
+   "precedence": "env",
+   "note": "Scope : Any file Type : string, one of: \"5m\": the cache holds for five minutes \"1h\": the cache holds for an hour Default : unset, so each of these requests gets its default lifetime Per-session overrides : FORCE_PROMPT_CACHING_5M takes precedence over everything else, then CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL, then this key, then ENABLE_PROMPT_CACHING_1H, which asks for the one-hour lifetime on e"
+  },
+  {
+   "env": "ENABLE_PROMPT_CACHING_1H",
+   "precedence": "related",
+   "note": "Scope : Any file Type : string, one of: \"5m\": the cache holds for five minutes \"1h\": the cache holds for an hour Default : unset, so each of these requests gets its default lifetime Per-session overrides : FORCE_PROMPT_CACHING_5M takes precedence over everything else, then CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL, then this key, then ENABLE_PROMPT_CACHING_1H, which asks for the one-hour lifetime on e"
+  },
+  {
+   "env": "FORCE_PROMPT_CACHING_5M",
+   "precedence": "related",
+   "note": "Scope : Any file Type : string, one of: \"5m\": the cache holds for five minutes \"1h\": the cache holds for an hour Default : unset, so each of these requests gets its default lifetime Per-session overrides : FORCE_PROMPT_CACHING_5M takes precedence over everything else, then CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL, then this key, then ENABLE_PROMPT_CACHING_1H, which asks for the one-hour lifetime on e"
+  }
+ ],
  "teammateMode": [
   {
    "env": "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS",
    "precedence": "related",
    "note": "Enable them by adding CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS to your settings.json or environment."
+  }
+ ],
+ "terminalTitleFromRename": [
+  {
+   "env": "CLAUDE_CODE_DISABLE_TERMINAL_TITLE",
+   "precedence": "related",
+   "note": "Scope : Any file Type : Boolean true: the terminal tab title shows the session name you set false: the tab keeps the title Claude Code generates from your conversation Default : true json settings.json { \"terminalTitleFromRename\": false } To stop Claude Code from updating the terminal title at all, set CLAUDE_CODE_DISABLE_TERMINAL_TITLE to 1 instead."
   }
  ],
  "tui": [

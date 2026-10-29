@@ -9,7 +9,7 @@ import gc
 import shiboken6
 from PySide6 import QtCore, QtWidgets
 
-from qclaudecodesettingeditorwidget import QClaudeCodeSettingEditorWidget
+from qclaudecodesettingeditorwidget import QClaudeCodeSettingEditorWidget, Scope
 
 
 def _pump() -> None:
@@ -19,7 +19,7 @@ def _pump() -> None:
 
 
 def test_pending_refresh_does_not_fire_after_delete_later(qapp):
-    w = QClaudeCodeSettingEditorWidget(language="en", showManagedOnly=True)
+    w = QClaudeCodeSettingEditorWidget(language="en", targetScope=Scope.ANY_FILE)
     w.setSettings({"model": "opus"})
     w.deleteLater()
     _pump()
@@ -27,14 +27,14 @@ def test_pending_refresh_does_not_fire_after_delete_later(qapp):
 
 
 def test_pending_refresh_does_not_fire_after_explicit_delete(qapp):
-    w = QClaudeCodeSettingEditorWidget(language="en", showManagedOnly=True)
+    w = QClaudeCodeSettingEditorWidget(language="en", targetScope=Scope.ANY_FILE)
     w.setSettings({"model": "opus"})
     shiboken6.delete(w)  # C++ 객체를 즉시 파괴 (파이썬 참조는 남아 있음)
     _pump()
 
 
 def test_pending_refresh_does_not_fire_after_python_release(qapp):
-    w = QClaudeCodeSettingEditorWidget(language="en", showManagedOnly=True)
+    w = QClaudeCodeSettingEditorWidget(language="en", targetScope=Scope.ANY_FILE)
     w.setSettings({"model": "opus"})
     del w
     gc.collect()
@@ -42,7 +42,7 @@ def test_pending_refresh_does_not_fire_after_python_release(qapp):
 
 
 def test_flush_still_runs_for_live_widget(qtbot):
-    w = QClaudeCodeSettingEditorWidget(language="en", showManagedOnly=True)
+    w = QClaudeCodeSettingEditorWidget(language="en", targetScope=Scope.ANY_FILE)
     qtbot.addWidget(w)
     with qtbot.waitSignal(w.settingChanged, timeout=1000):
         w.setSettings({"model": "opus"})
