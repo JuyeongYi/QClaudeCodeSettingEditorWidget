@@ -35,10 +35,11 @@ w.settings()          # dict
 
 | API | 설명 |
 | --- | --- |
-| `settings()` / `setSettings(dict)` | dict 로 읽기/쓰기. 체크된(설정된) 키만 포함, 순서는 스키마 순서 |
-| `GetSetting(indent=2)` / `GetSettingJsonl()` | JSON 문자열 / 한 줄 JSON |
+| `settings(version=None)` / `setSettings(dict)` | dict 로 읽기/쓰기. 체크된(설정된) 키만 포함, 순서는 스키마 순서 |
+| `GetSetting(indent=2, version=None)` / `GetSettingJsonl(version=None)` | JSON 문자열 / 한 줄 JSON |
 | `SetSetting(text)` | JSON 문자열 로드. 파싱 실패 시 `ValueError` |
-| `loadFile(path)` / `saveFile(path=None)` | 파일 입출력 (`fileLoaded` / `fileSaved` 시그널) |
+| `loadFile(path)` / `saveFile(path=None, version=None)` | 파일 입출력 (`fileLoaded` / `fileSaved` 시그널) |
+| 출력 함수의 `version=` | 그 Claude Code 버전에 있는 키만 출력 (`"2.1.250"`, `"latest"`) — [버전별 빌드](#버전별-빌드) |
 | `clear()` | 모든 키 해제 |
 | `settingValue(key)` / `setSettingValue(key, v)` / `unsetSetting(key)` | 최상위 키 단건 (`SettingKey` 또는 문자열) |
 | `envValue(name)` / `setEnvValue(name, v_or_None)` | env 변수 단건 (`EnvVar` 또는 문자열) |
@@ -49,7 +50,7 @@ w.settings()          # dict
 | `setLanguage(code)` / `language()` / `availableLanguages()` | 현지화 전환 (`languageChanged` 시그널) |
 | `categories()` | 생성 시 지정한 `Category` 플래그 |
 | `targetScope()` / `setTargetScope(Scope)` | 편집 대상 설정 파일 (생성자 `targetScope=Scope.USER`) — 그 파일에서 효력 없는 키 숨김 |
-| `targetVersion()` / `setTargetVersion(str \| None)` / `latestVersion()` | 대상 Claude Code 버전 (생성자 `targetVersion=None` = 필터 없음) |
+| `targetVersion()` / `setTargetVersion(str \| None)` / `latestVersion()` | 대상 Claude Code 버전 (생성자 `targetVersion=None` = 필터 없음, `"latest"` 가능) |
 | `isKeyApplicable(key_or_path)` / `inapplicableKeys()` | 대상 스코프·버전에서 효력이 있는지 / 그래서 숨긴 최상위 키 |
 | `settingChanged` (Signal) | 값이 바뀔 때마다 (같은 이벤트 루프 턴 내 변경은 한 번으로 합침) |
 
@@ -159,8 +160,27 @@ w.setTargetScope(Scope.USER | Scope.PROJECT); w.setTargetVersion(None); w.inappl
   deprecated 키는 숨기지 않고 배지로 알린다.
 - 중첩 키(`sandbox.bwrapPath`, `autoMode.classifyAllShell` 등)도 같은 규칙으로 숨긴다.
 - 행 머리 배지: 스코프(`managed`, `user · managed`), 도입 버전(`v2.1.283+`), `deprecated`, `removed v2.1.277`.
-- 숨긴 키의 값은 로드 시 그대로 보존되어 출력에 남는다(카테고리 제외와 같은 규칙).
+- 숨긴 키의 값은 로드 시 그대로 보존되어 출력에 남는다(카테고리 제외와 같은 규칙). 출력에서도 빼려면 아래 버전별 빌드.
+- 버전 인자에는 `"latest"`(`LATEST_VERSION`)도 쓸 수 있다 — 번들 메타데이터의 기준 버전(= 패키지 버전, `Version.latest()`)으로 풀린다.
 - 데모: `python -m qclaudecodesettingeditorwidget --scope PROJECT --target-version 2.1.250` (하단 콤보·입력란으로도 전환).
+
+### 버전별 빌드
+
+설정 파일을 쓸 때 버전을 지정하면 **그 Claude Code 버전에 있는 키만** 출력한다. 편집 대상 버전(`targetVersion`)과는 별개다.
+
+```python
+from qclaudecodesettingeditorwidget import LATEST_VERSION, settings_for_version
+
+w.saveFile("settings.json", version="2.1.250")      # 2.1.250 에 없는 키(이후 추가·이전 제거)를 빼고 저장
+w.saveFile("settings.json", version=LATEST_VERSION) # 최신(현재 2.1.312) 기준 — 제거된 키(taskOutputMaxChars 등)를 뺀다
+w.settings("2.1.250"); w.GetSetting(version="latest"); w.GetSettingJsonl(version="latest")
+settings_for_version({"model": "opus", "taskOutputMaxChars": 1000}, "latest")   # 위젯 없이: {"model": "opus"}
+```
+
+- 최상위 키와 중첩 경로(`sandbox.bwrapPath` 등)를 `since`/`removed` 로 거른다. 걸러진 중첩 키만 빠지고 상위 객체는 남는다.
+- 버전 정보가 없는 키, 스키마 밖 키, env 변수는 남긴다. deprecated 키도 그 버전에서 아직 동작하므로 남긴다.
+- 스코프(`targetScope`)로는 거르지 않는다. `version=None`(기본)이면 지금처럼 숨긴 키의 보존값까지 그대로 쓴다.
+- 버전 형식이 틀리면 파일을 쓰기 전에 `ValueError`.
 
 ## 동작 규칙
 

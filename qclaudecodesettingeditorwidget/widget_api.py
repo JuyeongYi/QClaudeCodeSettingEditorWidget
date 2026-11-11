@@ -13,10 +13,35 @@ from typing import Any
 from .categories import Category
 from .constants import ENV_KEY
 from .i18n import tr
-from .keys import EnvVar, SettingKey
-from .schema import find_inapplicable_paths
+from .keys import EnvVar, SettingKey, setting_info
+from .schema import JsonSchema, find_inapplicable_paths, load_schema, prune_inapplicable
+from .spec import Version
 
 _MISSING = object()
+
+
+def settings_for_version(data: dict[str, Any], version: Version | str,
+                         schema: JsonSchema | None = None) -> dict[str, Any]:
+    """data 에서 그 Claude Code 버전("2.1.250", Version, LATEST_VERSION)에 있는 키만 남긴 사본.
+
+    최상위 키와 중첩 경로(sandbox.bwrapPath 등)를 since/removed 로 거른다. 버전 메타데이터가 없는 키
+    (스키마 밖 키·env 변수 포함)는 남기고, deprecated 키도 그 버전에서 아직 동작하므로 남긴다.
+    schema 가 None 이면 번들 스키마. 버전 형식이 틀리면 ValueError.
+    """
+    v = Version.parse(version)
+    schema = load_schema() if schema is None else schema
+    props = schema.get("properties", {})
+
+    def available(path: str) -> bool:
+        info = setting_info(path)
+        return info is None or info.available_in(v)
+
+    out: dict[str, Any] = {}
+    for key, value in data.items():
+        if available(key):
+            prop = props.get(key)
+            out[key] = value if prop is None else prune_inapplicable(prop, value, schema, available, key)[0]
+    return out
 
 
 class HiddenKeyError(ValueError):
@@ -33,8 +58,12 @@ class SettingsApiMixin:
     _set_keys(), _on_changed(), isKeyApplicable(path), _file_path, fileLoaded/fileSaved 시그널."""
 
     # ------------------------------------------------------------------ 전체 읽기/쓰기
-    def settings(self) -> dict[str, Any]:
-        """현재 설정을 dict 로. 설정된 키만 포함하며 키 순서는 스키마 순서. 노출되지 않은 키의 보존값도 포함."""
+    def settings(self, version: Version | str | None = None) -> dict[str, Any]:
+        """현재 설정을 dict 로. 설정된 키만 포함하며 키 순서는 스키마 순서. 노출되지 않은 키의 보존값도 포함.
+
+        version 을 주면 그 Claude Code 버전에 있는 키만 담는다(settings_for_version, LATEST_VERSION = 번들 기준 최신).
+        편집 대상 버전(targetVersion)과는 별개이며 None 이면 거르지 않는다.
+        """
         out: dict[str, Any] = {}
         for key in self._schema.get("properties", {}):
             if key == ENV_KEY:
@@ -47,7 +76,7 @@ class SettingsApiMixin:
                 out[key] = v
         for k, v in self._passthrough.items():
             out.setdefault(k, v)
-        return out
+        return out if version is None else settings_for_version(out, version, self._schema)
 
     def setSettings(self, data: dict[str, Any] | None, *, trusted: bool = False) -> None:
         """설정 전체를 교체한다.
@@ -62,13 +91,13 @@ class SettingsApiMixin:
         self._replace_all(data)
         self._on_changed()
 
-    def GetSetting(self, indent: int | None = 2) -> str:
-        """설정을 JSON 문자열로 반환."""
-        return json.dumps(self.settings(), indent=indent, ensure_ascii=False)
+    def GetSetting(self, indent: int | None = 2, *, version: Version | str | None = None) -> str:
+        """설정을 JSON 문자열로 반환. version 은 settings() 와 같다(그 버전에 있는 키만)."""
+        return json.dumps(self.settings(version), indent=indent, ensure_ascii=False)
 
-    def GetSettingJsonl(self) -> str:
-        """설정을 한 줄 JSON(JSONL 레코드 한 줄)으로 반환. 개행 없음."""
-        return json.dumps(self.settings(), ensure_ascii=False, separators=(",", ":"))
+    def GetSettingJsonl(self, *, version: Version | str | None = None) -> str:
+        """설정을 한 줄 JSON(JSONL 레코드 한 줄)으로 반환. 개행 없음. version 은 settings() 와 같다."""
+        return json.dumps(self.settings(version), ensure_ascii=False, separators=(",", ":"))
 
     def SetSetting(self, text: str, *, trusted: bool = False) -> None:
         """JSON 문자열에서 설정 로드. 파싱 실패 시 ValueError, 노출되지 않은 키 변경 시 HiddenKeyError."""
@@ -89,11 +118,16 @@ class SettingsApiMixin:
         self._file_path = p
         self.fileLoaded.emit(str(p))
 
-    def saveFile(self, path: str | Path | None = None) -> Path:
+    def saveFile(self, path: str | Path | None = None, *, version: Version | str | None = None) -> Path:
+        """설정 파일로 저장(들여쓰기 2, 끝 줄바꿈). path 가 None 이면 마지막으로 읽거나 쓴 경로.
+
+        version 을 주면 그 Claude Code 버전에 있는 키만 쓴다("2.1.250", LATEST_VERSION).
+        None 이면 숨긴 키의 보존값까지 그대로 쓴다.
+        """
         p = Path(path) if path is not None else self._file_path
         if p is None:
             raise ValueError(tr("No save path"))
-        p.write_text(self.GetSetting() + "\n", "utf-8")
+        p.write_text(self.GetSetting(version=version) + "\n", "utf-8")
         self._file_path = p
         self.fileSaved.emit(str(p))
         return p

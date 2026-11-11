@@ -13,7 +13,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from . import i18n
 from .categories import Category
-from .constants import MUTED, Scope
+from .constants import LATEST_VERSION, MUTED, Scope
 from .i18n import tr
 from .widget import QClaudeCodeSettingEditorWidget
 
@@ -177,7 +177,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--categories", help="노출할 카테고리 플래그, 예: MODEL|HOOKS|ENV (기본 ALL)")
     ap.add_argument("--exclude", help="제외할 카테고리 플래그, 예: JSON|ADMIN")
     ap.add_argument("--scope", default="USER", help="편집 대상 파일 스코프, 예: USER, PROJECT, MANAGED, ANY_FILE (기본 USER)")
-    ap.add_argument("--target-version", help="대상 Claude Code 버전, 예: 2.1.250 (그 버전에 없는 키를 숨김)")
+    ap.add_argument("--target-version",
+                    help=f"대상 Claude Code 버전, 예: 2.1.250 또는 {LATEST_VERSION} (그 버전에 없는 키를 숨김)")
     args = ap.parse_args(sys.argv[1:] if argv is None else argv[1:])
     mask = Category.parse(args.categories) if args.categories else Category.ALL
     if args.exclude:

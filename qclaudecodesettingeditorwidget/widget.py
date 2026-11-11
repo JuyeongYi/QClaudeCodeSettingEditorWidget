@@ -13,7 +13,6 @@ from typing import Any
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from . import i18n
-from ._version import __version__ as CLAUDE_CODE_VERSION
 from .categories import CATEGORY_TITLES, Category, categorize
 from .constants import ENV_ID, ENV_KEY, JSON_ID, MUTED, Precedence, Scope
 from .editors import PropertyRow
@@ -37,6 +36,7 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
     - GetSettingJsonl() -> str            : 설정을 한 줄 JSON(JSONL 한 레코드)로
     - SetSetting(text: str)               : JSON 문자열로부터 로드
     - loadFile(path) / saveFile(path)     : 파일 입출력
+      (settings/GetSetting/GetSettingJsonl/saveFile 의 version= : 그 Claude Code 버전에 있는 키만 출력, "latest" 가능)
     - clear()                             : 노출된 키 모두 해제
     - setLanguage(code) / language()      : 현지화 (locales/qccse_<code>.ts 또는 .qm 이 있으면 사용 가능)
     - settingChanged (Signal)             : 값이 바뀔 때마다 (같은 이벤트 루프 턴의 변경은 한 번)
@@ -51,13 +51,14 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
                  schema_path: str | Path | None = None, env_registry_path: str | Path | None = None,
                  env_registry: dict[str, EnvVarInfo] | None = None, language: str | None = None,
                  categories: Category = Category.ALL, overlaps: dict[str, list[dict[str, str]]] | None = None,
-                 targetScope: Scope = Scope.USER, targetVersion: str | None = None):
+                 targetScope: Scope = Scope.USER, targetVersion: Version | str | None = None):
         """categories: 좌측에 노출할 카테고리 비트 플래그. 제외된 카테고리의 키는 편집할 수 없고,
         로드된 값은 _passthrough 로 보존되어 그대로 다시 내보낸다.
         targetScope: 편집 대상 설정 파일(Scope 비트 플래그, 기본 USER = ~/.claude/settings.json).
         그 파일들 중 어디에서도 효력이 없는 키(예: USER 대상일 때 Managed 전용 키)는 숨긴다. ANY_FILE 이면 전부.
-        targetVersion: 대상 Claude Code 버전("2.1.250"). 그 버전에 없는 키(이후 추가·이전 제거)는 숨긴다.
-        None 이면 버전으로 거르지 않는다. 숨겨도 로드된 값은 보존되어 출력에 그대로 남는다."""
+        targetVersion: 대상 Claude Code 버전("2.1.250", LATEST_VERSION). 그 버전에 없는 키(이후 추가·이전 제거)는 숨긴다.
+        None 이면 버전으로 거르지 않는다. 숨겨도 로드된 값은 보존되어 출력에 그대로 남는다
+        (출력에서도 빼려면 saveFile/settings 의 version= 을 쓴다)."""
         super().__init__(parent)
         self._categories = Category(categories)
         self._target_scope = self._valid_scope(targetScope)
@@ -361,11 +362,12 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
             self._apply_filter()
 
     def targetVersion(self) -> str | None:
-        """대상 Claude Code 버전("2.1.250"). None 이면 버전 필터 없음."""
+        """대상 Claude Code 버전("2.1.250", LATEST_VERSION 은 실제 번호로 풀림). None 이면 버전 필터 없음."""
         return str(self._target_version) if self._target_version is not None else None
 
-    def setTargetVersion(self, version: str | None) -> None:
-        """대상 Claude Code 버전. 그 버전에 없는 키(이후 추가·이전 제거)는 숨긴다. None 이면 필터 해제."""
+    def setTargetVersion(self, version: Version | str | None) -> None:
+        """대상 Claude Code 버전("2.1.250", LATEST_VERSION). 그 버전에 없는 키(이후 추가·이전 제거)는 숨긴다.
+        None 이면 필터 해제."""
         v = self._valid_version(version)
         if v != self._target_version:
             self._target_version = v
@@ -373,8 +375,8 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
 
     @staticmethod
     def latestVersion() -> str:
-        """번들 메타데이터의 기준 Claude Code 버전(= 패키지 버전)."""
-        return CLAUDE_CODE_VERSION
+        """번들 메타데이터의 기준 Claude Code 버전(= 패키지 버전, LATEST_VERSION 이 가리키는 버전)."""
+        return str(Version.latest())
 
     @staticmethod
     def _valid_scope(scope: Scope) -> Scope:
@@ -384,8 +386,8 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
         return scope
 
     @staticmethod
-    def _valid_version(version: str | None) -> Version | None:
-        return None if version is None or not str(version).strip() else Version.parse(str(version))
+    def _valid_version(version: Version | str | None) -> Version | None:
+        return None if version is None or not str(version).strip() else Version.parse(version)
 
     def isKeyApplicable(self, path: str | SettingKey) -> bool:
         """키(또는 중첩 경로 "sandbox.bwrapPath")가 대상 스코프·버전에서 효력이 있는지. 메타데이터가 없으면 True."""

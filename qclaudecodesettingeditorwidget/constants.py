@@ -15,6 +15,9 @@ ENV_ID = ENV_KEY           # env 편집 페이지 id
 OTHER_ID = "other"         # 미분류 키 페이지 id
 JSON_ID = "json"           # 원문 JSON 페이지 id
 
+# --------------------------------------------------------------------------- Claude Code 버전
+LATEST_VERSION = "latest"  # 버전 인자 별칭: 번들 메타데이터의 기준 버전(= 패키지 버전)
+
 # --------------------------------------------------------------------------- 번들 리소스
 RESOURCE_DIR = "resources"
 SCHEMA_RESOURCE = "claude-code-settings.schema.json"

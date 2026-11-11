@@ -116,36 +116,51 @@ def resolve_ref(node: Any, root: JsonSchema) -> JsonSchema:
 
 # --------------------------------------------------------------------------- 유틸
 def find_inapplicable_paths(schema: JsonSchema, value: Any, root: JsonSchema, applicable: Callable[[str], bool],
-                            path: str, norm: str | None = None) -> list[str]:
-    """value 안에서 applicable(경로) 가 False 인 중첩 키의 경로들(예: sandbox.enabledPlatforms).
+                            path: str) -> list[str]:
+    """value 안에서 applicable(경로) 가 False 인 중첩 키의 경로들(예: sandbox.enabledPlatforms)."""
+    return prune_inapplicable(schema, value, root, applicable, path)[1]
+
+
+def prune_inapplicable(schema: JsonSchema, value: Any, root: JsonSchema, applicable: Callable[[str], bool],
+                       path: str, norm: str | None = None) -> tuple[Any, list[str]]:
+    """value 에서 applicable(경로) 가 False 인 중첩 키를 뺀 사본과 뺀 키의 경로들. value 는 바꾸지 않는다.
 
     path 는 보고용 경로(배열 원소는 [i]), norm 은 applicable 에 넘기는 편집기 경로 표기
     (객체 'a.b', dict 값 'a.*', 배열 원소 'a[]'). 최상위 키 자체는 검사하지 않는다.
     """
     schema = resolve_ref(schema, root)
     norm = path if norm is None else norm
-    out: list[str] = []
     if "anyOf" in schema or "oneOf" in schema:
         for v in variants_of(schema, root):
             if value_matches(v, value, root):
-                return find_inapplicable_paths(v, value, root, applicable, path, norm)
-        return out
+                return prune_inapplicable(v, value, root, applicable, path, norm)
+        return value, []
+    removed: list[str] = []
     if isinstance(value, dict):
         props = schema.get("properties", {})
         addl = schema.get("additionalProperties")
+        kept: dict[str, Any] = {}
         for k, v in value.items():
             child = f"{path}.{k}"
             if k in props:
                 if not applicable(f"{norm}.{k}"):
-                    out.append(child)
-                else:
-                    out += find_inapplicable_paths(props[k], v, root, applicable, child, f"{norm}.{k}")
+                    removed.append(child)
+                    continue
+                v, sub = prune_inapplicable(props[k], v, root, applicable, child, f"{norm}.{k}")
+                removed += sub
             elif isinstance(addl, dict):
-                out += find_inapplicable_paths(addl, v, root, applicable, child, f"{norm}.*")
-    elif isinstance(value, list) and isinstance(schema.get("items"), dict):
+                v, sub = prune_inapplicable(addl, v, root, applicable, child, f"{norm}.*")
+                removed += sub
+            kept[k] = v
+        return kept, removed
+    if isinstance(value, list) and isinstance(schema.get("items"), dict):
+        items: list[Any] = []
         for i, v in enumerate(value):
-            out += find_inapplicable_paths(schema["items"], v, root, applicable, f"{path}[{i}]", f"{norm}[]")
-    return out
+            v, sub = prune_inapplicable(schema["items"], v, root, applicable, f"{path}[{i}]", f"{norm}[]")
+            items.append(v)
+            removed += sub
+        return items, removed
+    return value, removed
 
 
 def json_type_name(value: Any) -> str:

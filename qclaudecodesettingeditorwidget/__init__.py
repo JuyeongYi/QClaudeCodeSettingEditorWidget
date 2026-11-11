@@ -14,16 +14,18 @@
     app.exec()
     print(w.GetSetting())        # 들여쓰기된 JSON
     print(w.GetSettingJsonl())   # 한 줄 JSON
+    w.saveFile("settings.json", version="latest")   # 최신 Claude Code 에 있는 키만
 """
 from ._version import __version__
 from .categories import Category
-from .constants import JsonType, Precedence, Scope, Topic
+from .constants import LATEST_VERSION, JsonType, Precedence, Scope, Topic
 from .keys import NESTED_SETTINGS, EnvVar, KeyEnum, SettingKey, setting_info
 from .schema import EnvVarInfo, load_env_registry, load_schema
 from .spec import SettingInfo, Version
 from .widget import HiddenKeyError, QClaudeCodeSettingEditorWidget
+from .widget_api import settings_for_version
 
 __all__ = ["QClaudeCodeSettingEditorWidget", "HiddenKeyError", "Category", "Scope", "JsonType", "Topic", "Precedence",
-           "Version", "SettingKey", "SettingInfo",
+           "Version", "LATEST_VERSION", "SettingKey", "SettingInfo",
            "NESTED_SETTINGS", "setting_info", "EnvVar", "KeyEnum", "EnvVarInfo", "load_env_registry", "load_schema",
-           "__version__"]
+           "settings_for_version", "__version__"]

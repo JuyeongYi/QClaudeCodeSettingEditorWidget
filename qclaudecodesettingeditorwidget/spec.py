@@ -10,7 +10,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, NamedTuple
 
-from .constants import JsonType, Scope, Topic
+from ._version import __version__
+from .constants import LATEST_VERSION, JsonType, Scope, Topic
 
 __all__ = ["KeyEnum", "SettingInfo", "Version"]
 
@@ -27,13 +28,22 @@ class Version(NamedTuple):
 
     @classmethod
     def parse(cls, text: str | Version) -> Version:
-        """'2.1.283' / 'v2.1' → Version(2, 1, 283) / Version(2, 1, 0). 형식이 틀리면 ValueError."""
+        """'2.1.283' / 'v2.1' → Version(2, 1, 283) / Version(2, 1, 0), LATEST_VERSION → latest().
+        형식이 틀리면 ValueError."""
         if isinstance(text, Version):
             return text
-        m = _VERSION.match(str(text).strip())
+        s = str(text).strip()
+        if s.lower() == LATEST_VERSION:
+            return cls.latest()
+        m = _VERSION.match(s)
         if not m:
             raise ValueError(f"invalid version: {text!r}")
         return cls(*(int(p) for p in m.group(1).split(".")))
+
+    @classmethod
+    def latest(cls) -> Version:
+        """번들 메타데이터의 기준 Claude Code 버전(= 패키지 버전)."""
+        return cls.parse(__version__)
 
     def __str__(self) -> str:
         return f"{self.major}.{self.minor}.{self.patch}"

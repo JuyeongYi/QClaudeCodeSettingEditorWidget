@@ -7,6 +7,7 @@ import pytest
 from PySide6 import QtWidgets
 
 from qclaudecodesettingeditorwidget import (
+    LATEST_VERSION,
     NESTED_SETTINGS,
     HiddenKeyError,
     JsonType,
@@ -17,6 +18,7 @@ from qclaudecodesettingeditorwidget import (
     Version,
     __version__,
     setting_info,
+    settings_for_version,
 )
 from qclaudecodesettingeditorwidget import keys
 from qclaudecodesettingeditorwidget.editors import EnumEditor, ObjectEditor, StringEditor
@@ -59,8 +61,11 @@ def test_setting_info_version_predicates():
     assert not i.deprecated_in("2.1.149") and i.deprecated_in("2.1.150")
     assert SettingInfo("y").available_in("0.1")                               # 버전 미상 = 항상 있음
     assert Version.parse("v2.1") == Version(2, 1, 0) and str(Version(2, 1, 283)) == "2.1.283"
-    with pytest.raises(ValueError):
-        Version.parse("latest")
+    assert Version.parse(LATEST_VERSION) == Version.parse(f" {LATEST_VERSION.upper()} ") == Version.latest()
+    assert Version.latest() == Version.parse(__version__)
+    for bad in ("nope", "2.1.x", ""):
+        with pytest.raises(ValueError):
+            Version.parse(bad)
     assert Scope.parse("user|managed") == Scope.USER | Scope.MANAGED
     assert JsonType.parse("string|null") == JsonType.STRING | JsonType.NULL
 
@@ -162,8 +167,51 @@ def test_target_version_hides_keys_added_later_or_removed_earlier(qtbot):
     assert not _visible(w, "taskOutputMaxChars")
     w.setTargetVersion(None)
     assert _visible(w, "availableModelsMatch") and _visible(w, "taskOutputMaxChars")
+    w.setTargetVersion(LATEST_VERSION)                                        # 실제 번호로 풀린다
+    assert w.targetVersion() == w.latestVersion() == __version__
+    assert _visible(w, "availableModelsMatch") and not _visible(w, "taskOutputMaxChars")
     with pytest.raises(ValueError):
-        w.setTargetVersion("latest")
+        w.setTargetVersion("nope")
+
+
+# 버전별 빌드: availableModelsMatch(2.1.283~), taskOutputMaxChars(2.1.261~2.1.277 제거), attribution.sessionUrl(2.1.183~)
+BUILD_DOC = {"model": "opus", "availableModelsMatch": "exact", "taskOutputMaxChars": 1000,
+             "attribution": {"commit": "c", "sessionUrl": False}, "zzzCustom": 1, "env": {"A": "1"}}
+
+
+def test_settings_for_version_keeps_only_keys_valid_in_that_version():
+    doc = json.loads(json.dumps(BUILD_DOC))
+    old = settings_for_version(doc, "2.1.180")
+    assert old == {"model": "opus", "attribution": {"commit": "c"}, "zzzCustom": 1, "env": {"A": "1"}}
+    assert settings_for_version(doc, Version(2, 1, 270)) == dict(old, taskOutputMaxChars=1000,
+                                                                  attribution=BUILD_DOC["attribution"])
+    latest = settings_for_version(doc, LATEST_VERSION)                        # 버전 미상·스키마 밖 키·env 는 남긴다
+    assert latest == {k: v for k, v in BUILD_DOC.items() if k != "taskOutputMaxChars"}
+    assert list(latest) == [k for k in BUILD_DOC if k in latest]              # 키 순서 유지
+    assert doc == BUILD_DOC                                                   # 입력은 바꾸지 않는다
+    with pytest.raises(ValueError):
+        settings_for_version(doc, "nope")
+
+
+def test_save_file_with_version_writes_only_keys_valid_in_that_version(qtbot, tmp_path):
+    src = tmp_path / "in.json"
+    src.write_text(json.dumps(dict(BUILD_DOC, claudeMd="org")), "utf-8")
+    w = QClaudeCodeSettingEditorWidget(language="en")                         # USER, 버전 필터 없음
+    qtbot.addWidget(w)
+    w.loadFile(src)
+    expect = settings_for_version(dict(BUILD_DOC, claudeMd="org"), LATEST_VERSION)
+    assert "claudeMd" in expect                                               # 빌드 버전은 스코프와 무관
+    saved = []
+    w.fileSaved.connect(saved.append)
+    out = w.saveFile(tmp_path / "out.json", version=LATEST_VERSION)
+    text = out.read_text("utf-8")
+    assert json.loads(text) == expect == w.settings(LATEST_VERSION) and text.endswith("\n")
+    assert saved == [str(out)] and w.filePath() == out
+    assert json.loads(w.GetSettingJsonl(version="2.1.180")) == settings_for_version(w.settings(), "2.1.180")
+    assert json.loads(w.saveFile().read_text("utf-8")) == dict(BUILD_DOC, claudeMd="org")   # version 없으면 전부
+    with pytest.raises(ValueError):
+        w.saveFile(tmp_path / "bad.json", version="nope")
+    assert not (tmp_path / "bad.json").exists()
 
 
 def test_scope_and_version_filters_block_api_bypass(qtbot):
