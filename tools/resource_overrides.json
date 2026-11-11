@@ -2,7 +2,8 @@
  "_comment": [
   "refresh_resources.py 가 생성 결과 위에 마지막으로 덮어쓰는 손 보정 (갱신해도 유지된다).",
   "settings.<경로>: SettingInfo 필드(scope 는 'user|managed' 문자열, since/removed/deprecated_since 는 버전 문자열) + schema(그 경로의 JSON 스키마 — 주입 또는 교체).",
-  "env.<NAME>: env-vars.json 항목 필드(description, values, inSchema, inDocs …). 공식 스키마·문서에 아직 없는 변수를 여기 둔다."
+  "env.<NAME>: env-vars.json 항목 필드(description, values, inSchema, inDocs …). 공식 스키마·문서에 아직 없는 변수를 여기 둔다.",
+  "schemaPatches.<경로>: 그 노드에 덧붙일 스키마 키워드(format·minimum·maxItems …). 경로는 편집기 표기('sshConfigs[].sshPort', 'a.*') 또는 '#/$defs/이름.하위경로'. anyOf 변형을 가로질러 일치하는 노드 모두에 적용한다. format 값은 constants.Format, 배열 확장 키워드 x-disjointNetworks 는 constants.DISJOINT_NETWORKS."
  ],
  "settings": {
   "taskOutputMaxChars": {
@@ -152,5 +153,23 @@
    "_note": "CHANGELOG 2.1.319 에서 언급. env 문서 미등재.",
    "description": "Set to 1 to keep the old self-paced /loop behavior of scheduling a fallback wakeup when a turn finishes without rescheduling, instead of ending the loop. Requires Claude Code v2.1.319 or later"
   }
+ },
+ "schemaPatches": {
+  "gatewayInternalNetworks": {"_note": "문서 Type: at most four IPv4 CIDR blocks, each /8 to /32, not overlapping one another", "maxItems": 4, "x-disjointNetworks": true},
+  "gatewayInternalNetworks[]": {"_note": "문서: none overlapping private space (문서용·VPN/NAT64·예약 대역도 거부)", "format": "public-ipv4-cidr"},
+  "sshConfigs[].sshPort": {"_note": "TCP 포트", "minimum": 1, "maximum": 65535},
+  "forceLoginGatewayUrl": {"_note": "문서 Type: a full URL including the scheme", "format": "uri"},
+  "#/$defs/hookCommand.url": {"_note": "http 훅이 POST 하는 URL", "format": "uri"},
+  "allowedMcpServers[].serverUrl": {"_note": "URL pattern, supports wildcards", "format": "uri-pattern"},
+  "deniedMcpServers[].serverUrl": {"_note": "URL pattern, supports wildcards", "format": "uri-pattern"},
+  "minimumVersion": {"_note": "문서 Type: a version number such as \"2.1.100\"; a value that isn't a valid version is ignored", "format": "semver"},
+  "requiredMinimumVersion": {"_note": "문서 Type: a version number such as \"2.1.100\"; a value that isn't a valid version is ignored", "format": "semver"},
+  "requiredMaximumVersion": {"_note": "문서 Type: a version number such as \"2.1.100\"; a value that isn't a valid version is ignored", "format": "semver"},
+  "timeZone": {"_note": "문서 Type: an IANA time zone name", "format": "iana-time-zone"},
+  "footerLinksRegexes[].pattern": {"_note": "Regex matched against turn output (JS 이름 그룹 사용)", "format": "regex"},
+  "strictKnownMarketplaces[].hostPattern": {"_note": "Regex pattern (스키마 설명)", "format": "regex"},
+  "strictKnownMarketplaces[].pathPattern": {"_note": "Regex pattern (스키마 설명)", "format": "regex"},
+  "blockedMarketplaces[].hostPattern": {"_note": "Regex pattern (스키마 설명)", "format": "regex"},
+  "blockedMarketplaces[].pathPattern": {"_note": "Regex pattern (스키마 설명)", "format": "regex"}
  }
 }

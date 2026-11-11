@@ -5,6 +5,9 @@
   removed / deprecated = overrides > 문서 경고 박스·색인 > 이력(문서에서 사라진 키).
 - 스키마: schemastore 에 없는 문서 키를 **Type** 문장에서 만든 스키마(또는 overrides 의 schema)로 주입한다.
   Global config(~/.claude.json) 전용 키는 settings.json 이 아니므로 주입하지 않는다.
+  schemastore 에 있는 숫자 키도 문서 Type 문장의 범위("minimum `1000`")가 스키마에 없으면 덧붙인다.
+  마지막으로 overrides 의 schemaPatches(경로 → 덧붙일 키워드)를 적용한다 — format·범위·개수처럼
+  문서 문장으로만 적힌 제약을 위젯 검증(validation.py)이 쓰도록.
 """
 from __future__ import annotations
 
@@ -116,7 +119,7 @@ def type_prose_schema(entry: DocEntry) -> dict | None:
         values = list(dict.fromkeys(_QUOTED.findall(first)))
         open_set = bool(re.search(r"such as|or a full|or any|or another", first.lower()))
         return _string_schema(values if len(values) >= 2 else [], open_set)
-    if low.startswith("number"):
+    if low.startswith(("number", "integer")):
         return _number_schema(low)
     if low.startswith("array of"):
         if "each one of:" in low:
@@ -141,6 +144,94 @@ def parse_default(text: str) -> Any:
 
 
 # --------------------------------------------------------------------------- 스키마 탐색·주입
+_PATH_TOKEN = re.compile(r"\[\]|\.\*|\.?[^.\[]+")
+
+
+def _expand(node: Any, root: dict) -> list[dict]:
+    """$ref 를 따라간 실제 노드와 그 anyOf/oneOf 변형들(재귀)."""
+    node = _deref(node, root)
+    if not isinstance(node, dict):
+        return []
+    out = [node]
+    for v in node.get("anyOf", []) + node.get("oneOf", []):
+        out += _expand(v, root)
+    return out
+
+
+def nodes_at(root: dict, target: str) -> list[dict]:
+    """경로가 가리키는 **실제** 스키마 노드들(수정용, 복사 아님). anyOf 변형을 가로질러 모두 찾는다.
+
+    target: 편집기 경로 표기('sshConfigs[].sshPort', 'a.*', 'gatewayInternalNetworks[]') 또는
+    JSON 포인터로 시작하는 경로('#/$defs/hookCommand.url' = $defs 노드에서 이어지는 경로).
+    """
+    start: Any = root
+    rest = target
+    if target.startswith("#/"):
+        m = re.match(r"(#/[^.\[]+)(.*)", target)
+        pointer, rest = (m.group(1), m.group(2)) if m else (target, "")
+        start = _deref({"$ref": pointer}, root)
+        if not isinstance(start, dict) or not start:
+            return []
+    current = [start]
+    for tok in _PATH_TOKEN.findall(rest):
+        nxt: list[dict] = []
+        for node in current:
+            for n in _expand(node, root):
+                if tok == "[]":
+                    child = n.get("items")
+                elif tok == ".*":
+                    child = n.get("additionalProperties")
+                else:
+                    child = n.get("properties", {}).get(tok.lstrip("."))
+                if isinstance(child, dict):
+                    nxt.append(child)
+        current = nxt
+    seen: set[int] = set()
+    out = []
+    for n in current:
+        d = _deref(n, root)
+        if isinstance(d, dict) and id(d) not in seen:
+            seen.add(id(d))
+            out.append(d)
+    return out
+
+
+def apply_schema_patches(schema: dict, patches: dict[str, dict]) -> list[str]:
+    """overrides 의 schemaPatches: {경로: {키워드: 값}} 를 해당 노드들에 덮어쓴다. "_" 로 시작하는 키는 주석."""
+    notes = []
+    for target, patch in patches.items():
+        if target.startswith("_"):
+            continue
+        nodes = nodes_at(schema, target)
+        if not nodes:
+            notes.append(f"schema patch target not found: {target}")
+        for node in nodes:
+            node.update(copy.deepcopy({k: v for k, v in patch.items() if not k.startswith("_")}))
+    return notes
+
+
+def merge_doc_bounds(schema: dict, docs: dict[str, DocEntry], store_paths: set[str]) -> list[str]:
+    """schemastore 에 있는 숫자 키에, 문서 Type 문장의 범위가 스키마에 없으면 덧붙인다(기존 값은 유지)."""
+    notes = []
+    for path, entry in docs.items():
+        low = entry.type_text.lower()
+        if path not in store_paths or not low.startswith(("number", "integer")):
+            continue
+        prose = _number_schema(low)
+        for node in nodes_at(schema, path):
+            if node.get("type") not in ("integer", "number"):
+                continue
+            added = {}
+            if "minimum" in prose and "minimum" not in node and "exclusiveMinimum" not in node:
+                added["minimum"] = prose["minimum"]
+            if "maximum" in prose and "maximum" not in node and "exclusiveMaximum" not in node:
+                added["maximum"] = prose["maximum"]
+            if added:
+                node.update(added)
+                notes.append(f"doc bounds {path}: {added}")
+    return notes
+
+
 def _deref(node: Any, root: dict) -> Any:
     """$ref 를 따라간 **실제** 대상 dict(복사 아님 — 주입용)."""
     seen = set()
@@ -269,8 +360,9 @@ def _make_info(path: str, entry: DocEntry | None, node: dict | None, root: dict,
 
 
 def build_catalog(store: dict, docs: dict[str, DocEntry], added: dict[str, str], history: dict,
-                  overrides: dict[str, dict]) -> tuple[dict, dict[str, dict], dict[str, dict], list[str]]:
-    """(병합 스키마, 최상위 키 info, 중첩 경로 info, 보고 줄)."""
+                  overrides: dict[str, dict], patches: dict[str, dict] | None = None,
+                  ) -> tuple[dict, dict[str, dict], dict[str, dict], list[str]]:
+    """(병합 스키마, 최상위 키 info, 중첩 경로 info, 보고 줄). patches 는 overrides 의 schemaPatches."""
     schema = copy.deepcopy(store)
     props: dict = schema.setdefault("properties", {})
     store_paths = set(schema_paths(store)) | set(store.get("properties", {}))
@@ -312,6 +404,8 @@ def build_catalog(store: dict, docs: dict[str, DocEntry], added: dict[str, str],
             parent = schema if not parent_path else _object_at(schema, parent_path)
             if parent is not None:
                 parent["properties"][leaf] = copy.deepcopy(ov["schema"])
+    notes += merge_doc_bounds(schema, docs, store_paths)
+    notes += apply_schema_patches(schema, patches or {})
 
     # 2) 키별 info
     resolved = schema_paths(schema)

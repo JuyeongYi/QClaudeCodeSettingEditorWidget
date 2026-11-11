@@ -23,10 +23,13 @@ include = ["qclaudecodesettingeditorwidget*"]
 version = {attr = "qclaudecodesettingeditorwidget._version.__version__"}
 
 [tool.setuptools.package-data]
-qclaudecodesettingeditorwidget = ["resources/*.json"]
+# locales/ 를 빼면 git·wheel 설치본에서 번역 파일이 없어 language="ko" 가 영어로 나온다(editable 설치에서만 보였다).
+qclaudecodesettingeditorwidget = ["resources/*.json", "locales/*.qm", "locales/*.ts"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# 스키마 밖 키(futureKey 등)를 일부러 쓰는 테스트가 많다 — 경고 자체는 test_validation 이 pytest.warns 로 검사한다
+filterwarnings = ["ignore::qclaudecodesettingeditorwidget.validation.SettingValidationWarning"]
 
 [tool.pyright]
 extraPaths = ["tools"]

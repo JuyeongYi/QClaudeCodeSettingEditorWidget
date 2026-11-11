@@ -8,26 +8,6 @@
             <translation>한국어</translation>
         </message>
         <message>
-            <source>User (~/.claude/settings.json)</source>
-            <translation>사용자 (~/.claude/settings.json)</translation>
-        </message>
-        <message>
-            <source>Project (.claude/settings.json)</source>
-            <translation>프로젝트 (.claude/settings.json)</translation>
-        </message>
-        <message>
-            <source>Local (.claude/settings.local.json)</source>
-            <translation>로컬 (.claude/settings.local.json)</translation>
-        </message>
-        <message>
-            <source>Managed settings</source>
-            <translation>관리형 설정</translation>
-        </message>
-        <message>
-            <source>All files</source>
-            <translation>모든 파일</translation>
-        </message>
-        <message>
             <source>Configured settings (GetSetting)</source>
             <translation>설정된 세팅 (GetSetting)</translation>
         </message>
@@ -54,10 +34,6 @@
         <message>
             <source>Language:</source>
             <translation>언어:</translation>
-        </message>
-        <message>
-            <source>Editing:</source>
-            <translation>편집 대상:</translation>
         </message>
         <message>
             <source>Claude Code version:</source>
@@ -136,6 +112,62 @@
             <translation>사용 중단</translation>
         </message>
         <message>
+            <source>Additional entries</source>
+            <translation>추가 항목</translation>
+        </message>
+        <message>
+            <source>+ Add item</source>
+            <translation>+ 항목 추가</translation>
+        </message>
+        <message>
+            <source>key</source>
+            <translation>키</translation>
+        </message>
+        <message>
+            <source>Remove</source>
+            <translation>삭제</translation>
+        </message>
+        <message>
+            <source>Duplicate key: only the last entry is kept</source>
+            <translation>중복 키: 마지막 항목만 남습니다</translation>
+        </message>
+        <message>
+            <source>e.g. {value}</source>
+            <translation>예: {value}</translation>
+        </message>
+        <message>
+            <source>Add</source>
+            <translation>추가</translation>
+        </message>
+        <message>
+            <source>Move up</source>
+            <translation>위로</translation>
+        </message>
+        <message>
+            <source>Move down</source>
+            <translation>아래로</translation>
+        </message>
+        <message>
+            <source>Duplicate item</source>
+            <translation>중복 항목</translation>
+        </message>
+        <message>
+            <source>(raw JSON)</source>
+            <translation>(raw JSON)</translation>
+        </message>
+        <message>
+            <source>Pick one of the allowed shapes (anyOf)</source>
+            <translation>허용되는 여러 형태 중 하나를 고릅니다 (anyOf)</translation>
+        </message>
+        <message>
+            <source>Variant:</source>
+            <translation>형태:</translation>
+        </message>
+        <message>
+            <source>null</source>
+            <translation>null</translation>
+        </message>
+        <message>
             <source>env wins</source>
             <translation>env 우선</translation>
         </message>
@@ -156,60 +188,28 @@
             <translation>필수 키</translation>
         </message>
         <message>
+            <source>…and {n} more</source>
+            <translation>…외 {n}개</translation>
+        </message>
+        <message>
             <source>Related env:</source>
             <translation>관련 env:</translation>
         </message>
         <message>
-            <source>Additional entries</source>
-            <translation>추가 항목</translation>
-        </message>
-        <message>
-            <source>+ Add item</source>
-            <translation>+ 항목 추가</translation>
-        </message>
-        <message>
-            <source>key</source>
-            <translation>키</translation>
-        </message>
-        <message>
-            <source>Remove</source>
-            <translation>삭제</translation>
-        </message>
-        <message>
-            <source>e.g. {value}</source>
-            <translation>예: {value}</translation>
-        </message>
-        <message>
-            <source>Add</source>
-            <translation>추가</translation>
-        </message>
-        <message>
-            <source>Move up</source>
-            <translation>위로</translation>
-        </message>
-        <message>
-            <source>Move down</source>
-            <translation>아래로</translation>
-        </message>
-        <message>
-            <source>(raw JSON)</source>
-            <translation>(raw JSON)</translation>
-        </message>
-        <message>
-            <source>Pick one of the allowed shapes (anyOf)</source>
-            <translation>허용되는 여러 형태 중 하나를 고릅니다 (anyOf)</translation>
-        </message>
-        <message>
-            <source>Variant:</source>
-            <translation>형태:</translation>
-        </message>
-        <message>
-            <source>null</source>
-            <translation>null</translation>
-        </message>
-        <message>
             <source>Fixed value (const)</source>
             <translation>고정값 (const)</translation>
+        </message>
+        <message>
+            <source>The form cannot show this value (not an allowed value, out of range or a different type), so it is kept exactly as loaded. Edit it as JSON or switch to the form.</source>
+            <translation>폼으로 표시할 수 없는 값(허용되지 않는 값, 범위 밖, 다른 타입)이라 읽은 그대로 보존합니다. JSON 으로 고치거나 폼으로 전환하세요.</translation>
+        </message>
+        <message>
+            <source>Use form</source>
+            <translation>폼으로 편집</translation>
+        </message>
+        <message>
+            <source>Discard this value and edit it with the form (starts from the default)</source>
+            <translation>이 값을 버리고 폼으로 편집합니다(기본값에서 시작)</translation>
         </message>
         <message>
             <source>e.g. {values}</source>
@@ -282,6 +282,198 @@
         <message>
             <source>No matches</source>
             <translation>검색 결과 없음</translation>
+        </message>
+        <message>
+            <source>User (~/.claude/settings.json)</source>
+            <translation>사용자 (~/.claude/settings.json)</translation>
+        </message>
+        <message>
+            <source>Project (.claude/settings.json)</source>
+            <translation>프로젝트 (.claude/settings.json)</translation>
+        </message>
+        <message>
+            <source>Local (.claude/settings.local.json)</source>
+            <translation>로컬 (.claude/settings.local.json)</translation>
+        </message>
+        <message>
+            <source>Managed settings</source>
+            <translation>관리형 설정</translation>
+        </message>
+        <message>
+            <source>All files</source>
+            <translation>모든 파일</translation>
+        </message>
+        <message>
+            <source>Settings file being edited. Keys that have no effect in it are hidden.</source>
+            <translation>편집 중인 설정 파일. 그 파일에서 효력이 없는 키는 숨깁니다.</translation>
+        </message>
+        <message>
+            <source>Editing:</source>
+            <translation>편집 대상:</translation>
+        </message>
+        <message>
+            <source>{n} hidden</source>
+            <translation>{n}개 숨김</translation>
+        </message>
+        <message>
+            <source>{n} keys have no effect in the selected file or Claude Code version and are hidden. Pick “All files” to show them.</source>
+            <translation>{n}개 키는 선택한 파일이나 Claude Code 버전에서 효력이 없어 숨겼습니다. 보려면 “모든 파일”을 고르세요.</translation>
+        </message>
+        <message>
+            <source>Hidden keys that have values (kept as is): {keys}</source>
+            <translation>값이 있는 숨긴 키(그대로 보존): {keys}</translation>
+        </message>
+        <message>
+            <source>⚠ {n} problems</source>
+            <translation>⚠ 문제 {n}개</translation>
+        </message>
+        <message>
+            <source>{errors} errors, {warnings} warnings — they do not block editing or saving. Click to jump to one.</source>
+            <translation>오류 {errors}개, 경고 {warnings}개 — 편집·저장을 막지는 않습니다. 눌러서 해당 위치로 이동하세요.</translation>
+        </message>
+        <message>
+            <source>(+{n} more)</source>
+            <translation>(외 {n}개)</translation>
+        </message>
+        <message>
+            <source>{n} problem(s) in settings: {issues}</source>
+            <translation>설정에 문제 {n}개: {issues}</translation>
+        </message>
+        <message>
+            <source>Unknown setting key (not in the bundled schema)</source>
+            <translation>알 수 없는 설정 키(번들 스키마에 없음)</translation>
+        </message>
+        <message>
+            <source>This value is not allowed here</source>
+            <translation>여기에는 이 값을 쓸 수 없습니다</translation>
+        </message>
+        <message>
+            <source>Must be {value}</source>
+            <translation>{value} 이어야 합니다</translation>
+        </message>
+        <message>
+            <source>Not an allowed value. Allowed: {values}</source>
+            <translation>허용되지 않는 값입니다. 허용값: {values}</translation>
+        </message>
+        <message>
+            <source>Expected {expected}, got {actual}</source>
+            <translation>{expected} 이어야 하는데 {actual} 입니다</translation>
+        </message>
+        <message>
+            <source>Does not match any allowed form: {forms}</source>
+            <translation>허용된 형태 중 어느 것과도 맞지 않습니다: {forms}</translation>
+        </message>
+        <message>
+            <source>pattern {pattern}</source>
+            <translation>패턴 {pattern}</translation>
+        </message>
+        <message>
+            <source>Must not be empty</source>
+            <translation>비워 둘 수 없습니다</translation>
+        </message>
+        <message>
+            <source>Must be at least {n} characters</source>
+            <translation>{n}자 이상이어야 합니다</translation>
+        </message>
+        <message>
+            <source>Must be at most {n} characters</source>
+            <translation>{n}자 이하여야 합니다</translation>
+        </message>
+        <message>
+            <source>Does not match the pattern {pattern}</source>
+            <translation>패턴 {pattern} 과 맞지 않습니다</translation>
+        </message>
+        <message>
+            <source>Must be a finite number</source>
+            <translation>유한한 숫자여야 합니다</translation>
+        </message>
+        <message>
+            <source>Must be ≥ {n}</source>
+            <translation>{n} 이상이어야 합니다</translation>
+        </message>
+        <message>
+            <source>Must be &gt; {n}</source>
+            <translation>{n} 보다 커야 합니다</translation>
+        </message>
+        <message>
+            <source>Must be ≤ {n}</source>
+            <translation>{n} 이하여야 합니다</translation>
+        </message>
+        <message>
+            <source>Must be &lt; {n}</source>
+            <translation>{n} 보다 작아야 합니다</translation>
+        </message>
+        <message>
+            <source>Must be a multiple of {n}</source>
+            <translation>{n} 의 배수여야 합니다</translation>
+        </message>
+        <message>
+            <source>Missing required key "{key}"</source>
+            <translation>필수 키 "{key}" 가 없습니다</translation>
+        </message>
+        <message>
+            <source>Invalid key "{key}": {reason}</source>
+            <translation>잘못된 키 "{key}": {reason}</translation>
+        </message>
+        <message>
+            <source>Unknown key "{key}"</source>
+            <translation>알 수 없는 키 "{key}"</translation>
+        </message>
+        <message>
+            <source>Must have at least {n} entries</source>
+            <translation>항목이 {n}개 이상이어야 합니다</translation>
+        </message>
+        <message>
+            <source>Must have at most {n} entries</source>
+            <translation>항목이 {n}개 이하여야 합니다</translation>
+        </message>
+        <message>
+            <source>Must have at least {n} items</source>
+            <translation>원소가 {n}개 이상이어야 합니다</translation>
+        </message>
+        <message>
+            <source>Must have at most {n} items</source>
+            <translation>원소가 {n}개 이하여야 합니다</translation>
+        </message>
+        <message>
+            <source>Duplicate of item {i}</source>
+            <translation>{i}번 원소와 중복</translation>
+        </message>
+        <message>
+            <source>Overlaps item {i} ({other})</source>
+            <translation>{i}번 원소({other})와 겹칩니다</translation>
+        </message>
+        <message>
+            <source>Not a valid URL (e.g. https://example.com/path)</source>
+            <translation>올바른 URL 이 아닙니다(예: https://example.com/path)</translation>
+        </message>
+        <message>
+            <source>Not a valid regular expression: {error}</source>
+            <translation>올바른 정규식이 아닙니다: {error}</translation>
+        </message>
+        <message>
+            <source>Not a valid version number (e.g. 2.1.100)</source>
+            <translation>올바른 버전 번호가 아닙니다(예: 2.1.100)</translation>
+        </message>
+        <message>
+            <source>Unknown IANA time zone name (e.g. UTC, Europe/Dublin)</source>
+            <translation>알 수 없는 IANA 시간대 이름입니다(예: UTC, Asia/Seoul)</translation>
+        </message>
+        <message>
+            <source>Write a CIDR block with a prefix length (e.g. 198.51.100.0/24)</source>
+            <translation>접두사 길이를 포함한 CIDR 블록으로 적으세요(예: 198.51.100.0/24)</translation>
+        </message>
+        <message>
+            <source>Not a valid IPv4 CIDR block: {error}</source>
+            <translation>올바른 IPv4 CIDR 블록이 아닙니다: {error}</translation>
+        </message>
+        <message>
+            <source>Prefix length must be /8 to /32</source>
+            <translation>접두사 길이는 /8 ~ /32 여야 합니다</translation>
+        </message>
+        <message>
+            <source>Overlaps non-public address space {range}</source>
+            <translation>공인 주소가 아닌 대역 {range} 와 겹칩니다</translation>
         </message>
         <message>
             <source>Search setting keys and descriptions…</source>
@@ -366,6 +558,10 @@
         <message>
             <source>No save path</source>
             <translation>저장 경로가 없습니다</translation>
+        </message>
+        <message>
+            <source>env must be an object or null</source>
+            <translation>env 는 객체 또는 null 이어야 합니다</translation>
         </message>
         <message>
             <source>Auth &amp; API</source>

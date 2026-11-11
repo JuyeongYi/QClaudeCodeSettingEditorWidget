@@ -15,6 +15,8 @@ class BaseEditor(QtWidgets.QWidget):
     - value(): 현재 값(JSON 호환 파이썬 객체)
     - setValue(v): 값 로드(변경 시그널 억제)
     - changed: 사용자 조작으로 값이 바뀔 때 발생
+    - canRepresent(v): 값을 바꾸지 않고 담을 수 있는지. False 인 값은 ValueSlot 이 raw JSON 으로 보존한다
+      (허용 목록 밖 enum·범위 밖 숫자·다른 타입을 기본값으로 바꾸거나 잘라 내는 일이 없게)
     - compact: True 면 한 줄(라벨 오른쪽)에 배치해도 되는 작은 편집기
     """
 
@@ -39,6 +41,9 @@ class BaseEditor(QtWidgets.QWidget):
 
     def reset(self) -> None:
         self.setValue(default_for(self.schema, self.root))
+
+    def canRepresent(self, value: Any) -> bool:  # noqa: N802
+        return True
 
     def isValid(self) -> bool:
         return True

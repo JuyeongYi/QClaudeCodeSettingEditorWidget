@@ -28,6 +28,9 @@ w = QClaudeCodeSettingEditorWidget(language="ko")   # 생략 시 QCCSE_LANG → 
 w.SetSetting('{"model": "opus", "env": {"API_TIMEOUT_MS": "1200000"}}')   # JSON 문자열 로드
 w.show(); app.exec()
 
+# 이전에 이 위젯이 만든 JSON 객체(dict 또는 JSON 문자열)로 생성 즉시 같은 상태를 세팅
+w2 = QClaudeCodeSettingEditorWidget(initialSettings=w.settings())
+
 w.GetSetting()        # 들여쓰기된 JSON 문자열
 w.GetSettingJsonl()   # 개행 없는 한 줄 JSON (JSONL 레코드)
 w.settings()          # dict
@@ -35,6 +38,7 @@ w.settings()          # dict
 
 | API | 설명 |
 | --- | --- |
+| 생성자 `initialSettings=dict \| str` | 처음 채울 설정(이 위젯이 만든 JSON 객체 또는 그 문자열). 파일처럼 신뢰 소스로 싣는다 |
 | `settings(version=None)` / `setSettings(dict)` | dict 로 읽기/쓰기. 체크된(설정된) 키만 포함, 순서는 스키마 순서 |
 | `GetSetting(indent=2, version=None)` / `GetSettingJsonl(version=None)` | JSON 문자열 / 한 줄 JSON |
 | `SetSetting(text)` | JSON 문자열 로드. 파싱 실패 시 `ValueError` |
@@ -52,7 +56,10 @@ w.settings()          # dict
 | `targetScope()` / `setTargetScope(Scope)` | 편집 대상 설정 파일 (생성자 `targetScope=Scope.USER`) — 그 파일에서 효력 없는 키 숨김 |
 | `targetVersion()` / `setTargetVersion(str \| None)` / `latestVersion()` | 대상 Claude Code 버전 (생성자 `targetVersion=None` = 필터 없음, `"latest"` 가능) |
 | `isKeyApplicable(key_or_path)` / `inapplicableKeys()` | 대상 스코프·버전에서 효력이 있는지 / 그래서 숨긴 최상위 키 |
+| 생성자 `showScopeSelector=True` / `setShowScopeSelector(bool)` | 툴바 「편집 대상」 콤보 표시 여부 |
+| `validationIssues()` / `showIssue(issue)` | 현재 설정의 스키마 문제(`Issue`: path·message·severity) / 그 위치로 이동 — [값 검증](#값-검증-막지-않음) |
 | `settingChanged` (Signal) | 값이 바뀔 때마다 (같은 이벤트 루프 턴 내 변경은 한 번으로 합침) |
+| `validationChanged` (Signal[int]) | 변경 반영 후 문제 수 |
 
 ## 키 enum·메타데이터와 단건·JSON 갱신
 
@@ -162,7 +169,9 @@ w.setTargetScope(Scope.USER | Scope.PROJECT); w.setTargetVersion(None); w.inappl
 - 행 머리 배지: 스코프(`managed`, `user · managed`), 도입 버전(`v2.1.283+`), `deprecated`, `removed v2.1.277`.
 - 숨긴 키의 값은 로드 시 그대로 보존되어 출력에 남는다(카테고리 제외와 같은 규칙). 출력에서도 빼려면 아래 버전별 빌드.
 - 버전 인자에는 `"latest"`(`LATEST_VERSION`)도 쓸 수 있다 — 번들 메타데이터의 기준 버전(= 패키지 버전, `Version.latest()`)으로 풀린다.
-- 데모: `python -m qclaudecodesettingeditorwidget --scope PROJECT --target-version 2.1.250` (하단 콤보·입력란으로도 전환).
+- 툴바 왼쪽 「편집 대상」 콤보(User / Project / Local / Managed / 모든 파일)로 바꿀 수 있고, 옆에 숨긴 키 수(`n개 숨김`,
+  툴팁에 값이 있는 숨긴 키)가 보인다. 콤보를 감추려면 `showScopeSelector=False`(그때는 `setTargetScope()` 로만 바꾼다).
+- 데모: `python -m qclaudecodesettingeditorwidget --scope PROJECT --target-version 2.1.250` (버전은 하단 입력란으로도 전환).
 
 ### 버전별 빌드
 
@@ -182,6 +191,37 @@ settings_for_version({"model": "opus", "taskOutputMaxChars": 1000}, "latest")   
 - 스코프(`targetScope`)로는 거르지 않는다. `version=None`(기본)이면 지금처럼 숨긴 키의 보존값까지 그대로 쓴다.
 - 버전 형식이 틀리면 파일을 쓰기 전에 `ValueError`.
 
+## 값 검증 (막지 않음)
+
+허용값 밖 선택·범위 밖 숫자·잘못된 형식을 **편집기가 원천적으로 막고**(enum 콤보, 범위가 걸린 스핀박스), 파일·API 로
+들어온 값은 **바꾸지 않고 보존한 채 문제를 알린다.** 검증 때문에 편집·저장이 멈추는 일은 없다.
+
+- 검증기 `validation.py`: 번들 스키마의 type·enum·const·anyOf/oneOf·required·additionalProperties·propertyNames·
+  min/max(Length·Items·imum)·exclusive*·multipleOf·uniqueItems·pattern·format 을 검사해 `Issue(path, message, severity)` 목록을 만든다.
+  `ERROR` = 스키마 위반, `WARNING` = 스키마 밖 최상위 키·env enum 밖 값(Claude Code 가 느슨하게 읽음)·이 환경에서 확정할 수 없는 값.
+- 확장 format(`constants.Format`): `uri`, `uri-pattern`(와일드카드 URL), `semver`, `regex`(JS 이름 그룹 `(?<n>…)` 허용, WARNING),
+  `iana-time-zone`(tzdata 가 없으면 건너뜀, WARNING), `public-ipv4-cidr`(/8~/32, 사설·CGNAT·문서용·멀티캐스트·예약 대역 거부)
+  와 배열 키워드 `x-disjointNetworks`(CIDR 끼리 겹침 금지). 어떤 키에 붙는지는 `tools/resource_overrides.json` 의 `schemaPatches`.
+- 표시: 툴바 `⚠ 문제 n개` 버튼(누르면 목록 → 해당 행으로 이동), 행 아래 메시지, env 값 셀 테두리, JSON 페이지 하단.
+- API: 문제가 있으면 `SettingValidationWarning`(파이썬 `warnings`, `.issues`)을 내고 **그대로 적용**한다.
+  `setSettingValue`·`UpdateSetting`·`UpdateEnv`·`setSettings`(trusted=False)·`saveFile` 은 적용·쓰기 **전에** 경고하므로,
+  막고 싶은 앱은 엄격 모드를 켠다. 파일·`initialSettings`(신뢰 소스)는 일단 싣고 나서 경고한다. UI 동작(열기·저장·JSON 적용)은 엄격 모드여도 멈추지 않는다.
+
+```python
+import warnings
+from qclaudecodesettingeditorwidget import SettingValidationWarning
+
+w.setSettingValue("effortLevel", "turbo")           # 경고 후 적용 — settings() 에 "turbo" 그대로
+w.validationIssues()                                # [Issue(path='effortLevel', message='Not an allowed value. ...', ...)]
+warnings.simplefilter("error", SettingValidationWarning)   # 엄격 모드: 문제 있는 값은 예외, 적용·저장되지 않음
+```
+
+- **보존(강제 변환 없음)**: 폼이 그대로 담을 수 없는 값(enum 밖 문자열, 불리언 자리의 `"yes"`, int32 를 넘는 정수,
+  표시 자릿수를 넘는 실수, 문자열 자리의 숫자 …)은 그 자리에서 `⚠` 와 함께 raw JSON 으로 보여 주고 그대로 출력한다.
+  `폼으로 편집` 을 누르면 그 값을 버리고 폼 기본값에서 시작한다. 그래서 페이지 구축 전후 `settings()` 가 항상 같다.
+- env 값은 문자열이 원칙이다. 파일의 숫자·불리언 값은 그대로 보존(셀에 JSON 으로 표시)되고, env 전용 API
+  (`setEnvValue`·`UpdateEnv`·`UpdateSetting` 의 env)에 넘긴 숫자만 `"5"` 처럼 문자열로 바꾼다(불리언은 `"true"`/`"1"` 중 무엇인지 정할 수 없어 그대로 두고 경고).
+
 ## 동작 규칙
 
 - **지연 구축**: 생성 시에는 내비게이션·키 메타·JSON 페이지만 만들고, 카테고리 페이지와 env 편집기는
@@ -190,10 +230,13 @@ settings_for_version({"model": "opus", "taskOutputMaxChars": 1000}, "latest")   
   구축 여부와 무관하게 같다. 전부 즉시 구축하려면 `ensureAllPagesBuilt()`. 벤치: `python tools/bench_construct.py`.
 
 - **포함/해제**: 각 키 앞의 체크박스가 "JSON에 포함" 여부. 해제된 키는 출력에 나오지 않는다.
-  체크가 꺼진 편집기를 만지면 자동으로 켜진다. `required` 키는 항상 포함.
-- **anyOf / oneOf**: 변형 선택 콤보 + 스택 편집기. 값을 로드하면 `value_matches` 휴리스틱으로
-  맞는 변형을 자동 선택하고, 어느 변형에도 안 맞으면 `(raw JSON)` 로 떨어져 값을 보존한다.
-  변형이 전부 문자열(`theme` 의 enum | `custom:*`)이면 제안 목록이 달린 편집 가능한 콤보 하나로 합친다.
+  체크가 꺼진 편집기를 만지면 자동으로 켜진다. `required` 키는 끌 수 없고 새 항목은 필수 키를 기본값으로 갖고 시작하지만,
+  로드한 값에 빠져 있으면 빠진 그대로 보존한다(체크가 풀린 채로 다시 켤 수 있고, 검증이 "필수 키 없음"으로 알린다).
+- **anyOf / oneOf**: 변형 선택 콤보 + 스택 편집기. 값을 로드하면 구조가 맞고(`value_matches`) 그대로 담을 수 있는
+  변형을 자동 선택하고, 없으면 `(raw JSON)` 로 떨어져 값을 보존한다.
+  변형이 전부 문자열(`theme` 의 enum | `custom:*`)이면 제안 목록이 달린 편집 가능한 콤보 하나로 합치되, 검증은 원래 anyOf 로 한다.
+- **dict·배열 편집기**: 키가 `propertyNames` 패턴에 안 맞거나 중복이면 빨갛게, 문자열 배열 항목이 항목 스키마(권한 규칙 패턴 등)에
+  안 맞거나 `uniqueItems` 중복이면 빨간 글자로 표시한다. 체크 리스트(enum 배열)는 로드한 순서를 유지한다.
   `type: [X, "null"]` 은 `null` 체크박스 + X 편집기.
 - **스키마에 없는 키**는 그대로 보존해 다시 내보낸다(최상위·중첩 객체 모두).
 - **env**: 스키마 340개 + 문서 전용 변수 105개 + overrides 7개 = 452개를 표로 제공. enum 이 있으면 콤보(직접 입력도 가능),
@@ -250,8 +293,11 @@ python tools/build_translations.py --compile
 
 - 생성물: `resources/` 의 병합 스키마·`env-vars.json`·`overlaps.json`, `keys.py`, `env_keys.py`, `_version.py`.
 - `since` 우선순위: overrides > 문서 > CHANGELOG > 이력. `removed`/`deprecated`: overrides > 문서 > 이력.
-- 문서에만 있는 키는 Type 문장(Boolean, 문자열 enum, 숫자 범위, 문자열 배열)에서 스키마를 만들고, 객체형은 overrides 에 적는다.
+- 문서에만 있는 키는 Type 문장(Boolean, 문자열 enum, 숫자·정수 범위, 문자열 배열)에서 스키마를 만들고, 객체형은 overrides 에 적는다.
   `Global config` 전용 키는 settings.json 이 아니므로 주입하지 않는다.
+- schemastore 에 있는 숫자 키도 문서 Type 의 범위가 스키마에 없으면 덧붙인다(예: `policyHelper.timeoutMs` minimum 1000).
+- 문서 문장으로만 적힌 형식·범위·개수 제약(CIDR·포트·URL·버전·시간대·정규식)은 overrides 의 `schemaPatches`
+  (`경로 → 키워드`, 경로는 `sshConfigs[].sshPort` 같은 편집기 표기 또는 `#/$defs/hookCommand.url`)로 스키마에 붙인다.
 - 새로 생긴 최상위 키는 `categories.py` 에 분류가 없어도 `Other` 페이지에 자동으로 나타난다.
 - 문서에 새 주제(Topic 열)가 생기면 갱신이 멈추고 `constants.Topic` 에 추가하라고 알린다.
 
@@ -259,8 +305,10 @@ python tools/build_translations.py --compile
 
 ```
 qclaudecodesettingeditorwidget/
-├── widget.py          # QClaudeCodeSettingEditorWidget (툴바·내비게이션·지연 구축·필터, 값 보관처)
-├── widget_api.py      # SettingsApiMixin: settings/setSettings/Update*/단건 접근·노출 정책, HiddenKeyError
+├── widget.py          # QClaudeCodeSettingEditorWidget (툴바·내비게이션·지연 구축·필터, 값 보관처, 검증 표시)
+├── widget_api.py      # SettingsApiMixin: settings/setSettings/Update*/단건 접근·노출 정책(HiddenKeyError)·검증 경고
+├── validation.py      # 스키마 검증기: Issue, validate/validate_settings, 확장 format, SettingValidationWarning
+├── toolbar.py         # 툴바 부품: 편집 대상(스코프) 콤보, 숨긴 키 수, ⚠ 문제 버튼
 ├── pages.py           # KeyMeta(행 없이 검색·스코프/버전 판별)와 지연 구축 _Page
 ├── demo.py            # 테스트 메인윈도우 (언어 선택, 확인 → JSON 표시)
 ├── env_editor.py      # EnvEditor: env 변수 표
@@ -269,9 +317,12 @@ qclaudecodesettingeditorwidget/
 │   ├── __init__.py    # create_editor 팩토리 (스키마 노드 → 편집기)
 │   ├── base.py        # BaseEditor
 │   ├── badges.py      # SettingInfo → 스코프·since·deprecated·removed 배지
-│   ├── scalars.py     # String / Enum / Bool / Int / Number / Const / Null
-│   └── containers.py  # PropertyRow / Object / Dict / StringList / CheckList / List / AnyOf / Nullable / RawJson
-├── schema.py          # 스키마 로딩, $ref, value_matches, 중첩 경로 적용 검사, env 레지스트리
+│   ├── scalars.py     # String / Enum / Bool / Int / Number / Const / Null (canRepresent: 값을 바꾸지 않고 담을 수 있는지)
+│   ├── slot.py        # ValueSlot: 폼이 담을 수 없는 값을 raw JSON 으로 보존
+│   ├── raw.py         # RawJsonEditor (여러 줄 / 한 줄)
+│   ├── row.py         # PropertyRow (포함 체크·배지·검증 문제 표시)
+│   └── containers.py  # Object / Dict / StringList / CheckList / List / AnyOf / Nullable
+├── schema.py          # 스키마 로딩, $ref, value_matches, 공용 정규식(compile_pattern)·json_equal, env 레지스트리
 ├── categories.py      # 최상위 키 → 카테고리 (영어 제목이 번역 소스, 키는 SettingKey)
 ├── constants.py       # 전역 참조 상수: Scope·JsonType(비트 플래그), Topic·Precedence, 페이지 id, 리소스·번역 이름, 공용 스타일
 ├── spec.py            # Version, SettingInfo(dataclass), KeyEnum
@@ -284,7 +335,7 @@ tools/
 ├── refresh_resources.py    # 문서·스키마·CHANGELOG 다운로드 → resources/, keys.py·env_keys.py·_version.py 생성
 ├── refresh/                # pkg(패키지 모듈 로더) / markdown(문서 파서) / changelog / catalog(스코프·버전·스키마 주입) /
 │                           # envvars / overlaps / codegen
-├── resource_overrides.json # 손 보정 (객체 키 스키마, 문서에 없는 env 변수 …)
+├── resource_overrides.json # 손 보정 (객체 키 스키마, 문서에 없는 env 변수, schemaPatches …)
 ├── settings_history.json   # 문서에 보인 버전 범위 (자동)
 ├── bench_construct.py      # 위젯 생성 시간 벤치
 └── build_translations.py   # .ts 생성/갱신/가져오기/컴파일

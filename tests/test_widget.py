@@ -60,7 +60,7 @@ SAMPLE = {
         "credentials": {"files": [{"path": "~/.aws/credentials", "mode": "deny"}], "allowPlaintextInject": False},
     },
     "statusLine": {"type": "command", "command": "~/bin/status.sh", "padding": 0},
-    "policyHelper": {"path": "/x", "timeoutMs": 100, "refreshIntervalMs": 0},
+    "policyHelper": {"path": "/x", "timeoutMs": 5000, "refreshIntervalMs": 0},
     "sshConfigs": [{"id": "a", "name": "A", "sshHost": "user@host", "sshPort": 22}],
     "managedMcpServers": [{"type": "http", "url": "https://x", "toolPolicy": {"a": "allow"}}],
     "vimInsertModeRemaps": {"jj": "<Esc>"},

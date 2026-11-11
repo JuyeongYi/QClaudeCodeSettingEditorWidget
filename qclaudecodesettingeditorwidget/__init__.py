@@ -18,14 +18,16 @@
 """
 from ._version import __version__
 from .categories import Category
-from .constants import LATEST_VERSION, JsonType, Precedence, Scope, Topic
+from .constants import LATEST_VERSION, JsonType, Precedence, Scope, Severity, Topic
 from .keys import NESTED_SETTINGS, EnvVar, KeyEnum, SettingKey, setting_info
 from .schema import EnvVarInfo, load_env_registry, load_schema
 from .spec import SettingInfo, Version
+from .validation import Issue, SettingValidationWarning
 from .widget import HiddenKeyError, QClaudeCodeSettingEditorWidget
 from .widget_api import settings_for_version
 
-__all__ = ["QClaudeCodeSettingEditorWidget", "HiddenKeyError", "Category", "Scope", "JsonType", "Topic", "Precedence",
+__all__ = ["QClaudeCodeSettingEditorWidget", "HiddenKeyError", "SettingValidationWarning", "Issue", "Severity",
+           "Category", "Scope", "JsonType", "Topic", "Precedence",
            "Version", "LATEST_VERSION", "SettingKey", "SettingInfo",
            "NESTED_SETTINGS", "setting_info", "EnvVar", "KeyEnum", "EnvVarInfo", "load_env_registry", "load_schema",
            "settings_for_version", "__version__"]

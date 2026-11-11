@@ -36,7 +36,39 @@ ENV_LOCALE_DIR = f"{APP_ID.upper()}_LOCALE_DIR"  # 추가 번역 디렉터리 �
 # --------------------------------------------------------------------------- 공용 스타일
 MUTED_COLOR = "#8a8a8a"
 MUTED = f"color: {MUTED_COLOR};"
-INVALID_STYLE = "border: 1px solid #d33; background: #fff4f4;"
+ERROR_COLOR = "#d33"
+WARNING_COLOR = "#d08a00"
+INVALID_STYLE = f"border: 1px solid {ERROR_COLOR}; background: #fff4f4;"
+SUSPECT_STYLE = f"border: 1px solid {WARNING_COLOR}; background: #fffaf0;"
+WARNING_LABEL_STYLE = f"color: {WARNING_COLOR}; font-weight: bold;"
+
+
+# --------------------------------------------------------------------------- 검증
+class Severity(str, Enum):
+    """검증 문제의 심각도. 어느 쪽도 편집·저장을 막지 않는다(표시·경고만)."""
+
+    ERROR = "error"      # 스키마 위반: Claude Code 가 값을 거부하거나 무시할 가능성이 높다
+    WARNING = "warning"  # 확인 권장: 스키마 밖 키, 이 환경에서 확인할 수 없는 값(시간대·JS 정규식) 등
+
+    def __str__(self) -> str:
+        return self.value
+
+
+class Format(str, Enum):
+    """스키마 "format" 값. 표준(uri, regex) + tools/resource_overrides.json 의 schemaPatches 가 붙이는 확장."""
+
+    URI = "uri"                            # 스킴이 있는 절대 URI (http(s) 는 호스트 필수)
+    URI_PATTERN = "uri-pattern"            # 와일드카드(*)를 허용하는 URL 패턴
+    REGEX = "regex"                        # 정규식(JS 문법 일부를 파이썬 re 로 바꿔 검사)
+    SEMVER = "semver"                      # 버전 번호 "2.1.100"
+    TIME_ZONE = "iana-time-zone"           # IANA 시간대 이름 "Europe/Dublin"
+    PUBLIC_IPV4_CIDR = "public-ipv4-cidr"  # 공인 IPv4 CIDR 블록 "198.51.100.0/24" (/8~/32)
+
+    def __str__(self) -> str:
+        return self.value
+
+
+DISJOINT_NETWORKS = "x-disjointNetworks"  # 배열 확장 키워드: 원소(CIDR)끼리 겹치면 안 된다
 
 
 def _parse_flags(cls, text: str):

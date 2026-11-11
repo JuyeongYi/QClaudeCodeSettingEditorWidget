@@ -11,11 +11,12 @@ from .containers import (
     ListEditor,
     NullableEditor,
     ObjectEditor,
-    PropertyRow,
-    RawJsonEditor,
     StringListEditor,
 )
+from .raw import RawJsonEditor
+from .row import PropertyRow, precedence_label
 from .scalars import BoolEditor, ConstEditor, EnumEditor, IntEditor, NullEditor, NumberEditor, StringEditor
+from .slot import ValueSlot
 
 MAX_DEPTH = 12
 MULTILINE_KEYS = {SettingKey.claudeMd, SettingKey.pluginTrustMessage}
@@ -23,7 +24,7 @@ MULTILINE_KEYS = {SettingKey.claudeMd, SettingKey.pluginTrustMessage}
 __all__ = [
     "AnyOfEditor", "BaseEditor", "BoolEditor", "CheckListEditor", "ConstEditor", "DictEditor", "EnumEditor",
     "IntEditor", "ListEditor", "NullEditor", "NullableEditor", "NumberEditor", "ObjectEditor", "PropertyRow",
-    "RawJsonEditor", "StringEditor", "StringListEditor", "create_editor",
+    "RawJsonEditor", "StringEditor", "StringListEditor", "ValueSlot", "create_editor", "precedence_label",
 ]
 
 
@@ -54,7 +55,8 @@ def create_editor(schema: JsonSchema, root: JsonSchema, depth: int = 0, key: str
                 suggestions.extend(str(e) for e in v.get("enum", []) if str(e) not in suggestions)
             merged = {k: v for k, v in schema.items() if k not in ("anyOf", "oneOf")}
             merged["type"] = "string"
-            return StringEditor(merged, root, depth, suggestions=suggestions, path=path)
+            # 제안 콤보로 합쳐도 검증은 원래 anyOf(enum·pattern)로 한다 — theme 의 "custom:" 접두사 등
+            return StringEditor(merged, root, depth, suggestions=suggestions, path=path, check_schema=schema)
         return AnyOfEditor(variants, schema, root, depth, path=path)
 
     types = schema_types(schema)

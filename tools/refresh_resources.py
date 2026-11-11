@@ -5,7 +5,8 @@
 - https://www.schemastore.org/claude-code-settings.json → 스키마 기반 (문서에만 있는 키는 Type 문장에서 주입)
 - https://code.claude.com/docs/en/env-vars.md            → env 변수 설명
 - https://raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md → 최신 버전, 'Added `key` setting' 버전
-- tools/resource_overrides.json (손으로 관리) → 키·경로·env 보정, 구조를 추론할 수 없는 키의 스키마
+- tools/resource_overrides.json (손으로 관리) → 키·경로·env 보정, 구조를 추론할 수 없는 키의 스키마,
+  schemaPatches(문서 문장으로만 적힌 format·범위·개수 제약을 스키마 키워드로)
 - tools/settings_history.json   (자동 관리)   → 문서에 보인 버전 범위(새 키의 since, 사라진 키의 removed)
 
 생성물
@@ -41,6 +42,8 @@ SCHEMA_OUT = RES / constants.SCHEMA_RESOURCE
 ENV_OUT = RES / constants.ENV_RESOURCE
 OVERLAPS_OUT = RES / constants.OVERLAPS_RESOURCE
 OVERRIDES = Path(__file__).resolve().parent / "resource_overrides.json"
+OVERRIDE_SETTINGS = "settings"         # resource_overrides.json 섹션: 키·경로별 메타데이터/스키마 교체
+OVERRIDE_SCHEMA_PATCHES = "schemaPatches"  # 섹션: 경로 → 덧붙일 스키마 키워드(format·범위·개수)
 HISTORY = Path(__file__).resolve().parent / "settings_history.json"
 
 
@@ -87,7 +90,8 @@ def main(argv: list[str] | None = None) -> int:
     history = update_history(old_history, list(docs), version)
     added = added_versions(changelog_md, set(docs) | set(store.get("properties", {})))
 
-    schema, top, nested, notes = build_catalog(store, docs, added, history, overrides.get("settings", {}))
+    schema, top, nested, notes = build_catalog(store, docs, added, history, overrides.get(OVERRIDE_SETTINGS, {}),
+                                               overrides.get(OVERRIDE_SCHEMA_PATCHES, {}))
     RES.mkdir(parents=True, exist_ok=True)
     _dump(SCHEMA_OUT, schema, 2)
     registry = build_env_registry(schema, parse_env_doc(env_md), overrides.get(ENV_KEY, {}))

@@ -19,7 +19,7 @@ from pathlib import Path
 ROOT = Path.cwd()
 sys.path[:0] = [str(ROOT), str(ROOT / "tools")]
 
-from refresh_resources import HISTORY, OVERRIDES  # noqa: E402
+from refresh_resources import HISTORY, OVERRIDE_SETTINGS, OVERRIDES  # noqa: E402
 from refresh.pkg import PKG  # noqa: E402
 
 from qclaudecodesettingeditorwidget import NESTED_SETTINGS, SettingKey, Version, __version__  # noqa: E402
@@ -80,7 +80,7 @@ def cmd_obsolete() -> None:
         elif info.get("inDocs") or info.get("inSchema"):
             report(f"overrides.env.{name}: 이제 공식 {'문서' if info.get('inDocs') else '스키마'}에 있음 → 보정 제거"
                    " (값 후보 등 문서로 안 되는 보정만 남길 것)")
-    for path, ov in overrides.get("settings", {}).items():
+    for path, ov in overrides.get(OVERRIDE_SETTINGS, {}).items():
         if path not in settings and path not in history:
             report(f"overrides.settings.{path}: 문서·스키마·이력 어디에도 없음 → 제거")
             continue

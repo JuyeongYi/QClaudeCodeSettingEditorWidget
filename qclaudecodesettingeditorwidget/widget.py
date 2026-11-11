@@ -3,28 +3,37 @@
 페이지(카테고리)와 env 편집기는 **지연 구축**된다: 생성 시에는 내비게이션과 키 메타데이터만 만들고,
 좌측에서 처음 선택되거나 rowFor()/envEditor() 로 필요해질 때 행을 만든다. 그 전까지 값은
 _pending 에 보관되며 settings()/setSettings() 의 의미는 구축 여부와 무관하게 같다.
+
+검증(validation.py)은 막지 않는다: 값은 그대로 보존되고, 문제는 툴바 ⚠ 버튼·행 아래 메시지·env 셀 테두리로 보인다.
 """
 from __future__ import annotations
 
 import json
+import warnings
+from collections import defaultdict
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from . import i18n
 from .categories import CATEGORY_TITLES, Category, categorize
-from .constants import ENV_ID, ENV_KEY, JSON_ID, MUTED, Precedence, Scope
-from .editors import PropertyRow
+from .constants import ENV_ID, ENV_KEY, ERROR_COLOR, JSON_ID, MUTED, WARNING_COLOR, WARNING_LABEL_STYLE, Precedence, \
+    Scope, Severity
+from .editors import PropertyRow, precedence_label
 from .env_editor import EnvEditor
 from .i18n import tr
 from .keys import SettingKey, setting_info
 from .pages import KeyMeta, _Page
 from .schema import EnvVarInfo, JsonSchema, load_env_registry, load_overlaps, load_schema, overlaps_by_env, resolve_ref
 from .spec import Version
+from .toolbar import HiddenKeysLabel, IssuesButton, ScopeSelector
+from .validation import Issue, SettingValidationWarning, validate_settings
 from .widget_api import _MISSING, HiddenKeyError, SettingsApiMixin
 
-__all__ = ["QClaudeCodeSettingEditorWidget", "HiddenKeyError"]
+__all__ = ["QClaudeCodeSettingEditorWidget", "HiddenKeyError", "SettingValidationWarning"]
+MAX_JSON_ISSUES = 5
 
 
 class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
@@ -39,10 +48,13 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
       (settings/GetSetting/GetSettingJsonl/saveFile 의 version= : 그 Claude Code 버전에 있는 키만 출력, "latest" 가능)
     - clear()                             : 노출된 키 모두 해제
     - setLanguage(code) / language()      : 현지화 (locales/qccse_<code>.ts 또는 .qm 이 있으면 사용 가능)
+    - validationIssues() -> list[Issue]   : 현재 설정의 스키마 문제(막지 않는다 — 표시·경고만)
     - settingChanged (Signal)             : 값이 바뀔 때마다 (같은 이벤트 루프 턴의 변경은 한 번)
+    - validationChanged (Signal[int])     : 변경 반영 후 문제 수
     """
 
     settingChanged = QtCore.Signal()
+    validationChanged = QtCore.Signal(int)
     fileLoaded = QtCore.Signal(str)
     fileSaved = QtCore.Signal(str)
     languageChanged = QtCore.Signal(str)
@@ -51,19 +63,26 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
                  schema_path: str | Path | None = None, env_registry_path: str | Path | None = None,
                  env_registry: dict[str, EnvVarInfo] | None = None, language: str | None = None,
                  categories: Category = Category.ALL, overlaps: dict[str, list[dict[str, str]]] | None = None,
-                 targetScope: Scope = Scope.USER, targetVersion: Version | str | None = None):
+                 targetScope: Scope = Scope.USER, targetVersion: Version | str | None = None,
+                 initialSettings: dict[str, Any] | str | None = None, showScopeSelector: bool = True):
         """categories: 좌측에 노출할 카테고리 비트 플래그. 제외된 카테고리의 키는 편집할 수 없고,
         로드된 값은 _passthrough 로 보존되어 그대로 다시 내보낸다.
         targetScope: 편집 대상 설정 파일(Scope 비트 플래그, 기본 USER = ~/.claude/settings.json).
         그 파일들 중 어디에서도 효력이 없는 키(예: USER 대상일 때 Managed 전용 키)는 숨긴다. ANY_FILE 이면 전부.
         targetVersion: 대상 Claude Code 버전("2.1.250", LATEST_VERSION). 그 버전에 없는 키(이후 추가·이전 제거)는 숨긴다.
         None 이면 버전으로 거르지 않는다. 숨겨도 로드된 값은 보존되어 출력에 그대로 남는다
-        (출력에서도 빼려면 saveFile/settings 의 version= 을 쓴다)."""
+        (출력에서도 빼려면 saveFile/settings 의 version= 을 쓴다).
+        initialSettings: 처음 채울 설정 — 이 위젯이 만든 JSON 객체(dict) 또는 그 JSON 문자열. 파일에서 읽은 문서처럼
+        신뢰 소스로 다룬다(노출되지 않은 키도 보존). 스키마 문제는 SettingValidationWarning 으로 알리고 그대로 싣는다.
+        JSON 문자열이 깨졌거나 최상위가 객체가 아니면 ValueError.
+        showScopeSelector: 툴바의 「편집 대상」 콤보 표시 여부(False 면 targetScope 를 코드로만 바꾼다)."""
         super().__init__(parent)
         self._categories = Category(categories)
         self._target_scope = self._valid_scope(targetScope)
         self._target_version = self._valid_version(targetVersion)
         self._env_enabled = bool(Category.ENV & self._categories)
+        self._show_scope_selector = bool(showScopeSelector)
+        self._issues: list[Issue] = []
         self._schema: JsonSchema = schema if schema is not None else load_schema(schema_path)
         self._env_registry_path = env_registry_path
         self._env_registry: dict[str, EnvVarInfo] | None = env_registry  # env 페이지 구축 시 로드
@@ -91,6 +110,10 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
         self._outer.addWidget(self._body)
         self._refresh_json()
         self._apply_filter()
+        if initialSettings is not None:
+            data = self._parse_document(initialSettings) if isinstance(initialSettings, str) else initialSettings
+            self._set_document(data, trusted=True)
+            self._flush_change()  # 생성 직후부터 카운트·문제 표시가 맞도록 즉시 반영
 
     # ------------------------------------------------------------------ UI 구축
     def _build_ui(self) -> QtWidgets.QWidget:
@@ -122,10 +145,19 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
         self._status.setSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Preferred)
         self._status.setMinimumWidth(self._status.fontMetrics().horizontalAdvance(tr("000 keys set")) + 8)
         self._overlap_label = QtWidgets.QLabel()
-        self._overlap_label.setStyleSheet("color: #d08a00; font-weight: bold;")
+        self._overlap_label.setStyleSheet(WARNING_LABEL_STYLE)
         self._overlap_label.hide()
+        self._scope_selector = ScopeSelector(self._target_scope)
+        self._scope_selector.scopeChanged.connect(self.setTargetScope)
+        self._scope_selector.setVisible(self._show_scope_selector)
+        self._hidden_label = HiddenKeysLabel()
+        self._issues_button = IssuesButton()
+        self._issues_button.issueActivated.connect(self.showIssue)
         bar = QtWidgets.QHBoxLayout()
+        bar.addWidget(self._scope_selector)
+        bar.addWidget(self._hidden_label)
         bar.addWidget(self._search, 1)
+        bar.addWidget(self._issues_button)
         bar.addWidget(self._overlap_label)
         bar.addWidget(self._only_set)
         bar.addWidget(open_btn)
@@ -178,6 +210,7 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
         lay.addLayout(bar)
         lay.addWidget(splitter, 1)
         self._update_nav_counts()
+        self._update_hidden_label()
         return body
 
     def _build_json_page(self) -> None:
@@ -189,8 +222,12 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
         self._json.setTabChangesFocus(True)
         self._json.textChanged.connect(self._on_json_text)
         self._json_error = QtWidgets.QLabel()
-        self._json_error.setStyleSheet("color: #d33;")
+        self._json_error.setStyleSheet(f"color: {ERROR_COLOR};")
         self._json_error.setWordWrap(True)
+        self._json_issues = QtWidgets.QLabel()
+        self._json_issues.setWordWrap(True)
+        self._json_issues.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
+        self._json_issues.hide()
         apply_btn = QtWidgets.QPushButton(tr("Apply JSON"))
         apply_btn.setToolTip(tr("Parse the text and load it into the form"))
         apply_btn.clicked.connect(self._apply_json_text)
@@ -202,6 +239,7 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
         jb.addStretch(1)
         jv.addWidget(self._json, 1)
         jv.addWidget(self._json_error)
+        jv.addWidget(self._json_issues)
         jv.addLayout(jb)
         self._json_index = self._stack.addWidget(json_page)
         self._nav.addItem(tr(CATEGORY_TITLES[JSON_ID]))
@@ -216,6 +254,7 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
         self._rows[key] = row
         if key in self._pending:
             row.setValue(self._pending.pop(key))
+        row.setIssues([i for i in self._issues if i.key == key])
         return row
 
     def _ensure_page(self, page: _Page) -> None:
@@ -235,6 +274,7 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
             env_schema = resolve_ref(self._schema.get("properties", {}).get(ENV_KEY, {"type": "object"}), self._schema)
             env = EnvEditor(env_schema, self._schema, self._env_registry, related=self._overlaps_by_env)
             env.setValue(self._pending.pop(ENV_KEY, {}))
+            env.setIssues(self._env_issues())
             env.changed.connect(self._on_changed)
             env.setFilterText(self._search.text())
             if self._env_placeholder is not None:
@@ -267,7 +307,7 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
         if row is not None:
             if value is None:
                 row.setIncluded(False)
-                row.editor.reset()
+                row.resetValue()
             else:
                 row.setValue(value)
             return
@@ -286,7 +326,7 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
         keys += [k for k in self._passthrough if k != ENV_KEY]
         return keys
 
-    def _env_dict(self) -> dict[str, str]:
+    def _env_dict(self) -> dict[str, Any]:
         if self._env is not None:
             return self._env.value()
         store = self._pending if self._env_enabled else self._passthrough
@@ -312,10 +352,12 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
                 row.setValue(data[key])
             else:
                 row.setIncluded(False)
-                row.editor.reset()
+                row.resetValue()
         for k, v in data.items():
             if k == ENV_KEY:
                 self._set_env_dict(v if isinstance(v, dict) else {})
+                if not isinstance(v, dict):  # 객체가 아닌 env 는 편집기에 담을 수 없다 — 바꾸지 않고 보존(검증이 알린다)
+                    self._passthrough[ENV_KEY] = v
             elif k not in self._rows:
                 (self._pending if k in self._page_by_key else self._passthrough)[k] = v
         if ENV_KEY not in data:
@@ -338,7 +380,7 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
         self._outer.replaceWidget(old, self._body)
         old.hide()
         old.deleteLater()
-        self.setSettings(data, trusted=True)
+        self._load_document(data)
         self._nav.setCurrentRow(current)
         self.languageChanged.emit(applied)
         return applied
@@ -357,9 +399,11 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
     def setTargetScope(self, scope: Scope) -> None:
         """편집 대상 설정 파일(Scope 플래그). 그 파일들에서 효력이 없는 키는 숨기고 API 로도 바꿀 수 없다."""
         scope = self._valid_scope(scope)
+        self._scope_selector.setScope(scope)
         if scope != self._target_scope:
             self._target_scope = scope
             self._apply_filter()
+            self._update_hidden_label()
 
     def targetVersion(self) -> str | None:
         """대상 Claude Code 버전("2.1.250", LATEST_VERSION 은 실제 번호로 풀림). None 이면 버전 필터 없음."""
@@ -372,6 +416,7 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
         if v != self._target_version:
             self._target_version = v
             self._apply_filter()
+            self._update_hidden_label()
 
     @staticmethod
     def latestVersion() -> str:
@@ -395,6 +440,35 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
         return info is None or info.applicable(self._target_scope, self._target_version)
 
     _applicable = isKeyApplicable
+
+    def showScopeSelector(self) -> bool:  # noqa: N802
+        """툴바의 「편집 대상」 콤보가 보이는지(생성자 showScopeSelector)."""
+        return self._show_scope_selector
+
+    def setShowScopeSelector(self, show: bool) -> None:  # noqa: N802
+        self._show_scope_selector = bool(show)
+        self._scope_selector.setVisible(self._show_scope_selector)
+
+    def validationIssues(self) -> list[Issue]:  # noqa: N802
+        """현재 설정(숨긴 키의 보존값 포함)의 스키마 문제. 편집·저장을 막지 않는다."""
+        return validate_settings(self.settings(), self._schema)
+
+    def showIssue(self, issue: Issue) -> bool:  # noqa: N802
+        """문제가 있는 키로 이동(env 는 해당 변수, 노출되지 않은 키는 JSON 페이지). 이동했으면 True."""
+        key = issue.key
+        if key == ENV_KEY and self._env_enabled:
+            name = issue.path[len(ENV_KEY) + 1:].split(".", 1)[0].split("[", 1)[0]
+            return self.showEnvVariable(name)
+        page = self._page_by_key.get(key)
+        if page is not None and self.isKeyApplicable(key):
+            self._search.clear()
+            self._only_set.setChecked(False)
+            self.setCurrentCategory(page.category_id)
+            row = self.rowFor(key)
+            if row is not None:
+                page.scrollTo(row)
+            return True
+        return self._json is not None and self.setCurrentCategory(JSON_ID)
 
     def categories(self) -> Category:
         """생성 시 지정한 카테고리 비트 플래그."""
@@ -467,8 +541,11 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
 
     def _flush_change(self) -> None:
         self._flush_timer.stop()
-        self._refresh_json()
+        data = self.settings()
+        self._refresh_json(data)
+        self._update_issues(data)
         self._update_nav_counts()
+        self._update_hidden_label()
         self._update_overlap_warning()
         if self._only_set.isChecked():
             self._apply_filter()
@@ -476,9 +553,49 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
             self._apply_nested_filter()  # 로드로 새로 생긴 중첩 행 반영
         self.settingChanged.emit()
 
-    def _update_overlap_warning(self) -> None:
-        from .editors.containers import precedence_label
+    def _update_issues(self, data: dict[str, Any]) -> None:
+        """검증 결과를 툴바 버튼·구축된 행·env 셀·JSON 페이지에 반영."""
+        self._issues = validate_settings(data, self._schema)
+        by_key: dict[str, list[Issue]] = defaultdict(list)
+        for issue in self._issues:
+            by_key[issue.key].append(issue)
+        for key, row in self._rows.items():
+            row.setIssues(by_key.get(key, []))
+        if self._env is not None:
+            self._env.setIssues(self._env_issues())
+        self._issues_button.setIssues(self._issues)
+        if self._json is not None:
+            shown = self._issues[:MAX_JSON_ISSUES]
+            more = len(self._issues) - len(shown)
+            lines = [f"⚠ {i}" for i in shown] + ([tr("…and {n} more", n=more)] if more > 0 else [])
+            color = ERROR_COLOR if any(i.severity is Severity.ERROR for i in self._issues) else WARNING_COLOR
+            self._json_issues.setStyleSheet(f"color: {color};")
+            self._json_issues.setText("\n".join(lines))
+            self._json_issues.setVisible(bool(lines))
+        self.validationChanged.emit(len(self._issues))
 
+    def _env_issues(self) -> dict[str, list[Issue]]:
+        out: dict[str, list[Issue]] = defaultdict(list)
+        prefix = ENV_KEY + "."
+        for issue in self._issues:
+            if issue.path.startswith(prefix):
+                out[issue.path[len(prefix):]].append(issue)
+        return out
+
+    def _update_hidden_label(self) -> None:
+        hidden = self.inapplicableKeys()
+        self._hidden_label.setKeys(hidden, [k for k in hidden if self._is_set(k)])
+
+    @staticmethod
+    @contextmanager
+    def _ui_shows_issues() -> Iterator[None]:
+        """UI 동작(파일 열기·저장·JSON 적용)에서는 문제를 화면에 보여 주므로 파이썬 경고는 내지 않는다
+        (엄격 모드로 warnings 를 error 로 바꿔 둔 앱에서도 UI 가 멈추지 않게)."""
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", SettingValidationWarning)
+            yield
+
+    def _update_overlap_warning(self) -> None:
         pairs = self.overlaps()
         if not pairs:
             self._overlap_label.hide()
@@ -488,8 +605,8 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
             f"{p['setting']} ↔ {p['env']} ({precedence_label(p['precedence'])})" for p in pairs))
         self._overlap_label.show()
 
-    def _refresh_json(self) -> None:
-        data = self.settings()
+    def _refresh_json(self, data: dict[str, Any] | None = None) -> None:
+        data = self.settings() if data is None else data
         if self._json is not None:
             text = json.dumps(data, indent=2, ensure_ascii=False)
             if self._json.toPlainText() != text:
@@ -507,7 +624,8 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
         if self._json is None:
             return
         try:
-            self.SetSetting(self._json.toPlainText())
+            with self._ui_shows_issues():
+                self.SetSetting(self._json.toPlainText())
             self._json_error.clear()
         except HiddenKeyError as e:
             self._json_error.setText(str(e))
@@ -563,7 +681,8 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
         path, _ = QtWidgets.QFileDialog.getOpenFileName(self, tr("Open settings.json"), start, tr("JSON (*.json);;All files (*)"))
         if path:
             try:
-                self.loadFile(path)
+                with self._ui_shows_issues():
+                    self.loadFile(path)
             except (OSError, ValueError) as e:
                 QtWidgets.QMessageBox.warning(self, tr("Open failed"), str(e))
 
@@ -572,6 +691,7 @@ class QClaudeCodeSettingEditorWidget(SettingsApiMixin, QtWidgets.QWidget):
         path, _ = QtWidgets.QFileDialog.getSaveFileName(self, tr("Save settings.json"), start, tr("JSON (*.json)"))
         if path:
             try:
-                self.saveFile(path)
-            except OSError as e:
+                with self._ui_shows_issues():
+                    self.saveFile(path)
+            except (OSError, ValueError) as e:
                 QtWidgets.QMessageBox.warning(self, tr("Save failed"), str(e))

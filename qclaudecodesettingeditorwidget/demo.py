@@ -1,7 +1,7 @@
 """위젯 테스트용 메인윈도우.
 
-- 중앙: QClaudeCodeSettingEditorWidget
-- 하단: [언어 선택]  [확인] → 설정된 키만 담긴 JSON 을 대화상자로 표시,  [취소] → 닫기
+- 중앙: QClaudeCodeSettingEditorWidget (편집 대상 파일 선택은 위젯 툴바의 「Editing:」 콤보)
+- 하단: [언어 선택] [Claude Code 버전]  [확인] → 설정된 키만 담긴 JSON 을 대화상자로 표시,  [취소] → 닫기
 실행: python -m qclaudecodesettingeditorwidget [settings.json]
 """
 from __future__ import annotations
@@ -16,19 +16,6 @@ from .categories import Category
 from .constants import LATEST_VERSION, MUTED, Scope
 from .i18n import tr
 from .widget import QClaudeCodeSettingEditorWidget
-
-
-SCOPE_CHOICES = [Scope.USER, Scope.PROJECT, Scope.LOCAL, Scope.MANAGED, Scope.ANY_FILE]
-
-
-def scope_choice_label(scope: Scope) -> str:
-    return {
-        Scope.USER: tr("User (~/.claude/settings.json)"),
-        Scope.PROJECT: tr("Project (.claude/settings.json)"),
-        Scope.LOCAL: tr("Local (.claude/settings.local.json)"),
-        Scope.MANAGED: tr("Managed settings"),
-        Scope.ANY_FILE: tr("All files"),
-    }[scope]
 
 
 class JsonResultDialog(QtWidgets.QDialog):
@@ -79,13 +66,6 @@ class DemoMainWindow(QtWidgets.QMainWindow):
         self._lang_combo.setCurrentIndex(max(self._lang_combo.findData(self.editor.language()), 0))
         self._lang_combo.currentIndexChanged.connect(lambda i: self.editor.setLanguage(self._lang_combo.itemData(i)))
 
-        self._scope_label = QtWidgets.QLabel()
-        self._scope_combo = QtWidgets.QComboBox()
-        for s in SCOPE_CHOICES:
-            self._scope_combo.addItem("", int(s))
-        self._scope_combo.setCurrentIndex(max(self._scope_combo.findData(int(scope)), 0))
-        self._scope_combo.currentIndexChanged.connect(
-            lambda i: self.editor.setTargetScope(Scope(self._scope_combo.itemData(i))))
         self._version_label = QtWidgets.QLabel()
         self._version = QtWidgets.QLineEdit(version or "")
         self._version.setMaximumWidth(110)
@@ -104,9 +84,6 @@ class DemoMainWindow(QtWidgets.QMainWindow):
         bottom = QtWidgets.QHBoxLayout()
         bottom.addWidget(self._lang_label)
         bottom.addWidget(self._lang_combo)
-        bottom.addSpacing(12)
-        bottom.addWidget(self._scope_label)
-        bottom.addWidget(self._scope_combo)
         bottom.addSpacing(12)
         bottom.addWidget(self._version_label)
         bottom.addWidget(self._version)
@@ -158,9 +135,6 @@ class DemoMainWindow(QtWidgets.QMainWindow):
         title = tr("QClaudeCodeSettingEditorWidget — test")
         self.setWindowTitle(f"{title} — {self._path_title}" if self._path_title else title)
         self._lang_label.setText(tr("Language:"))
-        self._scope_label.setText(tr("Editing:"))
-        for i, s in enumerate(SCOPE_CHOICES):
-            self._scope_combo.setItemText(i, scope_choice_label(s))
         self._version_label.setText(tr("Claude Code version:"))
         self._version.setPlaceholderText(tr("all ({version})", version=self.editor.latestVersion()))
         self._ok.setText(tr("OK"))

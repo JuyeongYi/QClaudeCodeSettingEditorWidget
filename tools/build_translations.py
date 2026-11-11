@@ -43,7 +43,7 @@ from qclaudecodesettingeditorwidget.constants import (  # noqa: E402
 from qclaudecodesettingeditorwidget.schema import load_env_registry, load_schema, resolve_ref  # noqa: E402
 
 LOCALES = PKG / LOCALE_DIR
-_TR_CALL = re.compile(r'\btr\(\s*"((?:[^"\\]|\\.)*)"')
+_TR_CALL = re.compile(r'\btr\(\s*((?:"(?:[^"\\]|\\.)*"\s*)+)')  # 인접 리터럴("a " "b")도 한 소스
 
 
 # --------------------------------------------------------------------------- 소스 수집
@@ -52,7 +52,7 @@ def collect_ui_sources() -> list[str]:
     for py in sorted(PKG.rglob("*.py")):
         text = py.read_text("utf-8")
         for m in _TR_CALL.finditer(text):
-            found[ast.literal_eval('"' + m.group(1) + '"')] = None
+            found[ast.literal_eval("(" + m.group(1).strip() + ")")] = None  # 괄호: 여러 줄 리터럴 이어 붙이기
     for title in categories.CATEGORY_TITLES.values():
         found[title] = None
     return list(found)

@@ -1,15 +1,22 @@
-"""env 설정 전용 편집기: 알려진 환경변수 전체(스키마+문서)를 표로 나열하고 값을 설정/해제한다."""
+"""env 설정 전용 편집기: 알려진 환경변수 전체(스키마+문서)를 표로 나열하고 값을 설정/해제한다.
+
+값은 문자열이 원칙이지만, 파일·API 로 문자열이 아닌 값(숫자·불리언 등)이 들어오면 바꾸지 않고 보존한다
+(셀에는 JSON 으로 보이고, 사용자가 그 셀을 고치면 그때부터 문자열). 문제는 검증이 셀 테두리·툴팁으로 알린다.
+"""
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from .constants import ENV_KEY, MUTED
+from .constants import ENV_KEY, INVALID_STYLE, MUTED, SUSPECT_STYLE, Severity
 from .editors.base import BaseEditor
+from .editors.row import precedence_label
 from .i18n import describe, tr
 from .keys import EnvVar
 from .schema import EnvVarInfo, JsonSchema, first_sentence
+from .validation import Issue
 
 COL_SET, COL_NAME, COL_VALUE, COL_DESC = range(4)
 
@@ -52,6 +59,13 @@ class _ValueCell(QtWidgets.QWidget):
         else:
             self._line.setText(text)  # type: ignore[union-attr]
 
+    def setProblem(self, message: str, severity: Severity | None) -> None:
+        """검증 문제 표시(severity 가 None 이면 해제)."""
+        widget = self._combo if self._combo is not None else self._line
+        style = {Severity.ERROR: INVALID_STYLE, Severity.WARNING: SUSPECT_STYLE}[severity] if severity else ""
+        widget.setStyleSheet(style)  # type: ignore[union-attr]
+        widget.setToolTip(message)  # type: ignore[union-attr]
+
 
 class EnvEditor(BaseEditor):
     """settings.env 객체 편집기. value() 는 체크된 행만 {NAME: value} 로 반환한다."""
@@ -62,6 +76,9 @@ class EnvEditor(BaseEditor):
         self._registry = registry
         self._related = related or {}  # env 이름 → [(settingKey, precedence)]
         self._rows: dict[str, int] = {}
+        self._names: dict[int, str] = {}       # 행 → 이름
+        self._non_string: dict[str, Any] = {}  # 문자열이 아닌 채로 로드된 값(사용자가 고치기 전까지 그대로 출력)
+        self._marked: set[str] = set()         # 문제 표시 중인 변수
         self._mono = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.SystemFont.FixedFont)
 
         self._filter = QtWidgets.QLineEdit()
@@ -126,8 +143,7 @@ class EnvEditor(BaseEditor):
         tip = description or info.name
         rel = self._related.get(info.name, [])
         if rel:
-            tip += "\n" + tr("Related setting:") + " " + ", ".join(
-                f"{k} ({ {'env': tr('env wins'), 'setting': tr('setting wins')}.get(p, tr('related')) })" for k, p in rel)
+            tip += "\n" + tr("Related setting:") + " " + ", ".join(f"{k} ({precedence_label(p)})" for k, p in rel)
         if custom:
             tip += "\n" + tr("(custom variable: not in schema or docs)")
         elif not info.in_schema:
@@ -149,6 +165,7 @@ class EnvEditor(BaseEditor):
         desc_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable)
         self._table.setItem(r, COL_DESC, desc_item)
         self._rows[info.name] = r
+        self._names[r] = info.name
         return r
 
     def _cell(self, row: int) -> _ValueCell:
@@ -166,6 +183,7 @@ class EnvEditor(BaseEditor):
     def _on_value_edited(self, row: int) -> None:
         if self._loading:
             return
+        self._non_string.pop(self._names.get(row, ""), None)  # 사용자가 고친 값은 문자열
         if not self._is_set(row):
             self._set_checked(row, True)  # itemChanged → _on_item_changed 가 emit
         else:
@@ -195,14 +213,14 @@ class EnvEditor(BaseEditor):
             return self._rows[name]
         return self._append_row(EnvVarInfo(name=name), custom=True)
 
-    def setVariable(self, name: str | EnvVar, value: str | None) -> None:
-        """value 가 None 이면 해제, 아니면 설정."""
+    def setVariable(self, name: str | EnvVar, value: Any) -> None:
+        """value 가 None 이면 해제, 아니면 설정. 문자열이 아닌 값도 바꾸지 않고 보존한다."""
         row = self.ensureVariable(name)
         with self.loading():
             if value is None:
                 self._set_checked(row, False)
             else:
-                self._cell(row).setText(str(value))
+                self._put(self._names[row], row, value)
                 self._set_checked(row, True)
         self._update_count()
         self._emit()
@@ -214,17 +232,39 @@ class EnvEditor(BaseEditor):
         name = EnvVar.coerce(name)
         return name in self._rows and self._is_set(self._rows[name])
 
-    def variable(self, name: str | EnvVar) -> str | None:
+    def variable(self, name: str | EnvVar) -> Any:
         """설정된 값, 해제 상태면 None."""
         name = EnvVar.coerce(name)
-        return self._cell(self._rows[name]).text() if self.isSet(name) else None
+        return self._value_of(name, self._rows[name]) if self.isSet(name) else None
+
+    def setIssues(self, issues: dict[str, list[Issue]]) -> None:
+        """변수 이름 → 검증 문제. 해당 값 셀에 테두리·툴팁으로 표시하고, 목록에 없는 변수는 표시를 지운다."""
+        for name in self._marked - set(issues):
+            if name in self._rows:
+                self._cell(self._rows[name]).setProblem("", None)
+        for name, found in issues.items():
+            if name in self._rows and found:
+                worst = Severity.ERROR if any(i.severity is Severity.ERROR for i in found) else Severity.WARNING
+                self._cell(self._rows[name]).setProblem("\n".join(i.message for i in found), worst)
+        self._marked = set(issues)
+
+    def _put(self, name: str, row: int, value: Any) -> None:
+        if isinstance(value, str):
+            self._non_string.pop(name, None)
+            self._cell(row).setText(value)
+        else:
+            self._non_string[name] = value
+            self._cell(row).setText(json.dumps(value, ensure_ascii=False))
+
+    def _value_of(self, name: str, row: int) -> Any:
+        return self._non_string[name] if name in self._non_string else self._cell(row).text()
 
     # ---- BaseEditor
-    def value(self) -> dict[str, str]:
-        out: dict[str, str] = {}
+    def value(self) -> dict[str, Any]:
+        out: dict[str, Any] = {}
         for name, row in self._rows.items():
             if self._is_set(row):
-                out[name] = self._cell(row).text()
+                out[name] = self._value_of(name, row)
         return out
 
     def setValue(self, value: Any) -> None:
@@ -237,7 +277,7 @@ class EnvEditor(BaseEditor):
                         self._set_checked(row, False)
                 for name, v in data.items():
                     row = self.ensureVariable(str(name))
-                    self._cell(row).setText("" if v is None else str(v))
+                    self._put(self._names[row], row, v)
                     self._set_checked(row, True)
             finally:
                 self._table.setUpdatesEnabled(True)

@@ -185,7 +185,8 @@
             "url": {
               "type": "string",
               "description": "URL to POST hook input JSON to. Endpoint must accept POST requests and return JSON.",
-              "minLength": 1
+              "minLength": 1,
+              "format": "uri"
             },
             "headers": {
               "type": "object",
@@ -2695,7 +2696,8 @@
             "properties": {
               "serverUrl": {
                 "type": "string",
-                "description": "URL pattern for remote servers, supports wildcards (e.g., https://*.example.com/*)"
+                "description": "URL pattern for remote servers, supports wildcards (e.g., https://*.example.com/*)",
+                "format": "uri-pattern"
               }
             },
             "required": [
@@ -2746,7 +2748,8 @@
             "properties": {
               "serverUrl": {
                 "type": "string",
-                "description": "URL pattern for remote servers, supports wildcards (e.g., https://*.example.com/*)"
+                "description": "URL pattern for remote servers, supports wildcards (e.g., https://*.example.com/*)",
+                "format": "uri-pattern"
               }
             },
             "required": [
@@ -3505,7 +3508,8 @@
               },
               "hostPattern": {
                 "type": "string",
-                "description": "Git host pattern to trust for repositories in source specifications"
+                "description": "Git host pattern to trust for repositories in source specifications",
+                "format": "regex"
               }
             },
             "required": [
@@ -3662,7 +3666,8 @@
               },
               "pathPattern": {
                 "type": "string",
-                "description": "Regex pattern to match file or directory paths for marketplace sources"
+                "description": "Regex pattern to match file or directory paths for marketplace sources",
+                "format": "regex"
               }
             },
             "required": [
@@ -4526,7 +4531,8 @@
               },
               "hostPattern": {
                 "type": "string",
-                "description": "Regex pattern to match the host/domain extracted from any marketplace source type"
+                "description": "Regex pattern to match the host/domain extracted from any marketplace source type",
+                "format": "regex"
               }
             },
             "required": [
@@ -4545,7 +4551,8 @@
               },
               "pathPattern": {
                 "type": "string",
-                "description": "Regex pattern to match file or directory paths for marketplace sources"
+                "description": "Regex pattern to match file or directory paths for marketplace sources",
+                "format": "regex"
               }
             },
             "required": [
@@ -4654,7 +4661,8 @@
       "examples": [
         "2.1.0"
       ],
-      "minLength": 1
+      "minLength": 1,
+      "format": "semver"
     },
     "showClearContextOnPlanAccept": {
       "type": "boolean",
@@ -4825,11 +4833,13 @@
     },
     "requiredMaximumVersion": {
       "type": "string",
-      "description": "(Managed settings only) Maximum Claude Code version allowed to start. If the running version is newer, Claude Code exits at startup with instructions to install an approved version. See https://code.claude.com/docs/en/admin-setup#decide-what-to-enforce"
+      "description": "(Managed settings only) Maximum Claude Code version allowed to start. If the running version is newer, Claude Code exits at startup with instructions to install an approved version. See https://code.claude.com/docs/en/admin-setup#decide-what-to-enforce",
+      "format": "semver"
     },
     "requiredMinimumVersion": {
       "type": "string",
-      "description": "(Managed settings only) Minimum Claude Code version required to start. If the running version is older, Claude Code exits at startup rather than only warning. See https://code.claude.com/docs/en/admin-setup#decide-what-to-enforce"
+      "description": "(Managed settings only) Minimum Claude Code version required to start. If the running version is older, Claude Code exits at startup rather than only warning. See https://code.claude.com/docs/en/admin-setup#decide-what-to-enforce",
+      "format": "semver"
     },
     "respondToBashCommands": {
       "type": "boolean",
@@ -4864,7 +4874,9 @@
           },
           "sshPort": {
             "type": "integer",
-            "description": "SSH port (default 22)"
+            "description": "SSH port (default 22)",
+            "minimum": 1,
+            "maximum": 65535
           },
           "sshIdentityFile": {
             "type": "string",
@@ -5008,7 +5020,8 @@
           },
           "pattern": {
             "type": "string",
-            "description": "Regex matched against turn output"
+            "description": "Regex matched against turn output",
+            "format": "regex"
           },
           "url": {
             "type": "string",
@@ -5041,7 +5054,8 @@
         },
         "timeoutMs": {
           "type": "integer",
-          "description": "How long in milliseconds to wait for the helper before treating the run as failed"
+          "description": "How long in milliseconds to wait for the helper before treating the run as failed",
+          "minimum": 1000
         },
         "refreshIntervalMs": {
           "description": "How often in milliseconds to re-run the helper in the background; set to 0 to disable refresh, or to at least 60000",
@@ -5177,7 +5191,8 @@
       "description": "Pre-fills and locks the gateway URL on the /login Cloud gateway screen. Either this key or forceLoginMethod: \"gateway\" surfaces that screen; set both so the URL is filled in. Honored only at the managed policy tier; ignored in user and project settings. See https://code.claude.com/docs/en/claude-apps-gateway#set-the-gateway-url",
       "examples": [
         "https://claude-gateway.example.com"
-      ]
+      ],
+      "format": "uri"
     },
     "disableSideloadFlags": {
       "type": "boolean",
@@ -5318,9 +5333,12 @@
     "gatewayInternalNetworks": {
       "type": "array",
       "items": {
-        "type": "string"
+        "type": "string",
+        "format": "public-ipv4-cidr"
       },
-      "description": "Declare the public IPv4 blocks that your organization numbers its internal network from, so /login accepts a cloud gateway there. Requires Claude Code v2.1.268 or later."
+      "description": "Declare the public IPv4 blocks that your organization numbers its internal network from, so /login accepts a cloud gateway there. Requires Claude Code v2.1.268 or later.",
+      "maxItems": 4,
+      "x-disjointNetworks": true
     },
     "idleCompaction": {
       "type": "boolean",
@@ -5632,7 +5650,8 @@
     },
     "timeZone": {
       "type": "string",
-      "description": "Show the times in the interface in a time zone other than your system's. Set it to an IANA time zone name, such as \"UTC\" or \"Europe/Dublin\". The times that timeFormat controls then show in this zone. If timeFormat is \"24-hour-utc\", times stay in UTC and Claude Code ignores this key. /config has no row for this key, so set it in a settings file. Requires Claude Code v2.1.257 or later."
+      "description": "Show the times in the interface in a time zone other than your system's. Set it to an IANA time zone name, such as \"UTC\" or \"Europe/Dublin\". The times that timeFormat controls then show in this zone. If timeFormat is \"24-hour-utc\", times stay in UTC and Claude Code ignores this key. /config has no row for this key, so set it in a settings file. Requires Claude Code v2.1.257 or later.",
+      "format": "iana-time-zone"
     },
     "ultracode": {
       "type": "boolean",

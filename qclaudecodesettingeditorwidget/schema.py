@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass, field
+from functools import lru_cache
 from importlib import resources
 from pathlib import Path
 from typing import Any, Callable
@@ -112,6 +113,57 @@ def resolve_ref(node: Any, root: JsonSchema) -> JsonSchema:
         merged.update({k: v for k, v in current.items() if k != "$ref"})
         current = merged
     return current
+
+
+# --------------------------------------------------------------------------- 정규식·값 비교 (검증·편집기 공용)
+_JS_NAMED_GROUP = re.compile(r"\(\?<(?![=!])")          # JS (?<name>…)  — (?<= (?<! 는 그대로
+_JS_NAMED_BACKREF = re.compile(r"\\k<([A-Za-z_]\w*)>")  # JS \k<name>
+
+
+@lru_cache(maxsize=1024)
+def _compile(pattern: str) -> tuple[re.Pattern[str] | None, str]:
+    py = _JS_NAMED_BACKREF.sub(r"(?P=\1)", _JS_NAMED_GROUP.sub("(?P<", pattern))
+    try:
+        return re.compile(py), ""
+    except re.error as e:
+        return None, str(e)
+
+
+def compile_pattern(pattern: str) -> re.Pattern[str] | None:
+    """스키마 pattern(ECMA 정규식)을 파이썬 re 로 컴파일(캐시). JS 전용 이름 그룹 문법은 바꾼다. 실패하면 None.
+
+    JSON Schema 의 pattern 은 앵커가 없으면 부분 일치이므로 사용처는 .search() 를 쓴다.
+    패키지의 모든 정규식 검사(검증·편집기·변형 선택)는 이 함수 하나를 거친다.
+    """
+    return _compile(pattern)[0]
+
+
+def regex_error(pattern: str) -> str:
+    """pattern 이 정규식으로 컴파일되지 않으면 오류 메시지, 되면 ""."""
+    return _compile(pattern)[1]
+
+
+def pattern_matches(pattern: str, value: str) -> bool:
+    """value 가 pattern 에 (부분) 일치하는지. 컴파일할 수 없는 pattern 은 판단할 수 없으므로 True."""
+    rx = compile_pattern(pattern)
+    return rx is None or rx.search(value) is not None
+
+
+def json_equal(a: Any, b: Any) -> bool:
+    """JSON 값 동등성: true ≠ 1, 1 == 1.0, 배열·객체는 재귀 비교 (파이썬 == 는 True == 1 이다)."""
+    if isinstance(a, bool) or isinstance(b, bool):
+        return type(a) is type(b) and a == b
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+        return a == b
+    if isinstance(a, list) and isinstance(b, list):
+        return len(a) == len(b) and all(json_equal(x, y) for x, y in zip(a, b))
+    if isinstance(a, dict) and isinstance(b, dict):
+        return a.keys() == b.keys() and all(json_equal(a[k], b[k]) for k in a)
+    return type(a) is type(b) and a == b
+
+
+def json_in(value: Any, options: list[Any]) -> bool:
+    return any(json_equal(value, o) for o in options)
 
 
 # --------------------------------------------------------------------------- 유틸
@@ -254,7 +306,11 @@ def first_sentence(text: str, limit: int = 140) -> str:
 
 
 def value_matches(schema: JsonSchema, value: Any, root: JsonSchema, depth: int = 0) -> bool:
-    """가벼운 검증 휴리스틱: anyOf 변형 선택용. 완전한 JSON Schema 검증기는 아니다."""
+    """가벼운 구조 일치 휴리스틱: anyOf 변형 선택용(타입·const·enum·required·pattern 정도).
+
+    값의 문제를 찾는 검증은 validation.validate() 가 한다. 여기서 엄격하게 굴면 사소한 문제(범위 밖 숫자 등)가
+    있는 값이 어느 변형에도 안 맞아 raw JSON 으로 떨어지므로 일부러 느슨하다.
+    """
     schema = resolve_ref(schema, root)
     if depth > 8:
         return True
@@ -262,8 +318,8 @@ def value_matches(schema: JsonSchema, value: Any, root: JsonSchema, depth: int =
         inner = schema["not"]
         return not value_matches(inner, value, root, depth + 1) if inner else False
     if "const" in schema:
-        return value == schema["const"] and json_type_name(value) == json_type_name(schema["const"])
-    if "enum" in schema and value not in schema["enum"]:
+        return json_equal(value, schema["const"])
+    if "enum" in schema and not json_in(value, schema["enum"]):
         return False
     types = schema_types(schema)
     vtype = json_type_name(value)
@@ -274,12 +330,8 @@ def value_matches(schema: JsonSchema, value: Any, root: JsonSchema, depth: int =
     if "anyOf" in schema or "oneOf" in schema:
         if not any(value_matches(v, value, root, depth + 1) for v in variants_of(schema, root)):
             return False
-    if vtype == "string" and isinstance(schema.get("pattern"), str):
-        try:
-            if not re.search(schema["pattern"], value):
-                return False
-        except re.error:
-            pass
+    if vtype == "string" and isinstance(schema.get("pattern"), str) and not pattern_matches(schema["pattern"], value):
+        return False
     if vtype == "object" and isinstance(value, dict):
         for req in schema.get("required", []):
             if req not in value:
@@ -300,8 +352,11 @@ def value_matches(schema: JsonSchema, value: Any, root: JsonSchema, depth: int =
     return True
 
 
-def default_for(schema: JsonSchema, root: JsonSchema) -> Any:
-    """편집기 초기값: schema.default → const → enum[0] → 타입별 빈 값."""
+def default_for(schema: JsonSchema, root: JsonSchema, _depth: int = 0) -> Any:
+    """편집기 초기값: schema.default → const → enum[0] → 타입별 빈 값.
+
+    숫자는 범위 안으로 옮긴 0, 객체는 required 키를 각자의 기본값으로 채운 dict(새 항목이 처음부터 필수 키를 갖게).
+    """
     schema = resolve_ref(schema, root)
     if "default" in schema:
         return schema["default"]
@@ -312,6 +367,31 @@ def default_for(schema: JsonSchema, root: JsonSchema) -> Any:
     types = schema_types(schema)
     if not types:
         vs = variants_of(schema, root)
-        return default_for(vs[0], root) if vs else None
+        return default_for(vs[0], root, _depth + 1) if vs and _depth < 8 else None
     t = types[0]
-    return {"string": "", "boolean": False, "integer": 0, "number": 0.0, "array": [], "object": {}, "null": None}.get(t)
+    if t in ("integer", "number"):
+        return _clamp_zero(schema, integer=t == "integer")
+    if t == "object" and _depth < 8:
+        props = schema.get("properties", {})
+        return {k: default_for(props[k], root, _depth + 1) for k in schema.get("required", []) if k in props}
+    return {"string": "", "boolean": False, "array": [], "object": {}, "null": None}.get(t)
+
+
+def _clamp_zero(schema: JsonSchema, integer: bool) -> int | float:
+    """숫자 기본값: 0 을 스키마 범위(minimum/maximum/exclusive*) 안으로 옮긴 값."""
+    def num(k: str) -> float | None:
+        x = schema.get(k)
+        return x if isinstance(x, (int, float)) and not isinstance(x, bool) else None
+
+    step = 1 if integer else 0.001
+    lo, xlo, hi, xhi = num("minimum"), num("exclusiveMinimum"), num("maximum"), num("exclusiveMaximum")
+    v: float = 0
+    if lo is not None and v < lo:
+        v = lo
+    if xlo is not None and v <= xlo:
+        v = xlo + step
+    if hi is not None and v > hi:
+        v = hi
+    if xhi is not None and v >= xhi:
+        v = xhi - step
+    return int(v) if integer else float(v)

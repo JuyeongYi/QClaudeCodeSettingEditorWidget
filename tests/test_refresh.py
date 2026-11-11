@@ -7,8 +7,11 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
 
 from refresh.catalog import (  # noqa: E402
+    apply_schema_patches,
     build_catalog,
     is_managed_only,
+    merge_doc_bounds,
+    nodes_at,
     parse_default,
     parse_scope,
     parse_topic,
@@ -113,6 +116,7 @@ def test_type_prose_to_schema():
     assert type_prose_schema(_entry("number of tokens, from `100000` to `1000000`")) == \
         {"type": "integer", "minimum": 100000, "maximum": 1000000}
     assert type_prose_schema(_entry("number of characters, a positive integer")) == {"type": "integer", "minimum": 1}
+    assert type_prose_schema(_entry("integer, milliseconds, minimum `1000`")) == {"type": "integer", "minimum": 1000}
     assert type_prose_schema(_entry("array of strings, each one of:", ['`"bedrock"`: x', '`"vertex"`: y'])) == \
         {"type": "array", "items": {"type": "string", "enum": ["bedrock", "vertex"]}}
     assert type_prose_schema(_entry("array of `plugin-name@marketplace-name` strings")) == \
@@ -188,3 +192,32 @@ def test_env_registry_overrides_add_unlisted_variables():
     assert reg["HAND_ADDED_VAR"] == {"description": "x", "schemaDescription": "", "values": ["0", "1"],
                                      "inSchema": False, "inDocs": False, "valuesAreHints": False}
     assert reg["DOC_ONLY_VAR"]["values"] == ["1", "0"] and reg["DOC_ONLY_VAR"]["valuesAreHints"]
+
+
+def test_schema_patches_and_doc_bounds():
+    """schemaPatches 는 경로(anyOf 변형·$ref 를 가로질러)·포인터로 찾은 노드에 키워드를 덧붙이고,
+    문서 Type 의 숫자 범위는 schemastore 노드에 없을 때만 덧붙는다."""
+    schema = {
+        "$defs": {"hook": {"anyOf": [{"properties": {"type": {"const": "a"}}},
+                                     {"properties": {"type": {"const": "http"}, "url": {"type": "string"}}}]}},
+        "properties": {
+            "list": {"type": "array", "items": {"anyOf": [{"properties": {"u": {"type": "string"}}},
+                                                          {"properties": {"v": {"type": "string"}}}]}},
+            "hooks": {"type": "array", "items": {"$ref": "#/$defs/hook"}},
+            "helper": {"type": "object", "properties": {"timeoutMs": {"type": "integer"},
+                                                        "rate": {"type": "integer", "exclusiveMinimum": 0}}},
+        },
+    }
+    assert nodes_at(schema, "list[].u") == [{"type": "string"}]
+    assert nodes_at(schema, "hooks[].url") == nodes_at(schema, "#/$defs/hook.url") == [{"type": "string"}]
+    notes = apply_schema_patches(schema, {"_comment": "skip", "#/$defs/hook.url": {"format": "uri", "_note": "x"},
+                                          "list[].u": {"minLength": 1}, "missing.path": {"format": "uri"}})
+    assert schema["$defs"]["hook"]["anyOf"][1]["properties"]["url"] == {"type": "string", "format": "uri"}
+    assert schema["properties"]["list"]["items"]["anyOf"][0]["properties"]["u"]["minLength"] == 1
+    assert notes == ["schema patch target not found: missing.path"]
+    docs = {"helper.timeoutMs": DocEntry("helper.timeoutMs", type_text="integer, milliseconds, minimum `1000`"),
+            "helper.rate": DocEntry("helper.rate", type_text="integer, a positive integer")}
+    store_paths = {"helper.timeoutMs", "helper.rate"}
+    assert merge_doc_bounds(schema, docs, store_paths) == ["doc bounds helper.timeoutMs: {'minimum': 1000}"]
+    helper = schema["properties"]["helper"]["properties"]
+    assert helper["timeoutMs"]["minimum"] == 1000 and "minimum" not in helper["rate"]  # 기존 하한은 그대로

@@ -8,7 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Callable
 
-from PySide6 import QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from .constants import MUTED
 from .editors import PropertyRow
@@ -71,13 +71,13 @@ class _Page(QtWidgets.QWidget):
         self.empty_label.hide()
         self._layout.addWidget(self.empty_label)
         self._layout.addStretch(1)
-        scroll = QtWidgets.QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setWidget(self._body)
-        scroll.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
+        self._scroll = QtWidgets.QScrollArea()
+        self._scroll.setWidgetResizable(True)
+        self._scroll.setWidget(self._body)
+        self._scroll.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         lay = QtWidgets.QVBoxLayout(self)
         lay.setContentsMargins(0, 0, 0, 0)
-        lay.addWidget(scroll)
+        lay.addWidget(self._scroll)
 
     # ---- 구축
     def build(self) -> None:
@@ -100,6 +100,10 @@ class _Page(QtWidgets.QWidget):
                 insert_at += 2
         finally:
             self._body.setUpdatesEnabled(True)
+
+    def scrollTo(self, row: QtWidgets.QWidget) -> None:  # noqa: N802
+        """행이 보이도록 스크롤(레이아웃이 끝난 뒤 실행되도록 이벤트 루프에 미룬다)."""
+        QtCore.QTimer.singleShot(0, self, lambda: self._scroll.ensureWidgetVisible(row, 0, 40))
 
     # ---- 필터·카운트 (applicable: 편집 대상 스코프·버전에서 효력이 있는 키인지)
     def _visible_keys(self, text: str, only_set: bool, applicable: Callable[[str], bool]) -> list[str]:

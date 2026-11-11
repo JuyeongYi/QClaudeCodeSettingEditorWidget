@@ -43,3 +43,13 @@ def test_unfinished_flag_survives_rerun_until_translation_imported():
     assert not _update({"env.A": "New."})["env.A"].done      # 두 번째 갱신에서도 다시 볼 대상으로 남는다
     assert _update({"env.A": "New."}, {CONTEXT_SCHEMA: {"env.A": "새 번역."}})["env.A"] == \
         bt.TsMessage("새 번역.", "New.", False)
+
+
+def test_tr_calls_use_double_quoted_literals():
+    """수집기(_TR_CALL)는 큰따옴표 리터럴만 본다 — tr('...') 는 번역 파일에서 빠지므로 쓰지 않는다."""
+    import re
+
+    single = [f"{py.name}:{i}" for py in sorted(bt.PKG.rglob("*.py"))
+              for i, line in enumerate(py.read_text("utf-8").splitlines(), 1) if re.search(r"\btr\(\s*'", line)]
+    assert single == []
+    assert "Missing required key \"{key}\"" in bt.collect_ui_sources()
