@@ -3,7 +3,7 @@
   {
    "env": "CLAUDE_CODE_DISABLE_ADVISOR_TOOL",
    "precedence": "related",
-   "note": "CLAUDE_CODE_DISABLE_ADVISOR_TOOL turns the advisor off, and this key can't turn it back on json settings.json { \"advisorModel\": \"opus\" } The key has no effect on providers where the advisor isn't available, such as Amazon Bedrock and Claude Platform on AWS."
+   "note": "CLAUDE_CODE_DISABLE_ADVISOR_TOOL turns the advisor off, and this key can't turn it back on json settings.json { \"advisorModel\": \"opus\" } The key has no effect on providers where the advisor isn't available, such as Amazon Bedrock."
   }
  ],
  "allowedProviders": [
@@ -29,12 +29,27 @@
   {
    "env": "ANTHROPIC_AUTH_TOKEN",
    "precedence": "related",
-   "note": "The last two cases apply only when the helper's output is the credential Claude Code sends and ANTHROPIC_AUTH_TOKEN isn't set."
+   "note": "The last three cases apply only when the helper's output is the credential Claude Code sends and ANTHROPIC_AUTH_TOKEN isn't set."
   },
   {
    "env": "CLAUDE_CODE_API_KEY_HELPER_TTL_MS",
    "precedence": "related",
    "note": "Scope : Any file Type : string, a shell command line Default : unset, so Claude Code doesn't run a helper json settings.json { \"apiKeyHelper\": \"/bin/generate_temp_api_key.sh\" } Claude Code caches the value and reruns the command in these cases: After the cache lifetime, five minutes by default or the interval you set with CLAUDE_CODE_API_KEY_HELPER_TTL_MS."
+  },
+  {
+   "env": "CLAUDE_CODE_SKIP_ANTHROPIC_AWS_AUTH",
+   "precedence": "related",
+   "note": "When a request through an LLM gateway fails with 401, but not 403, and you set CLAUDE_CODE_SKIP_VERTEX_AUTH for Google Cloud's Agent Platform, CLAUDE_CODE_SKIP_ANTHROPIC_AWS_AUTH for Claude Platform on AWS, or CLAUDE_CODE_SKIP_MANTLE_AUTH for Amazon Bedrock Mantle."
+  },
+  {
+   "env": "CLAUDE_CODE_SKIP_MANTLE_AUTH",
+   "precedence": "related",
+   "note": "When a request through an LLM gateway fails with 401, but not 403, and you set CLAUDE_CODE_SKIP_VERTEX_AUTH for Google Cloud's Agent Platform, CLAUDE_CODE_SKIP_ANTHROPIC_AWS_AUTH for Claude Platform on AWS, or CLAUDE_CODE_SKIP_MANTLE_AUTH for Amazon Bedrock Mantle."
+  },
+  {
+   "env": "CLAUDE_CODE_SKIP_VERTEX_AUTH",
+   "precedence": "related",
+   "note": "When a request through an LLM gateway fails with 401, but not 403, and you set CLAUDE_CODE_SKIP_VERTEX_AUTH for Google Cloud's Agent Platform, CLAUDE_CODE_SKIP_ANTHROPIC_AWS_AUTH for Claude Platform on AWS, or CLAUDE_CODE_SKIP_MANTLE_AUTH for Amazon Bedrock Mantle."
   }
  ],
  "autoCompactEnabled": [
@@ -62,7 +77,7 @@
   {
    "env": "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL",
    "precedence": "related",
-   "note": "Scope : Global config Type : Boolean true: Claude Code installs the IDE extension automatically when you run it from a VS Code terminal false: Claude Code doesn't install the extension automatically Default : true Per-session overrides : CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL set to 1 skips the install for one session even when this key is true json ~/.claude.json { \"autoInstallIdeExtension\": false } C"
+   "note": "Scope : Global config Type : Boolean true: /ide installs the extension false: /ide doesn't install the extension Default : true Per-session overrides : CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL set to 1 skips the install for one session even when this key is true json ~/.claude.json { \"autoInstallIdeExtension\": false } Claude Code ignores this key in settings.json."
   }
  ],
  "autoMemoryEnabled": [
@@ -205,7 +220,7 @@
   {
    "env": "CLAUDE_CODE_DISABLE_FAST_MODE",
    "precedence": "related",
-   "note": "Scope : Any file Type : Boolean true: Claude Code turns fast mode on for sessions where it's available false: fast mode stays off Default : unset, so fast mode is off Per-session overrides : CLAUDE_CODE_DISABLE_FAST_MODE turns fast mode off for one session, and this key can't turn it back on json settings.json { \"fastMode\": true }"
+   "note": "On Fable 5.2, you must also run /fast while using Fable 5.2 false: fast mode stays off Default : unset, so fast mode is off Per-session overrides : CLAUDE_CODE_DISABLE_FAST_MODE turns fast mode off for one session, and this key can't turn it back on json settings.json { \"fastMode\": true }"
   }
  ],
  "feedbackDrafts": [

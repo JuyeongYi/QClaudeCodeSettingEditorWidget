@@ -1,6 +1,6 @@
 {
  "ANTHROPIC_API_KEY": {
-  "description": "API key sent as X-Api-Key header. When set, this key is used instead of your Claude Pro, Max, Team, or Enterprise subscription even if you are logged in. In non-interactive mode (-p), the key is always used when present. In interactive mode, you are prompted to approve the key once before it overrides your subscription. To use your subscription instead, run unset ANTHROPIC_API_KEY",
+  "description": "API key sent as X-Api-Key header. When set, this key is used instead of your Claude Pro, Max, Ultra, Team, or Enterprise subscription even if you are logged in. In non-interactive mode (-p), the key is always used when present. In interactive mode, you are prompted to approve the key once before it overrides your subscription. To use your subscription instead, run unset ANTHROPIC_API_KEY",
   "schemaDescription": "API key for Anthropic API authentication",
   "values": [],
   "inSchema": true,
@@ -72,7 +72,7 @@
   "valuesAreHints": false
  },
  "ANTHROPIC_BEDROCK_SERVICE_TIER": {
-  "description": "Amazon Bedrock service tier (default, flex, or priority). Sent as the X-Amzn-Bedrock-Service-Tier header. See Amazon Bedrock",
+  "description": "Amazon Bedrock service tier (default, flex, or priority). See Amazon Bedrock",
   "schemaDescription": "Select Bedrock service tier; sent as X-Amzn-Bedrock-Service-Tier header. See https://code.claude.com/docs/en/amazon-bedrock#service-tiers",
   "values": [
    "default",
@@ -784,6 +784,14 @@
   "inDocs": true,
   "valuesAreHints": false
  },
+ "CLAUDE_CODE_CONFIG_LOCK_WAIT_MS": {
+  "description": "Milliseconds that a command adding or removing a user or local scope MCP server, such as claude mcp add, keeps trying for the lock on ~/.claude.json before it fails. With it unset, the command waits about 10 to 20 seconds, and a shorter value changes nothing. Requires Claude Code v2.1.318 or later",
+  "schemaDescription": "",
+  "values": [],
+  "inSchema": false,
+  "inDocs": true,
+  "valuesAreHints": false
+ },
  "CLAUDE_CODE_CONNECT_TIMEOUT_MS": {
   "description": "Removed in v2.1.186 and now a no-op. Previously set a separate timeout for the connect, TLS, and response-header phase of a streaming API request. Use API_TIMEOUT_MS instead. For the response-header phase of a streaming request, see CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS",
   "schemaDescription": "",
@@ -955,6 +963,17 @@
   "inSchema": true,
   "inDocs": true
  },
+ "CLAUDE_CODE_DISABLE_BG_STABLE_PATH": {
+  "description": "On macOS with the native installer, set to 1 to run each background session's host process from the installed binary, not ~/.local/share/claude/ClaudeCode.app. macOS may then ask again for permissions such as folder access, including after each update. Set it in the env block of user settings, a managed settings file, or an MDM policy, not your shell. To remove ClaudeCode.app, delete it yourself. Requires Claude Code v2.1.295 or later",
+  "schemaDescription": "",
+  "values": [
+   "1",
+   "0"
+  ],
+  "inSchema": false,
+  "inDocs": true,
+  "valuesAreHints": true
+ },
  "CLAUDE_CODE_DISABLE_BUNDLED_SKILLS": {
   "description": "Set to 1 to disable the skills and workflows included with Claude Code: bundled skills and workflows are removed entirely, while built-in commands like /init stay typable but are hidden from the model. /doctor stays typable like the built-in commands; hide it with DISABLE_DOCTOR_COMMAND instead. Skills from plugins, .claude/skills/, and .claude/commands/ are unaffected. Equivalent to the disableBundledSkills setting",
   "schemaDescription": "Disable the skills and workflows bundled with Claude Code (plugins and project .claude/skills are unaffected). See https://code.claude.com/docs/en/env-vars",
@@ -966,7 +985,7 @@
   "inDocs": true
  },
  "CLAUDE_CODE_DISABLE_CFC_PROMPT": {
-  "description": "Set to 1 to keep the Claude in Chrome browser tools available while omitting the Chrome section of the system prompt and the /claude-in-chrome bundled skill. For hosts that embed Claude Code and supply their own browser guidance. Requires Claude Code v2.1.257 or later",
+  "description": "For hosts that embed Claude Code and supply their own browser guidance. Set to 1 to keep the Claude in Chrome browser tools available while omitting the Chrome section of the system prompt and the /claude-in-chrome bundled skill. In VS Code, the extension at v2.1.314 or later also leaves the Claude in Chrome instructions out of a session's messages. Requires Claude Code v2.1.257 or later",
   "schemaDescription": "",
   "values": [
    "1",
@@ -1037,6 +1056,17 @@
   "inSchema": true,
   "inDocs": true
  },
+ "CLAUDE_CODE_DISABLE_FEATURE_FLAGS": {
+  "description": "Set to 1 to turn off feature-flag fetching. Requires Claude Code v2.1.319 or later. With this variable set, Remote Control and the other features that need feature-flag fetching are unavailable. Telemetry event logging stays on unless DISABLE_TELEMETRY is also set. The older name, DISABLE_GROWTHBOOK, still works, and it is the only one that v2.1.124 through v2.1.318 read",
+  "schemaDescription": "",
+  "values": [
+   "1",
+   "0"
+  ],
+  "inSchema": false,
+  "inDocs": true,
+  "valuesAreHints": true
+ },
  "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": {
   "description": "Set to 1 to disable the \"How is Claude doing?\" session quality surveys. Surveys are also disabled when DISABLE_TELEMETRY, DO_NOT_TRACK, or CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC is set, unless CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL opts back in. To set a sample rate instead of disabling outright, use the feedbackSurveyRate setting. See Session quality surveys",
   "schemaDescription": "Disable session quality feedback surveys",
@@ -1098,6 +1128,28 @@
   ],
   "inSchema": true,
   "inDocs": true
+ },
+ "CLAUDE_CODE_DISABLE_LOOPED_CROSS_CERT_DROP": {
+  "description": "Set to 1 to keep system cross-certificates that certify each other in a loop, for servers whose private CA needs one. Requires Claude Code v2.1.316 or later",
+  "schemaDescription": "",
+  "values": [
+   "1",
+   "0"
+  ],
+  "inSchema": false,
+  "inDocs": false,
+  "valuesAreHints": true
+ },
+ "CLAUDE_CODE_DISABLE_MCP_TASKS": {
+  "description": "Set to 1 to turn off MCP tasks, which since v2.1.319 also work without feature-flag fetching (Bedrock, Vertex, Foundry, LLM gateways, DISABLE_TELEMETRY)",
+  "schemaDescription": "",
+  "values": [
+   "1",
+   "0"
+  ],
+  "inSchema": false,
+  "inDocs": false,
+  "valuesAreHints": true
  },
  "CLAUDE_CODE_DISABLE_MCP_TASK_BACKGROUND": {
   "description": "Set to 1 so that Claude waits for the result of an MCP task in an interactive session. While automatic backgrounding is on, it still moves the call to the background after two minutes by default. Requires Claude Code v2.1.304 or later",
@@ -1161,6 +1213,17 @@
   ],
   "inSchema": false,
   "inDocs": true,
+  "valuesAreHints": true
+ },
+ "CLAUDE_CODE_DISABLE_NESTED_SESSION_ID": {
+  "description": "Set to 1 on a self-hosted runner to have claude -p run inside a session use that session's ID and transcript, as in earlier versions. Requires Claude Code v2.1.317 or later",
+  "schemaDescription": "",
+  "values": [
+   "1",
+   "0"
+  ],
+  "inSchema": false,
+  "inDocs": false,
   "valuesAreHints": true
  },
  "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": {
@@ -1299,6 +1362,17 @@
   "inDocs": true,
   "valuesAreHints": true
  },
+ "CLAUDE_CODE_DISABLE_ULTRATHINK": {
+  "description": "Set to 1 to turn the ultrathink keyword off. Requires Claude Code v2.1.316 or later",
+  "schemaDescription": "",
+  "values": [
+   "1",
+   "0"
+  ],
+  "inSchema": false,
+  "inDocs": false,
+  "valuesAreHints": true
+ },
  "CLAUDE_CODE_DISABLE_UNKNOWN_MODEL_WINDOW_ENFORCEMENT": {
   "description": "Set to 1 to skip proactive auto-compaction when Claude Code doesn't recognize the model ID, such as an LLM gateway alias. Without this variable, Claude Code compacts at the context window it assumes for the ID. CLAUDE_CODE_MAX_CONTEXT_TOKENS can correct the assumed window instead; see Correct the window for a gateway or custom model ID for when each variable applies. Requires Claude Code v2.1.223 or later",
   "schemaDescription": "",
@@ -1351,6 +1425,17 @@
   ],
   "inSchema": true,
   "inDocs": true
+ },
+ "CLAUDE_CODE_DROP_UNAVAILABLE_DEFERRED_TOOL": {
+  "description": "Set to 1 to drop a deferred tool call whose tool isn't available when you resume with -p. Without this variable, the call stays pending and a prompt you send doesn't reach Claude. Requires Claude Code v2.1.319 or later",
+  "schemaDescription": "",
+  "values": [
+   "1",
+   "0"
+  ],
+  "inSchema": false,
+  "inDocs": true,
+  "valuesAreHints": true
  },
  "CLAUDE_CODE_EFFORT_LEVEL": {
   "description": "Set the effort level for supported models. Values: low, medium, high, xhigh, or max. Available levels depend on the model. Takes precedence over --effort, /effort, and the modelSettings and effortLevel settings. A maxEffortLevel cap still applies. Set it to auto or unset to have Claude Code send no effort level, so that the API applies its own default for the model. See Adjust effort level",
@@ -1577,7 +1662,7 @@
   "inDocs": true
  },
  "CLAUDE_CODE_EXTRA_BODY": {
-  "description": "JSON object to merge into the top level of every API request body. Useful for passing provider-specific parameters that Claude Code doesn't expose directly. A value exported in your shell also applies to the background sessions you dispatch with claude agents or --bg. Before v2.1.206, background sessions ignored a shell-exported value and used whatever copy the background supervisor process inherited",
+  "description": "JSON object to merge into the top level of model request bodies except on some requests outside the conversation, such as /model checks. Useful for passing provider-specific parameters that Claude Code doesn't expose directly. A value exported in your shell also applies to the background sessions you dispatch with claude agents or --bg. Before v2.1.206, background sessions ignored a shell-exported value and used whatever copy the background supervisor process inherited",
   "schemaDescription": "JSON object to merge into every API request body",
   "values": [],
   "inSchema": true,
@@ -1701,7 +1786,7 @@
   "inDocs": true
  },
  "CLAUDE_CODE_GLOB_TIMEOUT_SECONDS": {
-  "description": "Timeout in seconds for Glob tool file discovery. Defaults to 20 seconds on most platforms and 60 seconds on WSL",
+  "description": "Timeout in seconds for Glob and Grep tool searches. Defaults to 20 seconds on most platforms and 60 seconds on WSL",
   "schemaDescription": "Glob tool timeout in seconds (default: 20-60)",
   "values": [],
   "inSchema": true,
@@ -1743,7 +1828,7 @@
   "valuesAreHints": false
  },
  "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL": {
-  "description": "Set to 1 to skip auto-installation of IDE extensions. Equivalent to setting autoInstallIdeExtension to false",
+  "description": "Set to 1 to stop /ide from installing the IDE extension. Equivalent to setting autoInstallIdeExtension to false. Claude Code versions before v2.1.318 also install or update the extension when you start claude in a VS Code, Cursor, or Devin Desktop terminal. This variable stops that too",
   "schemaDescription": "Skip automatic IDE extension installation",
   "values": [
    "0",
@@ -1769,6 +1854,17 @@
   "inSchema": false,
   "inDocs": true,
   "valuesAreHints": false
+ },
+ "CLAUDE_CODE_LOOP_KEEPALIVE": {
+  "description": "Set to 1 to keep the old self-paced /loop behavior of scheduling a fallback wakeup when a turn finishes without rescheduling, instead of ending the loop. Requires Claude Code v2.1.319 or later",
+  "schemaDescription": "",
+  "values": [
+   "1",
+   "0"
+  ],
+  "inSchema": false,
+  "inDocs": false,
+  "valuesAreHints": true
  },
  "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": {
   "description": "How many subagents can be running in one session before the Agent tool refuses to spawn another (default: 20). Accepts a positive whole number in plain digits; anything else is ignored, so the variable can adjust the cap but can't disable it. Requires Claude Code v2.1.217 or later",
@@ -1950,7 +2046,7 @@
   "inDocs": true
  },
  "CLAUDE_CODE_OAUTH_REFRESH_TOKEN": {
-  "description": "OAuth refresh token for Claude.ai authentication. When set, claude auth login exchanges this token directly instead of opening a browser. Requires CLAUDE_CODE_OAUTH_SCOPES. Useful for provisioning authentication in automated environments",
+  "description": "OAuth refresh token for claude.ai authentication. When set, claude auth login exchanges this token directly instead of opening a browser. Requires CLAUDE_CODE_OAUTH_SCOPES. Useful for provisioning authentication in automated environments. Ignored in project and local settings",
   "schemaDescription": "OAuth refresh token",
   "values": [],
   "inSchema": true,
@@ -1958,7 +2054,7 @@
   "valuesAreHints": false
  },
  "CLAUDE_CODE_OAUTH_SCOPES": {
-  "description": "Space-separated OAuth scopes the refresh token was issued with, such as \"user:profile user:inference user:sessions:claude_code\". Required when CLAUDE_CODE_OAUTH_REFRESH_TOKEN is set",
+  "description": "Space-separated OAuth scopes the refresh token was issued with, such as \"user:profile user:inference user:sessions:claude_code\". Required when CLAUDE_CODE_OAUTH_REFRESH_TOKEN is set. Ignored in project and local settings",
   "schemaDescription": "OAuth scopes (space-separated)",
   "values": [],
   "inSchema": true,
@@ -1966,7 +2062,7 @@
   "valuesAreHints": false
  },
  "CLAUDE_CODE_OAUTH_TOKEN": {
-  "description": "OAuth access token for claude.ai authentication. Alternative to /login for SDK and automated environments. Takes precedence over keychain-stored credentials. Generate one with claude setup-token. Unless you run /login, Claude Code uses the token you set for the whole session. To replace an expired token, generate a new one and restart",
+  "description": "OAuth access token for claude.ai authentication. Alternative to /login for SDK and automated environments. Ignored in project and local settings. Takes precedence over keychain-stored credentials. Generate one with claude setup-token. Unless you run /login, Claude Code uses the token you set for the whole session. To replace an expired token, generate a new one and restart",
   "schemaDescription": "OAuth access token",
   "values": [],
   "inSchema": true,
@@ -2191,7 +2287,7 @@
   "inDocs": true
  },
  "CLAUDE_CODE_PROXY_RESOLVES_HOSTS": {
-  "description": "Set to 1 to allow the proxy to perform DNS resolution instead of the caller. Opt-in for environments where the proxy should handle hostname resolution",
+  "description": "Set to 1 to allow the proxy to perform DNS resolution instead of the caller. Opt-in for environments where the proxy should handle hostname resolution. When CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST is set, set this in the environment of the process that starts Claude Code",
   "schemaDescription": "Allow proxy to handle DNS resolution",
   "values": [
    "0",
@@ -2499,6 +2595,20 @@
   "values": [],
   "inSchema": true,
   "inDocs": true,
+  "valuesAreHints": false
+ },
+ "CLAUDE_CODE_SUBAGENT_EFFORT": {
+  "description": "Set the effort level subagents run at when nothing else names one, instead of inheriting the session's. Values: low, medium, high, xhigh, or max. Requires Claude Code v2.1.316 or later",
+  "schemaDescription": "",
+  "values": [
+   "low",
+   "medium",
+   "high",
+   "xhigh",
+   "max"
+  ],
+  "inSchema": false,
+  "inDocs": false,
   "valuesAreHints": false
  },
  "CLAUDE_CODE_SUBAGENT_MODEL": {
@@ -2836,7 +2946,7 @@
   "inDocs": false
  },
  "CLAUDE_EFFORT": {
-  "description": "Set automatically in Bash tool subprocesses and hook commands to the effort level in effect when the subprocess starts: low, medium, high, xhigh, or max. Matches the effort.level field passed to hooks. Only set when the current model supports the effort parameter",
+  "description": "Set automatically in Bash tool subprocesses and hook commands to the effort level setting when the subprocess starts: low, medium, high, xhigh, or max. Matches the effort.level field passed to hooks. Only set when the current model supports the effort parameter",
   "schemaDescription": "Set automatically in Bash tool subprocesses and hook commands to the active effort level for the turn (low, medium, high, xhigh, or max; ultracode reports as xhigh). Read-only. See https://code.claude.com/docs/en/env-vars",
   "values": [
    "low",
@@ -3042,7 +3152,7 @@
   "inDocs": true
  },
  "DISABLE_GROWTHBOOK": {
-  "description": "Set to 1 or true to disable feature-flag fetching and use code defaults for every flag. This makes Remote Control and the other features that need feature-flag fetching unavailable. Setting it to 0 or false leaves fetching on. Telemetry event logging stays on unless DISABLE_TELEMETRY is also set",
+  "description": "Set to 1 to turn off feature-flag fetching. Requires Claude Code v2.1.124 or later. Superseded by CLAUDE_CODE_DISABLE_FEATURE_FLAGS, which requires v2.1.319 or later: use that name unless a machine on v2.1.318 or earlier reads the configuration. This name still works",
   "schemaDescription": "Set to 1 to disable GrowthBook feature-flag fetching and use code defaults for every flag. Telemetry stays on unless DISABLE_TELEMETRY is also set. See https://code.claude.com/docs/en/env-vars",
   "values": [
    "0",
@@ -3256,7 +3366,7 @@
   "inDocs": true
  },
  "FORCE_HYPERLINK": {
-  "description": "Set to 1 to enable clickable OSC 8 hyperlinks when your terminal supports them but isn't auto-detected, or 0 to disable them. When unset, Claude Code enables hyperlinks only when it detects terminal support. Claude Code parses this value as a number, not a Boolean, so a value such as false, no, or off enables hyperlinks rather than disabling them. The footer PR or merge request badge renders as a hyperlink even when Claude Code can't detect terminal support, such as over SSH. Set 0 to render the badge as plain text",
+  "description": "Set to 1 to enable clickable OSC 8 hyperlinks when your terminal supports them but isn't auto-detected. When unset, Claude Code enables most hyperlinks only when it detects terminal support. The footer PR or merge request badge and long sign-in URLs are links either way. Set 0, false, no, or off to render all of them as plain text. Before v2.1.314, false, no, and off enabled hyperlinks instead",
   "schemaDescription": "Set to 1 to enable clickable OSC 8 hyperlinks when your terminal supports them but is not auto-detected, or 0 to disable them",
   "values": [
    "0",
@@ -3403,7 +3513,7 @@
   "valuesAreHints": false
  },
  "MCP_PROTOCOL_NEGOTIATION": {
-  "description": "On the v2 MCP client runtime only, controls whether Claude Code probes servers for MCP protocol revision 2026-07-28. Set legacy to skip the probe, so that every server connects with the handshake from before that revision. Set auto to probe the server kinds that support the probe: HTTP and stdio servers, claude.ai connectors, and the connectors of cloud and Remote Control sessions. With the variable unset, Claude Code probes those same kinds by default; see MCP client runtimes. Any other value is ignored with a warning in the debug log. Requires Claude Code v2.1.221 or later",
+  "description": "On the v2 MCP client runtime only, controls whether Claude Code probes servers for MCP protocol revision 2026-07-28. Set legacy to keep every server on the earlier handshake, or auto to probe the server kinds that support it. Unset, Claude Code probes them but can skip some servers. Any other value is ignored with a warning in the debug log. Requires Claude Code v2.1.221 or later",
   "schemaDescription": "",
   "values": [],
   "inSchema": false,
@@ -3727,7 +3837,7 @@
   "valuesAreHints": false
  },
  "OTEL_METRICS_INCLUDE_ACCOUNT_UUID": {
-  "description": "Set to false to exclude account UUID from metrics attributes (default: included). See Monitoring",
+  "description": "Set to false to exclude account UUID from metric and event attributes (default: included). See Monitoring",
   "schemaDescription": "Include the user.account_uuid and user.account_id attributes on metrics (default true). See https://code.claude.com/docs/en/monitoring-usage#metrics-cardinality-control",
   "values": [
    "true",
@@ -3737,7 +3847,7 @@
   "inDocs": true
  },
  "OTEL_METRICS_INCLUDE_ENTRYPOINT": {
-  "description": "Set to true to include the session entrypoint in metrics attributes (default: excluded). Added in v2.1.152. See Monitoring",
+  "description": "Set to true to include the session entrypoint in metric and event attributes (default: excluded). Added in v2.1.152. See Monitoring",
   "schemaDescription": "Include the app.entrypoint attribute on metrics (default false). See https://code.claude.com/docs/en/monitoring-usage#metrics-cardinality-control",
   "values": [
    "true",
@@ -3768,7 +3878,7 @@
   "inDocs": true
  },
  "OTEL_METRICS_INCLUDE_SESSION_ID": {
-  "description": "Set to false to exclude session ID from metrics attributes (default: included). See Monitoring",
+  "description": "Set to false to exclude session ID from metric and event attributes (default: included). See Monitoring",
   "schemaDescription": "Include the session.id attribute on metrics (default true). See https://code.claude.com/docs/en/monitoring-usage#metrics-cardinality-control",
   "values": [
    "true",
@@ -3778,7 +3888,7 @@
   "inDocs": true
  },
  "OTEL_METRICS_INCLUDE_VERSION": {
-  "description": "Set to true to include Claude Code version in metrics attributes (default: excluded). See Monitoring",
+  "description": "Set to true to include Claude Code version in metric and event attributes (default: excluded). See Monitoring",
   "schemaDescription": "Include the app.version attribute on metrics (default false). See https://code.claude.com/docs/en/monitoring-usage#metrics-cardinality-control",
   "values": [
    "true",
@@ -3983,6 +4093,14 @@
  },
  "VERTEX_REGION_CLAUDE_FABLE_5_1": {
   "description": "Override region for Claude Fable 5.1 when using Google Cloud's Agent Platform. Added in v2.1.257",
+  "schemaDescription": "",
+  "values": [],
+  "inSchema": false,
+  "inDocs": true,
+  "valuesAreHints": false
+ },
+ "VERTEX_REGION_CLAUDE_FABLE_5_2": {
+  "description": "Override region for Claude Fable 5.2 when using Google Cloud's Agent Platform. Added in v2.1.321",
   "schemaDescription": "",
   "values": [],
   "inSchema": false,

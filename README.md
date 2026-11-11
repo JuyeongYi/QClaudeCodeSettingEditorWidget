@@ -6,7 +6,7 @@ Claude Code `settings.json` 의 **모든 키**를 GUI로 편집하는 PySide6 �
 (schemastore 에 아직 없는 문서 키는 문서의 Type 설명에서 스키마를 만들어 주입). 그 병합 스키마로부터 편집기를 자동 생성한다.
 `env` 는 스키마의 변수 목록에 [환경 변수 문서](https://code.claude.com/docs/en/env-vars)를 병합한 전용 표로 편집한다.
 
-**패키지 버전 = 번들 메타데이터를 생성한 Claude Code 버전**(현재 `2.1.312`, `qclaudecodesettingeditorwidget/_version.py`).
+**패키지 버전 = 번들 메타데이터를 생성한 Claude Code 버전**(현재 `2.1.322`, `qclaudecodesettingeditorwidget/_version.py`).
 
 ## 설치·실행
 
@@ -56,12 +56,12 @@ w.settings()          # dict
 
 ## 키 enum·메타데이터와 단건·JSON 갱신
 
-키 문자열 대신 enum 을 쓴다. `SettingKey`(최상위 설정 키 184개, `keys.py`)와 `EnvVar`(환경변수 441개, `env_keys.py`)는
+키 문자열 대신 enum 을 쓴다. `SettingKey`(최상위 설정 키 184개, `keys.py`)와 `EnvVar`(환경변수 452개, `env_keys.py`)는
 `str` 겸용이라 **멤버 이름이 곧 키**다: `SettingKey.model == "model"`, `EnvVar.API_TIMEOUT_MS == "API_TIMEOUT_MS"`.
 식별자가 될 수 없는 `$schema` 만 `SettingKey.schema`(값 `"$schema"`)다. 위젯 내부(카테고리 표 등)도 이 enum 을 쓴다.
 
 `SettingKey` 의 각 멤버는 값으로 **`SettingInfo` dataclass** 를 갖고, `.info` 로 꺼낸다(키 문자열 동작은 그대로).
-중첩 경로(`sandbox.bwrapPath` 등 63개)는 `NESTED_SETTINGS`, 통합 조회는 `setting_info(path)`.
+중첩 경로(`sandbox.bwrapPath` 등 65개)는 `NESTED_SETTINGS`, 통합 조회는 `setting_info(path)`.
 메타데이터는 문자열 대신 `constants.py` 의 enum(`Scope`·`JsonType`·`Topic`)과 `Version` 으로 적힌다 — 문자열은 키와 JSON 값(기본값·값 후보)뿐.
 
 | `SettingInfo` 필드 | 내용 |
@@ -172,7 +172,7 @@ w.setTargetScope(Scope.USER | Scope.PROJECT); w.setTargetVersion(None); w.inappl
 from qclaudecodesettingeditorwidget import LATEST_VERSION, settings_for_version
 
 w.saveFile("settings.json", version="2.1.250")      # 2.1.250 에 없는 키(이후 추가·이전 제거)를 빼고 저장
-w.saveFile("settings.json", version=LATEST_VERSION) # 최신(현재 2.1.312) 기준 — 제거된 키(taskOutputMaxChars 등)를 뺀다
+w.saveFile("settings.json", version=LATEST_VERSION) # 최신(현재 2.1.322) 기준 — 제거된 키(taskOutputMaxChars 등)를 뺀다
 w.settings("2.1.250"); w.GetSetting(version="latest"); w.GetSettingJsonl(version="latest")
 settings_for_version({"model": "opus", "taskOutputMaxChars": 1000}, "latest")   # 위젯 없이: {"model": "opus"}
 ```
@@ -196,10 +196,10 @@ settings_for_version({"model": "opus", "taskOutputMaxChars": 1000}, "latest")   
   변형이 전부 문자열(`theme` 의 enum | `custom:*`)이면 제안 목록이 달린 편집 가능한 콤보 하나로 합친다.
   `type: [X, "null"]` 은 `null` 체크박스 + X 편집기.
 - **스키마에 없는 키**는 그대로 보존해 다시 내보낸다(최상위·중첩 객체 모두).
-- **env**: 스키마 340개 + 문서 전용 변수 100개 + overrides 1개 = 441개를 표로 제공. enum 이 있으면 콤보(직접 입력도 가능),
+- **env**: 스키마 340개 + 문서 전용 변수 105개 + overrides 7개 = 452개를 표로 제공. enum 이 있으면 콤보(직접 입력도 가능),
   문서에서 "Set to 1" 류로 추론된 값은 힌트로만 제공. 목록에 없는 변수는 `+ 사용자 변수` 로 추가.
 - **JSON 페이지**: 현재 설정의 JSON 을 보여주고, 직접 고쳐 `JSON 적용` 으로 폼에 반영할 수 있다.
-- **설정 키 ↔ env 변수 겹침**: `resources/overlaps.json`(문서에서 추출, 46개 설정 / 63쌍)을 바탕으로
+- **설정 키 ↔ env 변수 겹침**: `resources/overlaps.json`(문서에서 추출, 46개 설정 / 66쌍)을 바탕으로
   설정 행에 `관련 env: ANTHROPIC_MODEL (env 우선)` 링크(클릭 시 env 페이지로 이동·필터), env 행에 `↔ model` 접두어를 표시한다.
   둘 다 설정되어 있으면 툴바에 `⚠ 겹침 n건` 경고가 뜨고 `overlaps()` 로 목록을 얻을 수 있다.
   우선순위(`env`/`setting`)는 문서 문장에 명시된 경우에만 붙고, 나머지는 `related`(관련) 로 표시한다.
@@ -221,7 +221,7 @@ settings_for_version({"model": "opus", "taskOutputMaxChars": 1000}, "latest")   
 
 ```bash
 python tools/build_translations.py --lang ja          # 새 언어 .ts 생성 (Linguist 로 번역)
-python tools/build_translations.py                    # 소스 변경 후 기존 .ts 갱신 (번역 보존, 새 항목 unfinished)
+python tools/build_translations.py                    # 소스 변경 후 기존 .ts 갱신 (번역 보존, 새 항목·영어 원문이 바뀐 항목 unfinished)
 python tools/build_translations.py --import ja qccse=ja_ui.json schema=ja_desc.json   # {source: translation} JSON 반영
 python tools/build_translations.py --compile          # pyside6-lrelease 로 .qm 생성
 ```
@@ -229,10 +229,13 @@ python tools/build_translations.py --compile          # pyside6-lrelease 로 .qm
 ## 리소스 갱신
 
 Claude Code 가 새 버전을 내면 다음으로 번들 리소스·생성 코드를 다시 만든다(네트워크 필요).
+Claude Code 안에서는 프로젝트 스킬 `/update-claude-code-version`(`.claude/skills/update-claude-code-version/`)이
+아래 명령에 CHANGELOG 검토·overrides 보정·번역·README 수치 갱신·테스트까지 묶어 수행한다.
 
 ```bash
 python tools/refresh_resources.py              # 로컬 파일로: --schema/--envdoc/--settingsdoc/--changelog PATH
-python tools/build_translations.py             # 새 경로가 .ts 에 unfinished 로 추가된다
+python tools/build_translations.py             # 새 경로·영어 원문이 바뀐 경로가 .ts 에 unfinished 로 표시된다
+python tools/build_translations.py --import ko schema=ko.json   # 번역 반영
 python tools/build_translations.py --compile
 ```
 

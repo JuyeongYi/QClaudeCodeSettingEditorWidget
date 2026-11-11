@@ -11,6 +11,8 @@
                                                        # {source: translation} JSON 을 컨텍스트별로 반영
   python tools/build_translations.py --compile        # pyside6-lrelease 로 .qm 생성
 기존 번역은 보존되고, 새 소스는 type="unfinished", 사라진 소스는 type="vanished" 로 표시된다.
+schema 컨텍스트에서 영어 원문(extracomment)이 바뀐 소스는 기존 번역을 그대로 둔 채 type="unfinished" 로 되돌린다
+(런타임은 내용이 있는 unfinished 번역도 쓰므로 화면은 그대로이고, 다시 번역할 대상만 드러난다).
 """
 from __future__ import annotations
 
@@ -23,7 +25,7 @@ import subprocess
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Any
+from typing import Any, NamedTuple
 
 ROOT = Path(__file__).resolve().parent.parent
 PKG = ROOT / "qclaudecodesettingeditorwidget"
@@ -85,9 +87,19 @@ def collect_schema_paths(schema: dict[str, Any]) -> dict[str, str]:
 
 
 # --------------------------------------------------------------------------- .ts 읽기/쓰기
-def read_ts(path: Path) -> dict[str, dict[str, str]]:
-    """{context: {source: translation}} (빈 번역은 "")."""
-    data: dict[str, dict[str, str]] = {}
+class TsMessage(NamedTuple):
+    translation: str  # 빈 번역은 ""
+    comment: str      # extracomment (schema 컨텍스트에서는 번역 당시의 영어 원문)
+    unfinished: bool  # 번역이 없거나, 있어도 다시 봐야 함(원문 변경)
+
+    @property
+    def done(self) -> bool:
+        return bool(self.translation) and not self.unfinished
+
+
+def read_ts(path: Path) -> dict[str, dict[str, TsMessage]]:
+    """{context: {source: TsMessage}}."""
+    data: dict[str, dict[str, TsMessage]] = {}
     if not path.is_file():
         return data
     root = ET.parse(path).getroot()
@@ -99,17 +111,19 @@ def read_ts(path: Path) -> dict[str, dict[str, str]]:
             if src is None:
                 continue
             tr_el = msg.find("translation")
-            bucket[src] = (tr_el.text or "") if tr_el is not None else ""
+            text = (tr_el.text or "") if tr_el is not None else ""
+            unfinished = tr_el is None or tr_el.get("type") == "unfinished" or not text
+            bucket[src] = TsMessage(text, msg.findtext("extracomment") or "", unfinished)
     return data
 
 
-def write_ts(path: Path, lang: str, contexts: dict[str, list[tuple[str, str, str, bool]]]) -> None:
-    """contexts: {name: [(source, translation, comment, vanished)]}"""
+def write_ts(path: Path, lang: str, contexts: dict[str, list[tuple[str, str, str, bool, bool]]]) -> None:
+    """contexts: {name: [(source, translation, comment, unfinished, vanished)]}. 빈 번역은 항상 unfinished."""
     root = ET.Element("TS", version="2.1", language=lang)
     for name, messages in contexts.items():
         ctx = ET.SubElement(root, "context")
         ET.SubElement(ctx, "name").text = name
-        for source, translation, comment, vanished in messages:
+        for source, translation, comment, unfinished, vanished in messages:
             msg = ET.SubElement(ctx, "message")
             ET.SubElement(msg, "source").text = source
             if comment:
@@ -117,7 +131,7 @@ def write_ts(path: Path, lang: str, contexts: dict[str, list[tuple[str, str, str
             tr_el = ET.SubElement(msg, "translation")
             if vanished:
                 tr_el.set("type", "vanished")
-            elif not translation:
+            elif unfinished or not translation:
                 tr_el.set("type", "unfinished")
             tr_el.text = translation
     tree = ET.ElementTree(root)
@@ -134,18 +148,28 @@ def update_language(lang: str, ui_sources: list[str], schema_paths: dict[str, st
     path = LOCALES / f"{LOCALE_FILE_PREFIX}{lang}.ts"
     existing = read_ts(path)
     imports = imports or {}
-    contexts: dict[str, list[tuple[str, str, str, bool]]] = {}
+    contexts: dict[str, list[tuple[str, str, str, bool, bool]]] = {}
 
     def build(ctx: str, sources: list[str], comments: dict[str, str]) -> None:
         old = existing.get(ctx, {})
         imp = imports.get(ctx, {})
         rows = []
         for src in sources:
-            rows.append((src, imp.get(src) or old.get(src, ""), comments.get(src, ""), False))
+            comment = comments.get(src, "")
+            if imp.get(src):
+                rows.append((src, imp[src], comment, False, False))
+                continue
+            prev = old.get(src)
+            if prev is None:
+                rows.append((src, "", comment, True, False))
+                continue
+            # 영어 원문(extracomment)이 바뀌면 기존 번역은 남기되 다시 보도록 unfinished 로 돌린다
+            stale = bool(prev.comment) and bool(comment) and prev.comment != comment
+            rows.append((src, prev.translation, comment, prev.unfinished or stale, False))
         if keep_vanished:
-            for src, val in old.items():
-                if src not in sources and val:
-                    rows.append((src, val, "", True))
+            for src, prev in old.items():
+                if src not in sources and prev.translation:
+                    rows.append((src, prev.translation, "", False, True))
         contexts[ctx] = rows
 
     build(CONTEXT_UI, ui_sources, {})
@@ -206,9 +230,11 @@ def main(argv: list[str] | None = None) -> int:
             continue
         path = update_language(lang, ui_sources, schema_paths, imports.get(lang), args.keep_vanished)
         data = read_ts(path)
-        done_ui = sum(1 for v in data.get(CONTEXT_UI, {}).values() if v)
-        done_schema = sum(1 for v in data.get(CONTEXT_SCHEMA, {}).values() if v)
-        print(f"{path.name}: ui {done_ui}/{len(ui_sources)}, schema {done_schema}/{len(schema_paths)}")
+        done_ui = sum(1 for m in data.get(CONTEXT_UI, {}).values() if m.done)
+        done_schema = sum(1 for m in data.get(CONTEXT_SCHEMA, {}).values() if m.done)
+        stale = sum(1 for c in data.values() for m in c.values() if m.unfinished and m.translation)
+        print(f"{path.name}: ui {done_ui}/{len(ui_sources)}, schema {done_schema}/{len(schema_paths)}"
+              f" (원문이 바뀌어 다시 볼 번역 {stale})")
         if args.compile:
             compile_qm(path)
     return 0

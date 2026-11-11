@@ -2525,6 +2525,14 @@
         "blockReadsOutsideWorkingDirectories": {
           "type": "boolean",
           "description": "Make Claude's file tools refuse reads outside your working directories in every permission mode, including bypassPermissions. Claude Code denies Read, Grep, Glob, and LSP calls on those paths and tells Claude to ask you to add the directory with /add-dir. Files Claude Code itself needs stay readable, such as your skills, plugins, rules, agents, commands, and the CLAUDE.md memory file under ~/.claude/. Requires Claude Code v2.1.257 or later."
+        },
+        "blockWritesOutsideWorkingDirectories": {
+          "type": "boolean",
+          "description": "Make the Write, Edit, and NotebookEdit tools refuse paths outside your working directories in every permission mode, including bypassPermissions, apart from some of Claude Code's own files. The key doesn't limit shell commands, MCP tools, or the programs hooks run. To limit where shell commands write, turn on sandboxing. Requires Claude Code v2.1.314 or later."
+        },
+        "denyInsteadOfPrompting": {
+          "type": "boolean",
+          "description": "Set this to true to keep a session running when nobody is there to answer a permission prompt. Claude Code denies a tool call that would otherwise wait on a prompt, and the turn continues. Requires Claude Code v2.1.319 or later."
         }
       },
       "additionalProperties": false,
@@ -5259,7 +5267,7 @@
         "hold",
         "refuse"
       ],
-      "description": "Choose what this session does with messages arriving from your other Claude Code sessions. When no value applies, Claude Code decides per message from the two sessions' permission-mode classes. Requires Claude Code v2.1.224 or later."
+      "description": "Choose what this session does with messages arriving from your other Claude Code sessions. When no value applies, Claude Code decides per message from the two sessions' permission-mode classes."
     },
     "deniedModels": {
       "type": "array",
@@ -5271,7 +5279,7 @@
     "desktopSessionCleanupPeriodDays": {
       "type": "integer",
       "minimum": 0,
-      "description": "Set an age limit in days for the transcripts of sessions you started or most recently continued in Claude Desktop or Cowork. Without this key, Claude Code keeps those transcripts at any age. Claude Code deletes each one once it's older than both this limit and cleanupPeriodDays, so with cleanupPeriodDays at its default of 30, a value of 7 still keeps them 30 days. Cleaned up automatically lists the cases where cleanupPeriodDays applies instead and Claude Code ignores this key. Requires Claude Code v2.1.248 or later.",
+      "description": "Set an age limit in days for the transcripts of sessions you started or most recently continued in Claude Desktop or Cowork. Without this key, Claude Code keeps those transcripts at any age, except in cases such as a session you deleted in Claude Desktop. Requires Claude Code v2.1.248 or later.",
       "default": 0
     },
     "dialogExpiry": {
@@ -5572,7 +5580,7 @@
           }
         }
       },
-      "description": "Add SSH connections whose host comes from a command to the Desktop environment selector. When you create a connection or replace its host, Desktop runs the entry's command on your computer and connects to the host that the command prints. Requires Claude Desktop v3.6556.0 or later on macOS or Linux, signed in with a Claude account."
+      "description": "Add SSH connections whose host comes from a command to the Desktop environment selector. When you create a connection or create another machine for it, Desktop runs the entry's command on your computer and connects to the host that the command prints."
     },
     "subagentPromptCacheTtl": {
       "type": "string",

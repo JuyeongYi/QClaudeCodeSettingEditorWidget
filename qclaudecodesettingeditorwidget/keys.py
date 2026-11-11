@@ -1,4 +1,4 @@
-"""설정 키 enum + 키별 메타데이터 — Claude Code v2.1.312 기준.
+"""설정 키 enum + 키별 메타데이터 — Claude Code v2.1.322 기준.
 
 tools/refresh_resources.py 가 공식 문서(settings-reference)·schemastore 스키마·CHANGELOG 에서 자동 생성한다.
 직접 수정하지 말 것: 보정은 tools/resource_overrides.json 에 적고 다시 생성한다.
@@ -397,10 +397,16 @@ NESTED_SETTINGS: dict[str, SettingInfo] = {info.key: info for info in (
         "permissions.blockReadsOutsideWorkingDirectories", type=JsonType.BOOLEAN, since=Version(2, 1, 257),
         topic=Topic.PERMISSIONS, in_schemastore=False),
     SettingInfo(
+        "permissions.blockWritesOutsideWorkingDirectories", type=JsonType.BOOLEAN, since=Version(2, 1, 314),
+        topic=Topic.PERMISSIONS, in_schemastore=False),
+    SettingInfo(
         "permissions.defaultMode", type=JsonType.STRING,
         values=("acceptEdits", "bypassPermissions", "default", "delegate", "dontAsk", "plan", "auto", "manual"),
         topic=Topic.PERMISSIONS),
     SettingInfo("permissions.deny", type=JsonType.ARRAY, topic=Topic.PERMISSIONS),
+    SettingInfo(
+        "permissions.denyInsteadOfPrompting", scope=Scope.USER | Scope.MANAGED, type=JsonType.BOOLEAN,
+        since=Version(2, 1, 319), topic=Topic.PERMISSIONS, in_schemastore=False),
     SettingInfo(
         "permissions.disableBypassPermissionsMode", type=JsonType.STRING, values=("disable",), topic=Topic.PERMISSIONS),
     SettingInfo("policyHelper.path", scope=Scope.MANAGED, type=JsonType.STRING, topic=Topic.ENTERPRISE),

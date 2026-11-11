@@ -126,6 +126,31 @@
    "_note": "Claude Mods(Function hook) 활성화 플래그. 공식 스키마·문서에는 아직 미등재.",
    "description": "Enable Claude Mods (function hooks)",
    "values": ["0", "1"]
+  },
+  "CLAUDE_CODE_DISABLE_LOOPED_CROSS_CERT_DROP": {
+   "_note": "CHANGELOG 2.1.316 에서 추가. env 문서 미등재.",
+   "description": "Set to 1 to keep system cross-certificates that certify each other in a loop, for servers whose private CA needs one. Requires Claude Code v2.1.316 or later"
+  },
+  "CLAUDE_CODE_DISABLE_ULTRATHINK": {
+   "_note": "CHANGELOG 2.1.316 에서 추가. env 문서 미등재.",
+   "description": "Set to 1 to turn the ultrathink keyword off. Requires Claude Code v2.1.316 or later"
+  },
+  "CLAUDE_CODE_SUBAGENT_EFFORT": {
+   "_note": "CHANGELOG 2.1.316 에서 추가. env 문서 미등재. 값은 CLAUDE_CODE_EFFORT_LEVEL 의 effort 단계.",
+   "description": "Set the effort level subagents run at when nothing else names one, instead of inheriting the session's. Values: low, medium, high, xhigh, or max. Requires Claude Code v2.1.316 or later",
+   "values": ["low", "medium", "high", "xhigh", "max"]
+  },
+  "CLAUDE_CODE_DISABLE_NESTED_SESSION_ID": {
+   "_note": "CHANGELOG 2.1.317 에서 추가. env 문서 미등재.",
+   "description": "Set to 1 on a self-hosted runner to have claude -p run inside a session use that session's ID and transcript, as in earlier versions. Requires Claude Code v2.1.317 or later"
+  },
+  "CLAUDE_CODE_DISABLE_MCP_TASKS": {
+   "_note": "CHANGELOG 2.1.319 에서 언급. env 문서 미등재.",
+   "description": "Set to 1 to turn off MCP tasks, which since v2.1.319 also work without feature-flag fetching (Bedrock, Vertex, Foundry, LLM gateways, DISABLE_TELEMETRY)"
+  },
+  "CLAUDE_CODE_LOOP_KEEPALIVE": {
+   "_note": "CHANGELOG 2.1.319 에서 언급. env 문서 미등재.",
+   "description": "Set to 1 to keep the old self-paced /loop behavior of scheduling a fallback wakeup when a turn finishes without rescheduling, instead of ending the loop. Requires Claude Code v2.1.319 or later"
   }
  }
 }
